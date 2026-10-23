@@ -20,15 +20,17 @@
 
 unsigned on_area(const ob_neuron_t *n) {
   /* front to back (sx), floor to roof (sy), as ob_frontal.c's areas, with the
-     research's: Broca's area (the inferior frontal gyrus: low, toward the back),
-     the middle frontal gyrus (the middle band), the anteromedial superior
-     frontal gyrus (high, toward the front: the default mode network's) */
+     research's: the anteromedial superior frontal gyrus (high, toward the
+     front: the default mode network's), and in the band between floor and
+     roof Broca's area and the middle frontal gyrus. (The frontal sheet's
+     neurons sit in columns and bands; these bounds follow them) */
   if (n->region != OB_FRONTAL) return ON_OTHER;
   if (n->sx > 0.8f) return ON_FEF;
   if (n->sy < 0.3f) return n->sx < 0.35f ? ON_OFC : ON_ACC;
-  if (n->sy < 0.42f && n->sx > 0.5f) return ON_BROCA;
+  /* the middle band: Broca's area toward the back (the inferior frontal
+     gyrus, by the motor strip), the middle frontal gyrus in front of it */
+  if (n->sy >= 0.3f && n->sy < 0.6f) return n->sx > 0.5f ? ON_BROCA : ON_MFG_AREA;
   if (n->sy > 0.85f && n->sx < 0.45f) return ON_SFG_DMN;
-  if (n->sy >= 0.45f && n->sy < 0.65f) return ON_MFG_AREA;
   return ON_DLPFC;
 }
 
