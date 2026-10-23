@@ -26,7 +26,33 @@ This is the source of truth. Build from this, not from older code.
      imagination, intuition, a controller choosing among them, sleep,
      self-correction (`certifiable-c/smarsh_mind.c`).
   The plan was to make them one: the grown brain is the one that lives, and
-  the other two become what its regions do.
+  the other two become what its regions do. Region by region:
+
+  | Region | In the one brain | From |
+  |---|---|---|
+  | Retina, cochlea, skin, inner ear (vestibule) | Where the world arrives: what the camera sees, sound bands, touch, being moved | the grown brain |
+  | Spinal sensory, at the head | The eye muscles' stretch: where its eyes point | new |
+  | Thalamus, four nuclei | Each sense's relay to its cortex; predictions cancel what was expected, and what is left is surprise | the grown brain, the womb |
+  | Brainstem | Restless neurons; zones of them are its acts (eyes left, right, up, down, voice, a body jerk); a zone acts when its own activity plus the basal ganglia's push crosses threshold | the life brain |
+  | Cerebellum | Efference copies and the senses linger a few moments; its synapses onto the thalamus learn (delta rule) to predict each sense | the womb's touch learning, for every sense |
+  | Tegmentum | Dopamine = learning progress, from the thalamus's surprise, per situation | the life brain |
+  | Basal ganglia | Hear the cortex (where it looks, what it sees, what it did); learn which urges lead to progress | the mobile's learning, for every act |
+  | Hippocampus | Keeps every moment, filed under its own neurons' activity; expects what came next when a moment repeats; learns where that can be trusted | the life brain's memory |
+  | Parietal cortex | The map of objects and space | the mind |
+  | Frontal cortex | The controller: explore, follow intuition, imagine, ask; self-correction | the mind |
+  | Two hemispheres, corpus callosum | Left exact and eliminating (Hartley), right associative (Shannon); the callosum carries between them | later |
+
+  **Phases:** (1) the grown brain lives, and must pass the life brain's checks;
+  (2) the mind becomes its cortex, playing the practice worlds through its
+  own eyes and acts; (3) the one brain on the phone, grown from its genome.
+  The life brain is kept as the sketch to compare against.
+
+  **Where it stood (Oct 22):** phase 1 done; phase 2 step 1 (the cortex
+  learns what it sees; entorhinal gateway) and step 2 (the DLPFC reasons by
+  Hartley elimination, switched on by the myelination wave: none before 8
+  months, 39 hypotheses held at three years) done. The phone still runs the
+  life brain, not the one brain. Next was: the being proposes its own
+  hypotheses instead of being handed a list.
 - **Turn each big idea into a test that could fail.**
 - **Let each life stage switch ideas on when the biology does.** Abilities
   appear on the biological timeline, not all at once.
@@ -504,8 +530,15 @@ Splits the superior from the inferior parietal lobule.
 ### Insula (hidden fifth lobe)
 Deep in the Sylvian fissure under the frontal, parietal and temporal folds.
 The master centre of interoception: conscious awareness of the body's internal
-state. **Idea:** pair it with optogenetics so the body can understand how it is
-working; base self-regulation on it.
+state. **Idea:** pair it with coded optogenetics so the body can understand how
+it is working; base self-regulation on it.
+
+### Coded optogenetics
+Optogenetics, the 2026 Nobel Prize in Physiology or Medicine (Deisseroth,
+Hegemann and Nagel: light-gated ion channels, switching chosen neurons on and
+off with light). **Idea:** a coded version of it, used to selectively grow
+chosen parts of the brain. It is already used in the code to switch parts off
+and see what each is worth, and to light any one memory and read it back.
 
 Auditory processing is to be discussed further; the current focus is
 cognition and touch.
@@ -580,8 +613,11 @@ from the conversations that set the project. To be confirmed by the author.
   gyrus.
 - **"BAN"** is the VAN (ventral attention network).
 - **Hartley** belongs to the DLPFC, the CEO of the brain (Part 4).
-- **The three brains** are the grown brain, the life brain and the mind
-  (Part 1).
+- **The three brains** are the grown brain, the life brain and the mind, and
+  how they become one, region by region (Part 1).
+- **Optogenetics:** a coded version of the 2026 Nobel work, to selectively
+  grow chosen parts of the brain (Part 6).
+- **"Hi there"** was a voice-typing slip; removed.
 - **The configuration of objects:** the inferior temporal sulcus, which
   isolates an object's configuration, together with the postcentral sulcus by
   touch.
@@ -592,9 +628,6 @@ from the conversations that set the project. To be confirmed by the author.
 
 1. **Wernicke's "speech generation blueprinting"** is cut off mid-sentence
    ("constructs the conceptual …"); the rest never arrived.
-2. **"Hi there"** appears twice where a connection target is named ("use that
-   for hi there", "connect … to hi there"), about the ACC and the inferior
-   temporal sulcus. Likely a voice-typing error; meaning unclear.
-3. **Optogenetics with the insula:** what this means for an AI body.
-4. **How the three brains connect**, and which life stage switches on each
-   idea: still to be discussed.
+2. **Which life stage switches on each idea**, and each big idea as a test
+   that could fail: still to be discussed (noted as open in the earlier chats
+   too).
