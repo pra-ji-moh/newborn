@@ -92,6 +92,29 @@ claims.
    together, 28; act 1 or 2, 38; act 1 anywhere, 45). Not found: two of
    three acts at a quarter, and two acts together anywhere. No wrong claims.
    This 4/6, not the 8/8, is the number to quote.
+
+   **Second result: ideas on synapses, scored wide (Oct 23,
+   `brain/test_wide.c`).** An idea is now the synapses from real neurons
+   (each act's brainstem zone, each quarter of the tectum's gaze map) onto
+   a group of DLPFC neurons with its own threshold; failure (cortisol) can
+   teach inhibition ("not with that"). Three lives grown from three genome
+   seeds, 35 boxes each drawn at random from a seed never used in
+   development (`test_wide LIFE GENOME_SEED 35 2026`), 105 boxes in all:
+
+   | form | found | wrong claims | median tests |
+   |---|---|---|---|
+   | one act at a quarter | 9/9 | 0 | 43 to 57 |
+   | both of two | 14/15 | 0 | 42 to 51 |
+   | either of two | 18/18 | 0 | 39 to 51 |
+   | two of three | 6/12 | 0 | 52 to 59 |
+   | one act anywhere | 14/18 | 0 | 53 to 65 |
+   | one act but not with another | 5/15 | 0 | 59 to 78 |
+   | exactly one of two (cannot be thought) | 0/18, never claimed | 0 | |
+
+   66 of the 87 thinkable rules found (76%); 0 wrong claims in 105. The
+   number to quote. Against the yardstick: told the family and handed the
+   list, the ideal solver needs about 7 to 15 tests on these sizes and the
+   frontier model matched it; this, told nothing, needs about 50.
 3. **ARC-AGI-3 public set**, through its own eyes and acts, then the
    semi-private set.
 4. Everything else in the tracks below, on the way.

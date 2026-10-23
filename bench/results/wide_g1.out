@@ -1,0 +1,45 @@
+WIDE: genome seed 1, 35 rules from rule seed 2026
+  either    a3 b0 c1 q3  found         tests  57  fires on 1 of acts { 0 3 }, at quarters 3
+  one of 2  a3 b1 c2 q0  not claimed   tests   0  
+  one of 2  a0 b1 c2 q2  not claimed   tests   0  
+  both      a2 b5 c0 q2  found         tests  36  fires on 2 of acts { 2 5 }, at quarters 2
+  but not   a1 b4 c2 q3  not claimed   tests   0  
+  but not   a5 b1 c0 q3  not claimed   tests   0  
+  both      a1 b4 c2 q3  found         tests  55  fires on 2 of acts { 1 4 }, at quarters 3
+  both      a5 b2 c1 q0  found         tests  22  fires on 2 of acts { 2 5 }, at quarters 0
+  one of 2  a2 b3 c5 q0  not claimed   tests   0  
+  anywhere  a0 b4 c5 q1  found         tests  65  fires on 1 of acts { 0 }, at quarters 0 1 2 3
+  both      a1 b2 c3 q1  found         tests  66  fires on 2 of acts { 1 2 }, at quarters 1
+  anywhere  a5 b1 c3 q2  not claimed   tests   0  
+  two of 3  a0 b3 c1 q2  not claimed   tests   0  
+  one       a3 b0 c1 q3  found         tests  42  fires on 1 of acts { 3 }, at quarters 3
+  either    a0 b2 c1 q1  found         tests  44  fires on 1 of acts { 0 2 }, at quarters 1
+  one       a0 b4 c5 q1  found         tests  87  fires on 1 of acts { 0 }, at quarters 1
+  anywhere  a1 b0 c4 q3  found         tests  63  fires on 1 of acts { 1 }, at quarters 0 1 2 3
+  anywhere  a4 b2 c0 q1  found         tests  60  fires on 1 of acts { 4 }, at quarters 0 1 2 3
+  one of 2  a5 b4 c3 q1  not claimed   tests   0  
+  anywhere  a3 b0 c1 q2  found         tests  50  fires on 1 of acts { 3 }, at quarters 0 1 2 3
+  one       a3 b5 c4 q0  found         tests  57  fires on 1 of acts { 3 }, at quarters 0
+  two of 3  a0 b3 c5 q1  not claimed   tests   0  
+  either    a1 b2 c0 q2  found         tests  39  fires on 1 of acts { 1 2 }, at quarters 2
+  either    a3 b5 c2 q0  found         tests  43  fires on 1 of acts { 3 5 }, at quarters 0
+  anywhere  a1 b3 c0 q0  found         tests  57  fires on 1 of acts { 1 }, at quarters 0 1 2 3
+  two of 3  a0 b2 c5 q2  found         tests  59  fires on 2 of acts { 0 2 5 }, at quarters 2
+  both      a0 b5 c4 q2  found         tests  44  fires on 2 of acts { 0 5 }, at quarters 2
+  but not   a4 b0 c5 q1  not claimed   tests   0  
+  one of 2  a4 b5 c2 q2  not claimed   tests   0  
+  one of 2  a5 b2 c3 q1  not claimed   tests   0  
+  either    a5 b1 c0 q1  found         tests  35  fires on 1 of acts { 1 5 }, at quarters 1
+  two of 3  a1 b5 c2 q3  found         tests  53  fires on 2 of acts { 1 2 5 }, at quarters 3
+  but not   a1 b4 c0 q1  found         tests  61  fires on 1 of acts { 1 } not with 4, at quarters 1
+  but not   a1 b2 c3 q3  not claimed   tests   0  
+  either    a0 b1 c3 q2  found         tests  66  fires on 1 of acts { 0 1 }, at quarters 2
+
+  form       found  wrong   none   median
+  one            3      0      0       57
+  both           5      0      0       44
+  either         6      0      0       44
+  two of 3       2      0      2       59
+  anywhere       5      0      1       60
+  but not        1      0      4       61
+  one of 2       0      0      6        0
