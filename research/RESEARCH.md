@@ -617,7 +617,6 @@ from the conversations that set the project. To be confirmed by the author.
   how they become one, region by region (Part 1).
 - **Optogenetics:** a coded version of the 2026 Nobel work, to selectively
   grow chosen parts of the brain (Part 6).
-- **"Hi there"** was a voice-typing slip; removed.
 - **The configuration of objects:** the inferior temporal sulcus, which
   isolates an object's configuration, together with the postcentral sulcus by
   touch.
