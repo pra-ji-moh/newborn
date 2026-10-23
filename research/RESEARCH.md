@@ -13,7 +13,20 @@ This is the source of truth. Build from this, not from older code.
 ## Part 1. Overall plan
 
 - **Connect the three brains.** Use them to sharpen ideas and check each
-  other's results. (To be discussed further.)
+  other's results. The three, as built in the earlier chats (Ciall,
+  `research/ONE_BRAIN.md`), that did not yet touch each other:
+  1. **The grown brain:** anatomy grown from a genome, region by region, with
+     the womb's learning written into its synapses (`brain/ob_grow.c`,
+     `ob_womb.c`).
+  2. **The life brain:** a compact brain that lives: restless brainstem, a
+     predicting cerebellum, dopamine from learning progress, basal ganglia
+     that learn, a hippocampus that keeps every moment (`brain/ob_life.c`;
+     this is what runs in the newborn page today).
+  3. **The mind:** baby Ciall's cognition: object map, prediction, invention,
+     imagination, intuition, a controller choosing among them, sleep,
+     self-correction (`certifiable-c/smarsh_mind.c`).
+  The plan was to make them one: the grown brain is the one that lives, and
+  the other two become what its regions do.
 - **Turn each big idea into a test that could fail.**
 - **Let each life stage switch ideas on when the biology does.** Abilities
   appear on the biological timeline, not all at once.
@@ -228,14 +241,23 @@ is the brain eating its environment to sculpt its own shape.
   rules; suppresses distraction for focus.
 - **Middle frontal gyrus.** Fluid reasoning, devising novel strategies; works
   with the limbic system to understand threat and regulate emotion. Builds the
-  attention networks (see **Open**: "DAN and BAN").
+  attention networks: the DAN (dorsal attention network, top-down) and the VAN
+  (ventral attention network, stimulus-driven); the middle frontal gyrus is
+  where the two meet.
 - **Inferior frontal gyrus (IFG) / Broca's area.** The core of Broca's area:
   turns abstract language and vocabulary into complex sequences. Pars
   opercularis generates the motor plans for speech. Broca's area corrects
   speech and builds articulate sentences. Pars orbitalis and pars triangularis
   are also listed as important.
 - **Dorsolateral prefrontal cortex (DLPFC).** Manipulates working memory;
-  strategy under pressure.
+  strategy under pressure. The CEO of the brain.
+  **Hartley goes here.** It reasons by elimination (Hartley, "Transmission of
+  Information", 1928): hold the hypotheses as a set, rule out each one the
+  evidence contradicts, and what it still doesn't know is log2 of what is
+  left. Nothing is weighed or made likelier; every possibility counts the
+  same. From the earlier chats: this is the left hemisphere's way (exact,
+  eliminating); the right is associative (Shannon); the corpus callosum
+  carries between them.
 - **Premotor cortex.** Calculates the spatial orientation of objects.
 - **Gyrus rectus.** Coordinates with the orbitofrontal cortex (OFC).
 - **Orbitofrontal cortex.** Works with the amygdala in its calculations.
@@ -403,8 +425,10 @@ Splits the superior from the inferior parietal lobule.
   the symbolic representation work above, and to the ACC (mistake analysis).
 - **Inferior temporal sulcus.** The object cataloguer, part of the ventral
   stream. While the upper network tracks movement, this identifies what an
-  object is; processes shapes. **Idea:** connect it to the part that isolates
-  and understands an object's configuration.
+  object is; processes shapes. It isolates an object's configuration and
+  understands it. This is one of the two "configuration of objects" parts;
+  the other is the postcentral sulcus, which does the same by touch (Part 5).
+  **Idea:** connect the two.
 - **Rhinal sulcus.** The entorhinal hub, the spatial GPS: the main interface
   between cortex and hippocampus. Grid cells build a cognitive map for
   navigating space. Nearby cortex (perirhinal) gives the flash of "I've seen
@@ -473,8 +497,9 @@ Splits the superior from the inferior parietal lobule.
 - **Wernicke's area.** *Semantic decoding and syntactic assembly.*
   - Meaning extraction: phonemes → words; matches sounds to stored concepts.
   - Syntax parsing: "the dog chased the cat" vs "the cat chased the dog".
-  - Speech generation blueprinting: constructs the conceptual … (**Open**: cut
-    off in every copy).
+  - Speech generation blueprinting: "Before you speak, Wernicke's area
+    constructs the conceptual …" (**Open**: cut off in the source; the rest
+    never arrived).
 
 ### Insula (hidden fifth lobe)
 Deep in the Sylvian fissure under the frontal, parietal and temporal folds.
@@ -528,27 +553,48 @@ Every folium shares the same three-layer matrix.
 
 ---
 
-## Open questions (from the source)
+## Part 8. From the earlier chats (not in the PDF)
 
-1. **Wernicke's "speech generation blueprinting"** is cut off mid-sentence in
-   every copy ("constructs the conceptual …").
-2. **"Two parts that deal with the configuration of objects."** The author
-   couldn't find them. Candidates from this research: the inferior temporal
-   sulcus / ITG (what an object is) and the postcentral sulcus (tactile
-   configuration, stereognosis). Possibly the lateral occipital complex,
-   which is not in this document.
-3. **"DML"** is almost certainly the DMN (default mode network) in the
-   anteromedial superior frontal gyrus.
-4. **"DAN and BAN"** built by the middle frontal gyrus: DAN is the dorsal
-   attention network. "BAN" is probably the VAN (ventral attention network);
-   the middle frontal gyrus is where the two meet.
-5. **"Hi there"** appears twice where a connection target is named ("use that
-   for hi there", "connect … to hi there"). Likely a voice-typing error;
-   meaning unclear.
-6. **"Dorsolateral SRG"** is read here as the dorsolateral SFG; **"the
-   marginal one"** as the supramarginal gyrus; **"Vernix area"** as
-   Wernicke's area.
-7. **"Connect the three brains"**: which three, and how, is to be discussed.
-8. **Optogenetics with the insula**: what this means for an AI body.
-9. **Earlier chats mentioned material not in this PDF**, such as Hartley and
-   more detail on the hippocampus, OFC and ACC. Add it here if it exists.
+Recorded in the Ciall repo (`research/BEING.md`, `research/ONE_BRAIN.md`)
+from the conversations that set the project. To be confirmed by the author.
+
+- **The limbic loop:** the amygdala regulating how much gets through; the
+  hippocampus binding pairs; a router choosing which part acts on which; the
+  cerebellum predicting and correcting.
+- **Two hemispheres and the corpus callosum:** exact and eliminating (left,
+  Hartley) and associative (right, Shannon). Genome ideas: a thicker corpus
+  callosum, and Einstein's parietal lobe.
+- **Baby Ciall as genes and older sibling:** the newborn is built from baby
+  Ciall's design but starts with no memories. From about month three, the
+  older sibling teaches it.
+- **Eidetic memory, read by "coded optogenetics":** the hippocampus keeps
+  every moment exactly; any moment can be lit and read back without the
+  newborn knowing. (This is the light-a-memory feature on the page.)
+- **Claims held as hypotheses, not facts:** that the first flinch is the
+  origin of self-awareness, and that brain integration explains why leaders
+  tend to be 40 to 60.
+
+## Settled
+
+- **"DML"** is the DMN (default mode network), anteromedial superior frontal
+  gyrus.
+- **"BAN"** is the VAN (ventral attention network).
+- **Hartley** belongs to the DLPFC, the CEO of the brain (Part 4).
+- **The three brains** are the grown brain, the life brain and the mind
+  (Part 1).
+- **The configuration of objects:** the inferior temporal sulcus, which
+  isolates an object's configuration, together with the postcentral sulcus by
+  touch.
+- **"Dorsolateral SRG"** is the dorsolateral SFG; **"the marginal one"** is the
+  supramarginal gyrus; **"Vernix area"** is Wernicke's area.
+
+## Open questions
+
+1. **Wernicke's "speech generation blueprinting"** is cut off mid-sentence
+   ("constructs the conceptual …"); the rest never arrived.
+2. **"Hi there"** appears twice where a connection target is named ("use that
+   for hi there", "connect … to hi there"), about the ACC and the inferior
+   temporal sulcus. Likely a voice-typing error; meaning unclear.
+3. **Optogenetics with the insula:** what this means for an AI body.
+4. **How the three brains connect**, and which life stage switches on each
+   idea: still to be discussed.
