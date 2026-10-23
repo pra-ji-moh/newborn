@@ -35,9 +35,30 @@ claims.
    working memory of 39 and each idea checked against remembered results when
    it comes to mind, 15.5 tests (ideal 15, frontier model 14), 8/8 correct.
    Must be shown in the C brain, in hippocampal neurons.
-2. **Its own hypotheses.** Today it is handed the list of possible rules; so
-   was the frontier model. A cognitive human invents them. Without this,
-   nothing generalises to ARC-AGI-3. This is the core breakthrough to show.
+2. **Novelty from conditions, never from a list.** Today it is handed the
+   list of possible rules; so was the frontier model. No idea it claims may be
+   written for it, and no idea-generator either. Instead, grow the conditions
+   the research names, and let ideas arise from its own activity:
+   - **Middle frontal gyrus:** fluid reasoning, devising novel strategies;
+     the hub where the DAN (top-down) and VAN (the unexpected) meet, and
+     where the limbic system comes in.
+   - **Broca's area and the FEF, hyper-direct** (frontal hypothesis 1):
+     deeper, heavily myelinated connections straight into the central
+     sulcus, for clarity of novel ideas, paired with eye speed.
+   - **The larger picture:** the collateral sulcus / PPA feeding the middle
+     frontal gyrus (problem solving by seeing the whole).
+   - **The default mode network** (anteromedial SFG, angular gyrus): idle
+     activity that recombines what it has lived.
+   - **The pull:** dopamine as learning progress, so what is new and
+     learnable draws it and what it knows bores it.
+   - **Selection, not authorship:** whatever arises is held by the DLPFC and
+     tested by the ACC against remembered results (Hartley); what survives,
+     stays.
+   **Tests that could fail:** handed no list, it finds hidden rules it was
+   never told the form of; switching the middle frontal gyrus off (coded
+   optogenetics) stops that; without the hyper-direct links, it is slower.
+   This is the core breakthrough to show. The handed list stays only as a
+   yardstick in the old test.
 3. **ARC-AGI-3 public set**, through its own eyes and acts, then the
    semi-private set.
 4. Everything else in the tracks below, on the way.
