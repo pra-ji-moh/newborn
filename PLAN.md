@@ -8,6 +8,40 @@ board: reasoning, perception, language, and learning for life.
 and every big idea becomes a test that could fail. Results are written down
 as they come, including losses.
 
+## Focus: ARC-AGI-3
+
+The headline target, because it measures exactly what a cognitive human has
+and frontier models lack. ARC-AGI-3 (ARC Prize, March 2026): 135 interactive
+game worlds with no instructions; the player must explore, work out the rules
+by acting, and win, efficiently. Every environment was solved by untrained
+humans; frontier models score under 1% (reported: Gemini 3.1 Pro 0.37%,
+GPT-5.4 0.26%, Claude Opus 4.6 0.25%; best community agent 12.58%). Scores
+from secondary reports; check ARC Prize's own leaderboard before quoting.
+
+Why it fits this design: the newborn already acts of itself, is driven by
+learning progress (curiosity), keeps every moment, and reasons by Hartley
+elimination; baby Ciall's mind (`mind/`) already plays practice worlds of
+movers, walls, colours and level endings. ARC-AGI-3 is the same kind of
+problem.
+
+**What counts as a result for investors:** a score on ARC Prize's public and
+semi-private sets, run the way they run it, reproducible from this repo, with
+the frontier models' scores beside it. Internal tests are for us; they are not
+claims.
+
+### Milestones
+1. **Memory of results in the grown brain** (hidden-rule test): match the
+   ideal solver at 11,700 rules. Measured in the Python model (Oct 23): with
+   working memory of 39 and each idea checked against remembered results when
+   it comes to mind, 15.5 tests (ideal 15, frontier model 14), 8/8 correct.
+   Must be shown in the C brain, in hippocampal neurons.
+2. **Its own hypotheses.** Today it is handed the list of possible rules; so
+   was the frontier model. A cognitive human invents them. Without this,
+   nothing generalises to ARC-AGI-3. This is the core breakthrough to show.
+3. **ARC-AGI-3 public set**, through its own eyes and acts, then the
+   semi-private set.
+4. Everything else in the tracks below, on the way.
+
 ## Where it starts (Oct 23, 2026)
 
 | | |
