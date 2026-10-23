@@ -128,6 +128,10 @@ float ob_myelin_at(unsigned region, double months);
 /* Its life begins from a grown brain (copied in, with whatever the womb taught it). */
 void ob_one_born(ob_one_t *O, const ob_brain_t *grown, unsigned seed, unsigned curiosity);
 
+/* A life kept on file goes on in this process: its anatomy read again (the
+   tables of which neurons do what are kept beside it, not in it). */
+void ob_one_resume(ob_one_t *O);
+
 /* One moment: `in` as for ol_live. Returns what it does. */
 unsigned ob_one_live(ob_one_t *O, const float *in);
 

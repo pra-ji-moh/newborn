@@ -456,6 +456,8 @@ void ob_one_age(ob_one_t *O, double months) {
   for (i = 0u; i < O->brain.n_neurons; i++) O->gain[i] = 0.5f + 0.5f * O->myelin[O->brain.neuron[i].region];
 }
 
+void ob_one_resume(ob_one_t *O) { read_anatomy(&O->brain); }
+
 void ob_one_born(ob_one_t *O, const ob_brain_t *grown, unsigned seed, unsigned curiosity) {
   unsigned s, i;
   memset(O, 0, sizeof(*O));

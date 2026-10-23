@@ -136,6 +136,9 @@ static void meet_all(const box_t *boxes, unsigned n, unsigned off, tally_t *t, i
     t->oxytocin += m.oxytocin / n;
     for (s = 0u; s < ON_SOURCES; s++) t->arisen[s] += m.arisen[s];
     t->rejected += m.rejected;
+    if (print && !m.found && m.tries)
+      printf("    %-34s CLAIMED WRONGLY: acts %02x need %u places %x\n", boxes[k].name, m.known.acts, m.known.need,
+             m.known.places);
     if (print)
       printf("    %-34s %s  tests %3u  ideas arisen MFG %4u PPA %3u DMN %4u, failed memory %4u  "
              "cortisol %.2f dopamine %.2f oxytocin %.2f\n",
@@ -179,6 +182,7 @@ int main(int argc, char **argv) {
   double old_tries = 0.0;
   printf("IDEAS NOBODY WRITES: ONE LIFE TO THREE YEARS, THEN BOXES OF UNTOLD FORM\n\n");
   if (load(snap)) {
+    ob_one_resume(&SAVED);
     printf("  its life at three years, from %s\n", snap);
   } else {
     ob_genome_t g;

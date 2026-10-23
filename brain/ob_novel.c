@@ -287,6 +287,17 @@ static void dmn(on_mind_t *M) {
   if ((M->off & ON_OFF_DMN) || M->n_mem == 0u) return;
   if (unit(M) > M->pathway[ON_DMN]) return;
   light_area(M, ON_SFG_DMN, 1.0f);
+  if (M->n_good >= 2u && unit(M) < 0.4f) {
+    /* two thoughts that once foretold a chime, merged: what either binds,
+       needing as few as the readier of them */
+    const on_idea_t *x = &M->good[rnd(M) % M->n_good], *y = &M->good[rnd(M) % M->n_good];
+    idea.source = ON_DMN;
+    idea.acts = x->acts | y->acts;
+    idea.need = x->need < y->need ? x->need : y->need;
+    idea.places = (x->places & y->places) ? x->places & y->places : x->places | y->places;
+    arise(M, idea);
+    return;
+  }
   for (k = 0u; k < 2u; k++) {
     unsigned pick = 0u;
     for (tries = 0u; tries < 20u; tries++) {
@@ -326,15 +337,57 @@ static of_test_t choose(on_mind_t *M) {
   if (h == 1u) {
     /* one idea: try what it says will chime, and what it says will not, in turn
        (a child checks both ways) */
+    /* one idea: check it at its edges, where it would be wrong if it were
+       wrong. Near what it binds, what it says will not chime (another act
+       where it looks; its own acts elsewhere) and the least it says will
+       (just as many of its acts as it needs). And now and then anything it
+       says will chime. Each such test new to it, if it can find one */
     const on_idea_t *only = 0;
-    int want = (int)(M->tests & 1u) == 0;
+    of_test_t cand[64];
+    unsigned n = 0u, a, p, fresh, k;
     for (g = 0u; g < M->n_groups; g++)
       if (M->holds[g] && M->lit[g] >= LIT) only = &M->idea[g];
-    for (ties = 0u; ties < 400u; ties++) {
-      of_test_t t = {1u + rnd(M) % 63u, rnd(M) % 4u};
-      if (on_says(only, &t) == want) return t;
+    for (p = 0u; p < 4u; p++) {
+      for (a = 0u; a < OL_MOTORS; a++) {
+        of_test_t t = {1u << a, p};
+        if (!on_says(only, &t) && ((only->places >> p & 1u) || (only->acts >> a & 1u)) && n < 64u) cand[n++] = t;
+      }
+      {
+        of_test_t t = {only->acts, p};
+        if (!on_says(only, &t) && n < 64u) cand[n++] = t;
+      }
+      /* and the least it says would chime: just `need` of its acts, there */
+      if (only->places >> p & 1u)
+        for (a = 1u; a < 64u; a++) {
+          of_test_t t = {a, p};
+          if ((a & ~only->acts) == 0u && popcount(a) == only->need && n < 64u) cand[n++] = t;
+        }
+      /* and the nearest of all: the least it says would chime, with one of
+         its acts swapped for another */
+      if (only->places >> p & 1u)
+        for (a = 1u; a < 64u; a++) {
+          of_test_t t = {a, p};
+          if (popcount(a) == only->need && popcount(a & ~only->acts) == 1u && n < 64u) cand[n++] = t;
+        }
     }
-    return best;
+    if (n == 0u || (M->tests % 4u) == 0u) {
+      for (ties = 0u; ties < 400u; ties++) {
+        of_test_t t = {1u + rnd(M) % 63u, rnd(M) % 4u};
+        if (on_says(only, &t)) return t;
+      }
+      return best;
+    }
+    /* prefer one it has not tried */
+    for (fresh = 0u; fresh < 2u; fresh++) {
+      unsigned start = rnd(M) % n;
+      for (k = 0u; k < n; k++) {
+        of_test_t t = cand[(start + k) % n];
+        unsigned m, tried = 0u;
+        for (m = 0u; m < M->n_mem && !tried; m++) tried = M->mem[m].t.acts == t.acts && M->mem[m].t.place == t.place;
+        if (!tried || fresh) return t;
+      }
+    }
+    return cand[0];
   }
   for (place = 0u; place < 4u; place++)
     for (acts = 1u; acts < 64u; acts++) {
@@ -451,6 +504,8 @@ static void outcome(on_mind_t *M, const of_test_t *t, int heard) {
       if (heard) {
         foretold++;
         push[g] = -1.0f;               /* dopamine steadies the group that foretold it */
+        if (M->n_good < 64u) M->good[M->n_good++] = M->idea[g];
+        else M->good[rnd(M) % 64u] = M->idea[g];
         M->pathway[M->idea[g].source] += 0.05f * (1.0f - M->pathway[M->idea[g].source]);
       }
     } else {

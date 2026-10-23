@@ -30,8 +30,9 @@
  *   DMN     the default mode network (the anteromedial superior frontal
  *           gyrus, with the angular gyrus): when it is not busy testing,
  *           its hippocampus replays moments it has lived, two at a time, and
- *           what they share or what either holds becomes an idea. The common
- *           sense pivot: ideas made from its own life
+ *           what they share or what either holds becomes an idea; or two
+ *           thoughts that once foretold a chime, merged. The common sense
+ *           pivot: ideas made from its own life
  *   Broca   Broca's area and the frontal eye fields, wired hyper-directly
  *   + FEF   (deeper, heavily myelinated, straight into the motor strip at
  *           the central sulcus: frontal hypothesis 1). An idea becomes the
@@ -46,8 +47,10 @@
  *   self-excitation and shared inhibition as ob_frontal.c: how many it can
  *   hold grows with myelin). The IPS picks the test that splits what it
  *   holds most evenly. Each outcome: the ACC darkens what it contradicts.
- *   It knows when one idea is held, has predicted everything it remembers,
- *   and the ideas that keep arising all fail against memory.
+ *   Holding one idea, it checks it at its edges: other acts where the idea
+ *   looks, the idea's acts elsewhere, fewer of them than it needs. It knows
+ *   when one idea is held, has passed those checks, and the ideas that keep
+ *   arising all fail against memory.
  *
  * ITS CHEMISTRY (no reward, no punishment)
  *   cortisol   failure: an idea it held said the box would chime and it did
@@ -121,6 +124,9 @@ typedef struct {
   /* the hippocampus's results */
   on_result_t mem[ON_MEMORY];
   unsigned n_mem;
+  /* thoughts that once foretold a chime (dopamine marks them), for the DMN */
+  on_idea_t good[64];
+  unsigned n_good;
   /* how much each pathway's ideas have paid (dopamine strengthens it) */
   float pathway[ON_SOURCES];
   /* counts */
