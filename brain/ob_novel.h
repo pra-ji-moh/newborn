@@ -21,7 +21,9 @@
  *           were: the DAN) and the ventral (what was unexpected: the VAN)
  *           meet, with what it just did. When something unexpected happens,
  *           it binds them into a new idea, loosely: some of what it did, and
- *           a guess at how much of it mattered
+ *           a guess at how much of it mattered. When something new is in
+ *           front of it and nothing happens, it varies what it just did (an
+ *           act more or less, its eyes elsewhere): an untried idea
  *   PPA     the collateral sulcus's scene area: the larger picture. It feeds
  *           the MFG the whole of a scene, not one spot: an idea's place can
  *           widen to every part of the wall it has seen things happen in

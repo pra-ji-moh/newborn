@@ -37,6 +37,7 @@
  *   test_novel              the life, then the boxes (many minutes)
  *   test_novel SNAPSHOT     keep the life at three years in SNAPSHOT, or
  *                           start from it if it is there
+ *   test_novel SNAPSHOT q   the boxes only, no switching off and no checks
  */
 
 #include <stdio.h>
@@ -214,6 +215,7 @@ int main(int argc, char **argv) {
   meet_all(NEW, N_NEW, 0u, &nw, 1);
   printf("  beyond what one idea can stand for:\n");
   meet_all(&BEYOND, 1u, 0u, &beyond, 1);
+  if (argc > 2) return 0;   /* "quick": the boxes only */
 
   /* the yardstick: the old circuit, handed the 144 */
   for (k = 0u; k < N_FAM; k++) {

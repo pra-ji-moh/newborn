@@ -678,12 +678,16 @@ unsigned ob_one_live(ob_one_t *O, const float *in) {
     for (i = 0u; i < b->n_neurons; i++) {
       if (b->neuron[i].region == OB_TEGMENTUM) O->act[i] = O->dopamine > 1.0f ? 1.0f : O->dopamine;
     }
-    /* 4. the basal ganglia: the urges that dopamine and oxytocin follow grow on
-          their synapses (three factors: what the cortex carried, what the
-          brainstem did, the chemical). Nothing is punished: what is not used
-          fades slowly, as all of them do */
+    /* 4. the basal ganglia: the urges that bursts of dopamine and oxytocin
+          follow grow on their synapses (three factors: what the cortex
+          carried, what the brainstem did, the burst). Nothing is punished:
+          what is not used fades slowly, as all of them do */
     if (O->curiosity != OL_NONE && O->learning) {
-      float success = O->dopamine + O->oxytocin;
+      /* a burst: what is released beyond the steady level of late (a steady
+         level, like her constant presence, teaches nothing) */
+      float level = O->dopamine + O->oxytocin, success = level - O->tonic;
+      O->tonic += 0.01f * (level - O->tonic);
+      if (success < 0.0f) success = 0.0f;
       for (k = 0u; k < N_ACTION; k++) {
         s = ACTION_SYN[k];
         O->w[s] += ACTOR * success * O->elig[s] - FORGET * O->w[s];

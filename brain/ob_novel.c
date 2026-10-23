@@ -252,6 +252,15 @@ static void mfg(on_mind_t *M, const of_test_t *t, int outcome) {
     if (outcome) {
       /* it chimed: some of what it did, there */
       idea.acts = some_of(M, t->acts);
+    } else if (held(M) == 0u) {
+      /* something new in front of it, and nothing happened: what it just
+         did, varied (an act added or let go, its eyes elsewhere). Memory
+         turns away whatever it has already tried */
+      idea.acts = t->acts ^ (1u << (rnd(M) % OL_MOTORS));
+      idea.need = guess_need(M, idea.acts);
+      idea.places = 1u << (unit(M) < 0.5f ? t->place : rnd(M) % 4u);
+      arise(M, idea);
+      continue;
     } else {
       /* it did not, though something said it would: what was held, varied by
          what it just did (an act added, or one let go) */
@@ -541,7 +550,7 @@ void on_box_meet(ob_world_t *W, ob_one_t *O, on_rule_t rule, unsigned long momen
       if (bits) {
         t.acts = bits;
         remember(&M, &t, heard);
-        if (heard) mfg(&M, &t, 1);
+        mfg(&M, &t, heard);
       }
     }
     /* between tests, idle a moment: the default mode network */

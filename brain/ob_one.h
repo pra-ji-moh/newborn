@@ -80,6 +80,7 @@ typedef struct {
   float dopamine;                     /* success: getting better at something, or something it did working */
   float oxytocin;                     /* success with its mother: her answering it, her touch, being rocked */
   float cortisol;                     /* failure: what it expected did not come. Slow to fade */
+  float tonic;                        /* dopamine and oxytocin's steady level, of late: learning follows bursts above it */
   float success_now, social_now, failure_now;   /* this moment's causes (set by the world, or its frontal cortex; spent) */
   unsigned intent_on, intent;         /* the frontal cortex's intention: which acts to do, deliberately */
 
