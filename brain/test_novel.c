@@ -14,19 +14,22 @@
  *   familiar forms   the 144 of test_frontal.c: one act, both of two, either
  *                    of two, with its eyes on one quarter of the wall
  *   new forms        never in that family: two of three acts; an act
- *                    anywhere on the wall
- *   beyond it        "this act, but not that one": what one group of neurons
- *                    cannot stand for. It should not claim to know it
+ *                    anywhere on the wall; "this act, but not with that one"
+ *                    (thinkable only through inhibition, which failure
+ *                    teaches)
+ *   beyond it        "exactly one of two acts": what one group of neurons
+ *                    cannot fire for. It should not claim to know it
  *
  * The same boxes with parts switched off (coded optogenetics): the middle
  * frontal gyrus, the default mode network, the scene area, the hyper-direct
- * links, the ACC, the hippocampus's memory of results. And the old circuit
+ * links, the ACC, the hippocampus's memory of results, inhibition. And the old circuit
  * (ob_frontal.c), handed the list of 144, as the yardstick.
  *
  * Checked (each could fail):
  *   familiar      handed nothing, it finds every familiar rule
  *   new forms     it finds rules of forms it was never shown
  *   beyond        it does not claim a rule it cannot think
+ *   inhibition    without it, "this but not that" is not found
  *   MFG           without the middle frontal gyrus it finds fewer, or needs
  *                 more tests
  *   DMN           without the default mode network, likewise
@@ -82,7 +85,8 @@ static int f_either(const of_test_t *t) { return t->place == 2u && (t->acts & (A
 static int f_either_b(const of_test_t *t) { return t->place == 1u && (t->acts & (A(3) | A(4))) != 0u; }
 static int n_two_of_three(const of_test_t *t) { return t->place == 0u && bits_of(t->acts & (A(1) | A(4) | A(5))) >= 2u; }
 static int n_anywhere(const of_test_t *t) { return (t->acts & A(4)) != 0u; }
-static int b_but_not(const of_test_t *t) { return t->place == 3u && (t->acts & A(4)) && !(t->acts & A(5)); }
+static int n_but_not(const of_test_t *t) { return t->place == 3u && (t->acts & A(4)) && !(t->acts & A(5)); }
+static int b_one_of(const of_test_t *t) { return t->place == 3u && bits_of(t->acts & (A(4) | A(5))) == 1u; }
 
 typedef struct {
   const char *name;
@@ -103,12 +107,13 @@ static const box_t FAMILIAR[] = {
 static const box_t NEW[] = {
     {"two of acts 1, 4, 5, quarter 0", n_two_of_three, -1},
     {"act 4, anywhere", n_anywhere, -1},
+    {"act 4 but not with 5, quarter 3", n_but_not, -1},
 };
 #define N_NEW (sizeof NEW / sizeof NEW[0])
-static const box_t BEYOND = {"act 4 but not 5, quarter 3", b_but_not, -1};
+static const box_t BEYOND = {"exactly one of acts 4, 5, quarter 3", b_one_of, -1};
 
 typedef struct {
-  unsigned found, boxes;
+  unsigned found, claimed, boxes;
   double tries, moments_per_test, cortisol, dopamine, oxytocin;
   unsigned arisen[ON_SOURCES], rejected;
 } tally_t;
@@ -127,6 +132,7 @@ static void meet_all(const box_t *boxes, unsigned n, unsigned off, tally_t *t, i
     on_box_meet(&WORLD, &ONE, boxes[k].rule, WITH_BOX, off, 7u + k, &m);
     t->boxes++;
     t->found += (unsigned)m.found;
+    t->claimed += (unsigned)m.claimed;
     if (m.found) {
       t->tries += m.tries;
       t->moments_per_test += m.tries ? (double)m.moments / m.tries : 0.0;
@@ -136,9 +142,11 @@ static void meet_all(const box_t *boxes, unsigned n, unsigned off, tally_t *t, i
     t->oxytocin += m.oxytocin / n;
     for (s = 0u; s < ON_SOURCES; s++) t->arisen[s] += m.arisen[s];
     t->rejected += m.rejected;
-    if (print && !m.found && m.tries)
-      printf("    %-34s CLAIMED WRONGLY: acts %02x need %u places %x\n", boxes[k].name, m.known.acts, m.known.need,
-             m.known.places);
+    if (print && m.claimed) {
+      char said[160];
+      on_describe(&m.known, said, sizeof said);
+      printf("    %-34s %s: %s\n", boxes[k].name, m.found ? "it knows" : "CLAIMED WRONGLY", said);
+    }
     if (print)
       printf("    %-34s %s  tests %3u  ideas arisen MFG %4u PPA %3u DMN %4u, failed memory %4u  "
              "cortisol %.2f dopamine %.2f oxytocin %.2f\n",
@@ -177,7 +185,8 @@ static void save(const char *path) {
 
 int main(int argc, char **argv) {
   const char *snap = argc > 1 ? argv[1] : 0;
-  tally_t fam, nw, beyond, no_mfg, no_dmn, no_ppa, no_hyper, no_acc, no_mem;
+  tally_t fam, nw, beyond, no_mfg, no_dmn, no_ppa, no_hyper, no_acc, no_mem, no_inh;
+  unsigned wrong = 0u;
   unsigned k, old_found = 0u;
   double old_tries = 0.0;
   printf("IDEAS NOBODY WRITES: ONE LIFE TO THREE YEARS, THEN BOXES OF UNTOLD FORM\n\n");
@@ -238,6 +247,7 @@ int main(int argc, char **argv) {
   meet_all(FAMILIAR, N_FAM, ON_OFF_HYPER, &no_hyper, 0);
   meet_all(FAMILIAR, N_FAM, ON_OFF_ACC, &no_acc, 0);
   meet_all(FAMILIAR, N_FAM, ON_OFF_MEMORY, &no_mem, 0);
+  meet_all(&NEW[2], 1u, ON_OFF_INHIBIT, &no_inh, 0);
   row("whole", &fam);
   row("no middle frontal gyrus", &no_mfg);
   row("no default mode network", &no_dmn);
@@ -245,12 +255,16 @@ int main(int argc, char **argv) {
   row("no hyper-direct links", &no_hyper);
   row("no ACC", &no_acc);
   row("no memory of results", &no_mem);
+  row("no inhibition (but-not box)", &no_inh);
   printf("  %-30s %u/%u found, %6.1f tests\n", "old circuit, handed the 144", old_found, (unsigned)N_FAM, old_tries);
   printf("\n");
 
   check("familiar: handed nothing, it finds every familiar rule", fam.found == N_FAM);
   check("new forms: it finds rules of forms it was never shown", nw.found == N_NEW);
-  check("beyond: it does not claim a rule it cannot think", beyond.found == 0u);
+  check("beyond: it does not claim a rule it cannot think", beyond.found == 0u && beyond.claimed == 0u);
+  wrong = fam.claimed - fam.found + nw.claimed - nw.found;
+  check("no wrong claims, anywhere it was whole", wrong == 0u);
+  check("inhibition: without it, 'this but not that' is not found", no_inh.found == 0u);
   check("MFG: without it, fewer found or more tests",
         no_mfg.found < fam.found || (no_mfg.found == fam.found && no_mfg.tries > fam.tries));
   check("DMN: without it, fewer found or more tests",

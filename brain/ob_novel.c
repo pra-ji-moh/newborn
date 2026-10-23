@@ -1,10 +1,11 @@
 /*
- * ob_novel.c -- the conditions for novelty: ideas nobody writes. See ob_novel.h.
+ * ob_novel.c -- the conditions for novelty: ideas nobody writes, formed on
+ * synapses. See ob_novel.h.
  */
 
 #include "ob_novel.h"
 
-#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 /* the DLPFC's holding, as ob_frontal.c's: self-excitation through myelinated
@@ -15,6 +16,7 @@
 #define STRIKE 10.0f
 #define CUE 8.0f
 
+#define INH_GAIN 2.0f                 /* an inhibitory synapse, through its interneuron, outweighs an excitatory one */
 #define CHECK_TESTS 6u                /* tests an idea must pass, once held alone, before it is trusted */
 #define QUIET 12u                     /* ideas in a row that fail against memory, before it trusts the one it holds */
 
@@ -40,10 +42,6 @@ static unsigned popcount(unsigned x) {
   return n;
 }
 
-int on_says(const on_idea_t *i, const of_test_t *t) {
-  return (i->places >> t->place & 1u) && popcount(t->acts & i->acts) >= i->need;
-}
-
 static unsigned rnd(on_mind_t *M) {
   M->rng ^= M->rng << 13;
   M->rng ^= M->rng >> 17;
@@ -54,6 +52,64 @@ static unsigned rnd(on_mind_t *M) {
 static float unit(on_mind_t *M) { return (float)(rnd(M) >> 8) / 16777216.0f; }
 
 static float clip(float x) { return x < 0.0f ? 0.0f : x > 1.0f ? 1.0f : x; }
+
+/* ----- what a group with these synapses does ----- */
+
+static float frac(const unsigned char *syn) {
+  unsigned k, n = 0u;
+  for (k = 0u; k < ON_K; k++) n += syn[k];
+  return (float)n / (float)ON_K;
+}
+
+int on_fires(const on_idea_t *i, const of_test_t *t) {
+  float basal = 0.0f;
+  unsigned a;
+  /* the context: where its eyes are reaches the apical dendrites */
+  if (frac(i->exc[OL_MOTORS + t->place]) < 0.5f) return 0;
+  /* what it does reaches the basal dendrites */
+  for (a = 0u; a < OL_MOTORS; a++)
+    if (t->acts >> a & 1u) basal += frac(i->exc[a]) - INH_GAIN * frac(i->inh[a]);
+  return basal > i->theta - 0.5f;
+}
+
+void on_describe(const on_idea_t *i, char *out, unsigned size) {
+  unsigned a, q, n = 0u;
+  int w;
+  w = snprintf(out, size, "fires on %.0f of acts {", (double)i->theta);
+  n = w > 0 ? (unsigned)w : 0u;
+  for (a = 0u; a < OL_MOTORS && n < size; a++)
+    if (frac(i->exc[a]) >= 0.5f) n += (unsigned)snprintf(out + n, size - n, " %u", a);
+  if (n < size) n += (unsigned)snprintf(out + n, size - n, " }");
+  for (a = 0u; a < OL_MOTORS && n < size; a++)
+    if (frac(i->inh[a]) >= 0.25f) n += (unsigned)snprintf(out + n, size - n, " not with %u", a);
+  if (n < size) n += (unsigned)snprintf(out + n, size - n, ", at quarters");
+  for (q = 0u; q < 4u && n < size; q++)
+    if (frac(i->exc[OL_MOTORS + q]) >= 0.5f) n += (unsigned)snprintf(out + n, size - n, " %u", q);
+}
+
+/* the same, as far as anything it could do would show */
+static int same(const on_idea_t *a, const on_idea_t *b) {
+  unsigned acts, place;
+  for (place = 0u; place < 4u; place++)
+    for (acts = 1u; acts < 64u; acts++) {
+      of_test_t t = {acts, place};
+      if (on_fires(a, &t) != on_fires(b, &t)) return 0;
+    }
+  return 1;
+}
+
+static int fires_ever(const on_idea_t *i) {
+  unsigned place;
+  for (place = 0u; place < 4u; place++) {
+    of_test_t t = {63u, place};
+    unsigned acts;
+    for (acts = 1u; acts < 64u; acts++) {
+      t.acts = acts;
+      if (on_fires(i, &t)) return 1;
+    }
+  }
+  return 0;
+}
 
 /* ----- the DLPFC: holding ----- */
 
@@ -83,11 +139,6 @@ static void show(on_mind_t *M) {
   unsigned g, k;
   for (g = 0u; g < M->n_groups; g++)
     for (k = 0u; k < 6u; k++) M->O->act[M->neuron[g][k]] = M->lit[g];
-}
-
-static void light_area(on_mind_t *M, unsigned area, float level) {
-  unsigned k;
-  for (k = 0u; k < M->area_n[area]; k++) M->O->act[M->area_list[M->area_first[area] + k]] = level;
 }
 
 static unsigned held(const on_mind_t *M) {
@@ -121,33 +172,37 @@ static unsigned room(const on_mind_t *M) {
   return r;
 }
 
-/* the same idea, as far as anything it could do would show */
-static int same(const on_idea_t *a, const on_idea_t *b) {
-  unsigned acts, place;
-  for (place = 0u; place < 4u; place++)
-    for (acts = 1u; acts < 64u; acts++) {
-      of_test_t t = {acts, place};
-      if (on_says(a, &t) != on_says(b, &t)) return 0;
-    }
-  return 1;
+/* a free group, the one that wins this moment (excitability and noise) */
+static int free_group(on_mind_t *M) {
+  unsigned g, n = 0u;
+  int pick = -1;
+  for (g = 0u; g < M->n_groups; g++)
+    if (!M->holds[g] && rnd(M) % (++n) == 0u) pick = (int)g;
+  return pick;
 }
 
-/* hold it, if it will stay lit without putting out another */
-static int hold(on_mind_t *M, const on_idea_t *idea) {
+/* a free group as readily fired as `theta`, if there is one */
+static int free_group_like(on_mind_t *M, float theta) {
+  unsigned g, n = 0u;
+  int pick = -1;
+  for (g = 0u; g < M->n_groups; g++)
+    if (!M->holds[g] && M->theta[g] == theta && rnd(M) % (++n) == 0u) pick = (int)g;
+  return pick >= 0 ? pick : free_group(M);
+}
+
+/* the group keeps itself lit, if it will without putting out another */
+static int hold(on_mind_t *M, unsigned g0, const on_idea_t *idea) {
   float trial[ON_HELD];
-  unsigned g, n = M->n_groups, free_g = n;
-  for (g = 0u; g < n && free_g == n; g++)
-    if (!M->holds[g]) free_g = g;
-  if (free_g == n) return 0;
+  unsigned g, n = M->n_groups;
   memcpy(trial, M->lit, sizeof(float) * n);
-  trial[free_g] = 0.0f;
-  settle(M, trial, 0, (int)free_g);
-  if (trial[free_g] < LIT) return 0;
+  trial[g0] = 0.0f;
+  settle(M, trial, 0, (int)g0);
+  if (trial[g0] < LIT) return 0;
   for (g = 0u; g < n; g++)
-    if (g != free_g && M->lit[g] >= LIT && trial[g] < LIT) return 0;
+    if (g != g0 && M->lit[g] >= LIT && trial[g] < LIT) return 0;
   memcpy(M->lit, trial, sizeof(float) * n);
-  M->holds[free_g] = 1;
-  M->idea[free_g] = *idea;
+  M->holds[g0] = 1;
+  M->idea[g0] = *idea;
   show(M);
   return 1;
 }
@@ -165,64 +220,60 @@ static void remember(on_mind_t *M, const of_test_t *t, int outcome) {
   r->strength = 0.7f + 0.3f * clip(boost);
 }
 
-/* the ACC, against what the hippocampus recalls: 1 if the idea survives */
+/* the hippocampus replays each remembered test into the populations; the
+   ACC compares what the group does with what came. 1: it survives */
 static int survives_memory(on_mind_t *M, const on_idea_t *idea) {
   unsigned k;
   if (M->off & (ON_OFF_ACC | ON_OFF_MEMORY)) return 1;
   for (k = 0u; k < M->n_mem; k++) {
     const on_result_t *r = &M->mem[k];
-    if (on_says(idea, &r->t) != r->outcome && unit(M) < r->strength) return 0;
+    if (on_fires(idea, &r->t) != r->outcome && unit(M) < r->strength) return 0;
   }
   return 1;
 }
 
-/* an idea arises: the ACC checks it; it is held if it survives and is new */
-static void arise(on_mind_t *M, on_idea_t idea) {
-  unsigned g;
-  if (idea.acts == 0u || idea.places == 0u || idea.need == 0u) return;
-  if (idea.need > popcount(idea.acts)) idea.need = popcount(idea.acts);
-  M->arisen[idea.source]++;
-  if (!survives_memory(M, &idea)) {
+/* a group has just been bound: the ACC tests it; it is held if it survives
+   and is new; otherwise its synapses are let go */
+static void arise(on_mind_t *M, int g, on_idea_t *idea) {
+  unsigned h;
+  if (g < 0) return;
+  idea->theta = M->theta[g];
+  if (!fires_ever(idea)) return;     /* nothing took: no idea */
+  M->arisen[idea->source]++;
+  if (!survives_memory(M, idea)) {
     M->rejected++;
     M->quiet++;
     return;
   }
-  for (g = 0u; g < M->n_groups; g++)
-    if (M->holds[g] && same(&M->idea[g], &idea)) {
+  for (h = 0u; h < M->n_groups; h++)
+    if (M->holds[h] && same(&M->idea[h], idea)) {
       M->quiet++;
       return;
     }
-  if (hold(M, &idea)) M->quiet = 0u;
+  if (hold(M, (unsigned)g, idea)) M->quiet = 0u;
 }
 
-/* ----- where ideas arise ----- */
+/* ----- binding: synapses from the active populations take ----- */
 
-/* some of what it did: each act kept or let go */
-static unsigned some_of(on_mind_t *M, unsigned acts) {
-  unsigned a, out = 0u;
+/* each population's burst reaches the group or not (p_burst); each of its
+   synapses takes or not */
+static void bind_acts(on_mind_t *M, on_idea_t *i, unsigned acts, float p_burst) {
+  unsigned a, k;
   for (a = 0u; a < OL_MOTORS; a++)
-    if ((acts >> a & 1u) && unit(M) < 0.6f) out |= 1u << a;
-  if (!out && acts) {
-    /* at least one stays */
-    unsigned n = popcount(acts), pick = rnd(M) % n;
-    for (a = 0u; a < OL_MOTORS; a++)
-      if (acts >> a & 1u) {
-        if (pick == 0u) {
-          out = 1u << a;
-          break;
-        }
-        pick--;
-      }
-  }
-  return out;
+    if ((acts >> a & 1u) && unit(M) < p_burst)
+      for (k = 0u; k < ON_K; k++) i->exc[a][k] = unit(M) < 0.9f;
 }
 
-static unsigned guess_need(on_mind_t *M, unsigned acts) {
-  unsigned n = popcount(acts);
-  return n ? 1u + rnd(M) % n : 0u;
+static void bind_places(on_mind_t *M, on_idea_t *i, unsigned places) {
+  unsigned q, k;
+  for (q = 0u; q < 4u; q++)
+    if (places >> q & 1u)
+      for (k = 0u; k < ON_K; k++) i->exc[OL_MOTORS + q][k] = unit(M) < 0.95f;
 }
 
-/* the PPA: the larger picture. Every place it has heard the box chime */
+static float burst_p(const on_mind_t *M) { return clip(0.6f + 0.3f * M->O->dopamine); }
+
+/* the PPA: the larger picture. Every quarter it has heard the box in */
 static unsigned scene(const on_mind_t *M, unsigned place) {
   unsigned k, places = 1u << place;
   for (k = 0u; k < M->n_mem; k++)
@@ -230,74 +281,117 @@ static unsigned scene(const on_mind_t *M, unsigned place) {
   return places;
 }
 
-static unsigned maybe_wider(on_mind_t *M, unsigned place, unsigned *source) {
-  if (M->off & ON_OFF_PPA) return 1u << place;
-  if (unit(M) < 0.3f * M->pathway[ON_PPA]) {
+static unsigned context(on_mind_t *M, unsigned place, unsigned *source) {
+  if (!(M->off & ON_OFF_PPA) && unit(M) < 0.3f * M->pathway[ON_PPA]) {
     *source = ON_PPA;
     return scene(M, place);
   }
   return 1u << place;
 }
 
-/* the MFG: something unexpected. What it did, where its eyes were (the DAN),
-   bound loosely into an idea; cortisol makes the VAN quicker, so more arise */
-static void mfg(on_mind_t *M, const of_test_t *t, int outcome) {
+/* the MFG: the VAN flags something unexpected; a binding window opens */
+static void mfg(on_mind_t *M, const of_test_t *t, int outcome, const on_idea_t *failed) {
   unsigned k, n;
   if (M->off & ON_OFF_MFG) return;
   n = 1u + (unsigned)(3.0f * M->O->cortisol * M->pathway[ON_MFG]);
-  light_area(M, ON_MFG_AREA, 1.0f);
   for (k = 0u; k < n; k++) {
     on_idea_t idea;
+    /* a failed idea is bound again onto a group as readily fired as its own */
+    int g = failed && !outcome ? free_group_like(M, failed->theta) : free_group(M);
+    if (g < 0) return;
+    memset(&idea, 0, sizeof idea);
     idea.source = ON_MFG;
     if (outcome) {
-      /* it chimed: some of what it did, there */
-      idea.acts = some_of(M, t->acts);
-    } else if (held(M) == 0u) {
-      /* something new in front of it, and nothing happened: what it just
-         did, varied (an act added or let go, its eyes elsewhere). Memory
-         turns away whatever it has already tried */
-      idea.acts = t->acts ^ (1u << (rnd(M) % OL_MOTORS));
-      idea.need = guess_need(M, idea.acts);
-      idea.places = 1u << (unit(M) < 0.5f ? t->place : rnd(M) % 4u);
-      arise(M, idea);
-      continue;
-    } else {
-      /* it did not, though something said it would: what was held, varied by
-         what it just did (an act added, or one let go) */
-      unsigned g, pick = rnd(M) % (M->n_groups ? M->n_groups : 1u), tries = 0u;
-      idea.acts = t->acts;
-      for (g = pick; tries < M->n_groups; g = (g + 1u) % M->n_groups, tries++)
-        if (M->holds[g]) {
-          idea.acts = M->idea[g].acts ^ (1u << (rnd(M) % OL_MOTORS));
+      /* it chimed and nothing foretold it: what it did, where it looked */
+      bind_acts(M, &idea, t->acts, burst_p(M));
+      bind_places(M, &idea, context(M, t->place, &idea.source));
+    } else if (failed) {
+      /* an idea it held said chime, and none came. Either something it binds
+         does not matter (let one of them go), or something there besides
+         spoils it (inhibition from that: failure teaches "not with that").
+         Both are formed, each on a group of its own; memory decides */
+      const on_idea_t *was = failed;
+      unsigned a, besides = 0u, own = 0u, j, pick, v;
+      for (a = 0u; a < OL_MOTORS; a++) {
+        if (!(t->acts >> a & 1u)) continue;
+        if (frac(was->exc[a]) < 0.5f) besides |= 1u << a;
+        else own |= 1u << a;
+      }
+      for (v = 0u; v < 2u; v++) {
+        on_idea_t var;
+        int gv = v == 0u ? g : free_group_like(M, was->theta);
+        if (gv < 0) break;
+        memcpy(&var, was, sizeof var);
+        var.source = ON_MFG;
+        if (v == 0u && besides && !(M->off & ON_OFF_INHIBIT)) {
+          for (a = 0u; a < OL_MOTORS; a++)
+            if ((besides >> a & 1u) && unit(M) < burst_p(M))
+              for (j = 0u; j < ON_K; j++) var.inh[a][j] = unit(M) < 0.9f;
+          M->inhibitions++;
+        } else if (v == 1u && popcount(own) > 1u) {
+          /* one of its own acts let go */
+          pick = rnd(M) % popcount(own);
+          for (a = 0u; a < OL_MOTORS; a++)
+            if (own >> a & 1u) {
+              if (pick == 0u) break;
+              pick--;
+            }
+          memset(var.exc[a], 0, ON_K);
+        } else if (v == 0u) {
+          /* nothing besides: one act more or less */
+          a = rnd(M) % OL_MOTORS;
+          for (j = 0u; j < ON_K; j++) var.exc[a][j] = frac(was->exc[a]) >= 0.5f ? 0u : unit(M) < 0.9f;
+        } else {
           break;
         }
+        arise(M, gv, &var);
+      }
+      continue;
+    } else {
+      /* something new in front of it, and nothing happened: what it just
+         did, varied (an act more or less, its eyes elsewhere). Memory
+         turns away whatever it has already tried */
+      bind_acts(M, &idea, t->acts ^ (1u << (rnd(M) % OL_MOTORS)), 0.9f);
+      bind_places(M, &idea, 1u << (unit(M) < 0.5f ? t->place : rnd(M) % 4u));
     }
-    idea.need = guess_need(M, idea.acts);
-    idea.places = maybe_wider(M, t->place, &idea.source);
-    arise(M, idea);
+    arise(M, g, &idea);
   }
 }
 
-/* the DMN: idle, its hippocampus replays two moments it has lived (the ones
-   the box chimed in most of all), and what they share, or what either holds,
-   becomes an idea */
+/* the DMN: idle, it replays its own life into the populations */
 static void dmn(on_mind_t *M) {
   unsigned a = 0u, b = 0u, k, tries;
   on_idea_t idea;
+  int g;
   if ((M->off & ON_OFF_DMN) || M->n_mem == 0u) return;
   if (unit(M) > M->pathway[ON_DMN]) return;
-  light_area(M, ON_SFG_DMN, 1.0f);
+  g = free_group(M);
+  if (g < 0) return;
+  memset(&idea, 0, sizeof idea);
+  idea.source = ON_DMN;
   if (M->n_good >= 2u && unit(M) < 0.4f) {
-    /* two thoughts that once foretold a chime, merged: what either binds,
-       needing as few as the readier of them */
+    /* two groups that once foretold a chime, active together: a free group
+       takes what either excites, and what both inhibit */
     const on_idea_t *x = &M->good[rnd(M) % M->n_good], *y = &M->good[rnd(M) % M->n_good];
-    idea.source = ON_DMN;
-    idea.acts = x->acts | y->acts;
-    idea.need = x->need < y->need ? x->need : y->need;
-    idea.places = (x->places & y->places) ? x->places & y->places : x->places | y->places;
-    arise(M, idea);
+    unsigned f, j;
+    for (f = 0u; f < ON_FEAT; f++)
+      for (j = 0u; j < ON_K; j++) idea.exc[f][j] = x->exc[f][j] | y->exc[f][j];
+    for (f = 0u; f < OL_MOTORS; f++)
+      for (j = 0u; j < ON_K; j++) idea.inh[f][j] = x->inh[f][j] & y->inh[f][j];
+    /* where both look, if they share a place */
+    {
+      unsigned q, shared = 0u;
+      for (q = 0u; q < 4u; q++)
+        if (frac(x->exc[OL_MOTORS + q]) >= 0.5f && frac(y->exc[OL_MOTORS + q]) >= 0.5f) shared |= 1u << q;
+      if (shared)
+        for (q = 0u; q < 4u; q++)
+          if (!(shared >> q & 1u))
+            for (j = 0u; j < ON_K; j++) idea.exc[OL_MOTORS + q][j] = 0u;
+    }
+    arise(M, g, &idea);
     return;
   }
+  /* two moments it lived, replayed (the ones the box chimed in, most) */
   for (k = 0u; k < 2u; k++) {
     unsigned pick = 0u;
     for (tries = 0u; tries < 20u; tries++) {
@@ -307,95 +401,101 @@ static void dmn(on_mind_t *M) {
     if (k == 0u) a = pick;
     else b = pick;
   }
-  idea.source = ON_DMN;
-  if (M->mem[a].outcome && M->mem[b].outcome && unit(M) < 0.5f) {
-    /* what both moments share */
-    idea.acts = M->mem[a].t.acts & M->mem[b].t.acts;
-    idea.need = popcount(idea.acts);
+  if (M->mem[a].outcome && M->mem[b].outcome) {
+    if (unit(M) < 0.5f) {
+      /* synapses take only where both moments were active: what they share */
+      bind_acts(M, &idea, M->mem[a].t.acts & M->mem[b].t.acts, 0.95f);
+    } else {
+      /* where either was */
+      bind_acts(M, &idea, M->mem[a].t.acts | M->mem[b].t.acts, burst_p(M));
+    }
+    bind_places(M, &idea, (1u << M->mem[a].t.place) | (1u << M->mem[b].t.place));
   } else {
-    /* what either holds; how many of it mattered, a guess no bigger than the
-       smaller moment */
-    unsigned sa = popcount(M->mem[a].t.acts), sb = popcount(M->mem[b].t.acts);
-    idea.acts = M->mem[a].t.acts | M->mem[b].t.acts;
-    unsigned smaller = sa < sb ? sa : sb;
-    idea.need = 1u + rnd(M) % (smaller ? smaller : 1u);
+    /* one of them was silence: the chiming one, where it chimed */
+    unsigned c = M->mem[a].outcome ? a : b;
+    bind_acts(M, &idea, M->mem[c].t.acts, burst_p(M));
+    bind_places(M, &idea, 1u << M->mem[c].t.place);
   }
-  idea.places = (1u << M->mem[a].t.place) | (1u << M->mem[b].t.place);
-  if (!(M->mem[a].outcome && M->mem[b].outcome)) {
-    /* one of them was silence: the idea takes the chiming one's place */
-    idea.places = 1u << (M->mem[a].outcome ? M->mem[a].t.place : M->mem[b].t.place);
-  }
-  arise(M, idea);
+  arise(M, g, &idea);
 }
 
 /* ----- the IPS: which test ----- */
 
+static int tried(const on_mind_t *M, const of_test_t *t) {
+  unsigned m;
+  for (m = 0u; m < M->n_mem; m++)
+    if (M->mem[m].t.acts == t->acts && M->mem[m].t.place == t->place) return 1;
+  return 0;
+}
+
 static of_test_t choose(on_mind_t *M) {
-  unsigned g, acts, place, h = held(M);
+  unsigned g, acts, place, h = held(M), ties = 0u;
   int best_split = -1;
   of_test_t best = {1u, 0u};
-  unsigned ties = 0u;
   if (h == 1u) {
-    /* one idea: try what it says will chime, and what it says will not, in turn
-       (a child checks both ways) */
     /* one idea: check it at its edges, where it would be wrong if it were
-       wrong. Near what it binds, what it says will not chime (another act
-       where it looks; its own acts elsewhere) and the least it says will
-       (just as many of its acts as it needs). And now and then anything it
-       says will chime. Each such test new to it, if it can find one */
+       wrong. The least it fires for (no fewer acts would do), and that with
+       one act more; the nearest it does not fire for (one act more, less,
+       or swapped; or elsewhere); and now and then anything it fires for. Each new to it, if it can find one */
     const on_idea_t *only = 0;
-    of_test_t cand[64];
-    unsigned n = 0u, a, p, fresh, k;
+    unsigned least[64], n_least = 0u, i, j, start;
+    of_test_t cand[256];
+    unsigned n = 0u;
     for (g = 0u; g < M->n_groups; g++)
       if (M->holds[g] && M->lit[g] >= LIT) only = &M->idea[g];
-    for (p = 0u; p < 4u; p++) {
-      for (a = 0u; a < OL_MOTORS; a++) {
-        of_test_t t = {1u << a, p};
-        if (!on_says(only, &t) && ((only->places >> p & 1u) || (only->acts >> a & 1u)) && n < 64u) cand[n++] = t;
+    for (place = 0u; place < 4u; place++)
+      for (acts = 1u; acts < 64u; acts++) {
+        of_test_t t = {acts, place};
+        int minimal = on_fires(only, &t);
+        unsigned a;
+        for (a = 0u; a < OL_MOTORS && minimal; a++)
+          if (acts >> a & 1u) {
+            of_test_t s = {acts & ~(1u << a), place};
+            if (s.acts && on_fires(only, &s)) minimal = 0;
+          }
+        if (minimal && n_least < 64u) least[n_least++] = acts | place << 8;
       }
-      {
-        of_test_t t = {only->acts, p};
-        if (!on_says(only, &t) && n < 64u) cand[n++] = t;
-      }
-      /* and the least it says would chime: just `need` of its acts, there */
-      if (only->places >> p & 1u)
-        for (a = 1u; a < 64u; a++) {
-          of_test_t t = {a, p};
-          if ((a & ~only->acts) == 0u && popcount(a) == only->need && n < 64u) cand[n++] = t;
-        }
-      /* and the nearest of all: the least it says would chime, with one of
-         its acts swapped for another */
-      if (only->places >> p & 1u)
-        for (a = 1u; a < 64u; a++) {
-          of_test_t t = {a, p};
-          if (popcount(a) == only->need && popcount(a & ~only->acts) == 1u && n < 64u) cand[n++] = t;
+    for (i = 0u; i < n_least; i++) {
+      unsigned acts0 = least[i] & 63u, p0 = least[i] >> 8;
+      if (n < 256u) cand[n++] = (of_test_t){acts0, p0};
+      for (place = 0u; place < 4u; place++)
+        for (j = 0u; j < 64u; j++) {
+          of_test_t t;
+          unsigned near;
+          if (j == 0u) continue;
+          near = popcount(j ^ acts0);
+          t.acts = j;
+          t.place = place;
+          if (on_fires(only, &t)) {
+            /* the least it fires for, and one act more: does adding
+               something spoil it? */
+            if (place == p0 && near == 1u && (j & acts0) == acts0 && n < 256u) cand[n++] = t;
+            continue;
+          }
+          if ((place == p0 && (near == 1u || (near == 2u && popcount(j) == popcount(acts0)))) ||
+              (place != p0 && j == acts0))
+            if (n < 256u) cand[n++] = t;
         }
     }
     if (n == 0u || (M->tests % 4u) == 0u) {
       for (ties = 0u; ties < 400u; ties++) {
         of_test_t t = {1u + rnd(M) % 63u, rnd(M) % 4u};
-        if (on_says(only, &t)) return t;
+        if (on_fires(only, &t)) return t;
       }
-      return best;
+      return n ? cand[0] : best;
     }
-    /* prefer one it has not tried */
-    for (fresh = 0u; fresh < 2u; fresh++) {
-      unsigned start = rnd(M) % n;
-      for (k = 0u; k < n; k++) {
-        of_test_t t = cand[(start + k) % n];
-        unsigned m, tried = 0u;
-        for (m = 0u; m < M->n_mem && !tried; m++) tried = M->mem[m].t.acts == t.acts && M->mem[m].t.place == t.place;
-        if (!tried || fresh) return t;
-      }
-    }
-    return cand[0];
+    start = rnd(M) % n;
+    for (i = 0u; i < n; i++)
+      if (!tried(M, &cand[(start + i) % n])) return cand[(start + i) % n];
+    return cand[start];
   }
+  /* several: the test that splits them most evenly */
   for (place = 0u; place < 4u; place++)
     for (acts = 1u; acts < 64u; acts++) {
       of_test_t t = {acts, place};
       unsigned yes = 0u, split;
       for (g = 0u; g < M->n_groups; g++)
-        if (M->holds[g] && M->lit[g] >= LIT && on_says(&M->idea[g], &t)) yes++;
+        if (M->holds[g] && M->lit[g] >= LIT && on_fires(&M->idea[g], &t)) yes++;
       split = yes < h - yes ? yes : h - yes;
       if ((int)split > best_split) {
         best_split = (int)split;
@@ -433,7 +533,6 @@ static unsigned did(const ob_one_t *O) {
 static void look_to(on_mind_t *M, ob_world_t *W, unsigned q) {
   unsigned k;
   float tx = q & 1u ? 0.75f : 0.25f, ty = q & 2u ? 0.75f : 0.25f;
-  light_area(M, ON_FEF, 1.0f);
   for (k = 0u; k < 48u; k++) {
     unsigned want = 0u;
     if (W->crib.gx > tx + 0.06f) want |= 1u << OL_LOOK_LEFT;
@@ -445,11 +544,10 @@ static void look_to(on_mind_t *M, ob_world_t *W, unsigned q) {
   }
 }
 
-/* a test, through its body. What it actually did (its efference copy, which
+/* a test, through its body: what it actually did (its efference copy, which
    may be less than it meant), where, and what it heard */
 static int try_it(on_mind_t *M, ob_world_t *W, const of_test_t *meant, of_test_t *done) {
   look_to(M, W, meant->place);
-  light_area(M, ON_BROCA, 1.0f);
   done->place = quarter_of(&W->crib);
   ob_world_moment(W, M->O, 1u, through(M, meant->acts));
   done->acts = did(M->O);
@@ -459,31 +557,43 @@ static int try_it(on_mind_t *M, ob_world_t *W, const of_test_t *meant, of_test_t
 /* ----- the meeting ----- */
 
 static void begin(on_mind_t *M, ob_one_t *O, unsigned off, unsigned seed) {
-  static unsigned LIST[OB_MAX_NEURONS];
+  /* how readily a group fires, by the layer its neurons sit in (deepest
+     first: 6, 5, 4, 3, 2). A modelling choice: groups must differ, and here
+     the layer says how */
+  static const float THETA_OF_LAYER[OB_LAYERS] = {1.0f, 2.0f, 1.0f, 2.0f, 3.0f};
   const ob_brain_t *b = &O->brain;
-  unsigned i, a, in_group = 0u, n = 0u;
+  unsigned i, a, layer, n[ON_FEAT];
   memset(M, 0, sizeof(*M));
   M->O = O;
   M->off = off;
   M->rng = seed * 2654435761u + 12345u;
   if (!M->rng) M->rng = 1u;
   for (a = 0u; a < ON_SOURCES; a++) M->pathway[a] = 0.5f;
-  for (i = 0u; i < b->n_neurons && M->n_groups < ON_HELD; i++) {
-    if (b->neuron[i].inhibitory || on_area(&b->neuron[i]) != ON_DLPFC) continue;
-    M->neuron[M->n_groups][in_group] = i;
-    O->external[i] = 1u;
-    if (++in_group == 6u) {
-      in_group = 0u;
-      M->n_groups++;
+  /* the DLPFC's groups, six neurons of one layer each */
+  for (layer = 0u; layer < OB_LAYERS; layer++) {
+    unsigned in_group = 0u;
+    for (i = 0u; i < b->n_neurons && M->n_groups < ON_HELD; i++) {
+      const ob_neuron_t *nn = &b->neuron[i];
+      if (nn->inhibitory || on_area(nn) != ON_DLPFC || nn->layer != layer) continue;
+      M->neuron[M->n_groups][in_group] = i;
+      O->external[i] = 1u;
+      if (++in_group == 6u) {
+        in_group = 0u;
+        M->theta[M->n_groups] = THETA_OF_LAYER[layer];
+        M->n_groups++;
+      }
     }
   }
-  for (a = 0u; a < ON_AREAS; a++) {
-    M->area_first[a] = n;
-    for (i = 0u; i < b->n_neurons; i++)
-      if (on_area(&b->neuron[i]) == a && a != ON_OTHER) LIST[n++] = i;
-    M->area_n[a] = n - M->area_first[a];
+  /* the populations: each act's zone of the brainstem, each quarter of the
+     tectum's map */
+  memset(n, 0, sizeof n);
+  for (i = 0u; i < b->n_neurons; i++) {
+    const ob_neuron_t *nn = &b->neuron[i];
+    unsigned f = ON_FEAT;
+    if (nn->region == OB_BRAINSTEM && ob_one_zone(nn) < OL_MOTORS) f = ob_one_zone(nn);
+    if (nn->region == OB_TECTUM) f = OL_MOTORS + (nn->sx >= 0.5f) + 2u * (nn->sy >= 0.5f);
+    if (f < ON_FEAT && n[f] < ON_K) M->feat[f][n[f]++] = i;
   }
-  M->area_list = LIST;
 }
 
 static void end(on_mind_t *M) {
@@ -497,20 +607,22 @@ static void end(on_mind_t *M) {
 static void outcome(on_mind_t *M, const of_test_t *t, int heard) {
   float push[ON_HELD];
   unsigned g, expected_chime = 0u, foretold = 0u, wrong = 0u;
+  int failed = -1;
   memset(push, 0, sizeof push);
   for (g = 0u; g < M->n_groups; g++) {
     if (!M->holds[g] || M->lit[g] < LIT) continue;
-    if (on_says(&M->idea[g], t)) expected_chime++;
-    if (on_says(&M->idea[g], t) == heard) {
+    if (on_fires(&M->idea[g], t)) expected_chime++;
+    if (on_fires(&M->idea[g], t) == heard) {
       if (heard) {
         foretold++;
         push[g] = -1.0f;               /* dopamine steadies the group that foretold it */
-        if (M->n_good < 64u) M->good[M->n_good++] = M->idea[g];
-        else M->good[rnd(M) % 64u] = M->idea[g];
         M->pathway[M->idea[g].source] += 0.05f * (1.0f - M->pathway[M->idea[g].source]);
+        if (M->n_good < 32u) M->good[M->n_good++] = M->idea[g];
+        else M->good[rnd(M) % 32u] = M->idea[g];
       }
     } else {
       wrong++;
+      if (!heard) failed = (int)g;
       if (!(M->off & ON_OFF_ACC)) push[g] = STRIKE;
     }
   }
@@ -520,12 +632,19 @@ static void outcome(on_mind_t *M, const of_test_t *t, int heard) {
   settle(M, M->lit, push, -1);
   for (g = 0u; g < M->n_groups; g++)
     if (M->holds[g] && push[g] >= STRIKE && M->lit[g] < LIT) M->struck++;
-  forget_dark(M);
+  /* the MFG binds the failed idea again, as the ACC's darkening lets its
+     group go (its synapses still in the binding window) */
+  if (failed >= 0) {
+    on_idea_t was = M->idea[failed];
+    forget_dark(M);
+    mfg(M, t, 0, &was);
+  } else {
+    forget_dark(M);
+  }
   show(M);
-  /* the unexpected (the VAN): a chime nothing foretold, or a silence where one
-     was foretold. The MFG binds it */
-  if ((heard && !foretold) || (!heard && expected_chime) || wrong) mfg(M, t, heard);
-  (void)foretold;
+  /* the unexpected (the VAN): a chime nothing foretold */
+  if (heard && !foretold) mfg(M, t, 1, 0);
+  (void)wrong;
 }
 
 /* the one idea it holds, if it has earned trust */
@@ -542,7 +661,7 @@ static int rule_equals(on_rule_t rule, const on_idea_t *idea) {
   for (place = 0u; place < 4u; place++)
     for (acts = 1u; acts < 64u; acts++) {
       of_test_t t = {acts, place};
-      if (rule(&t) != on_says(idea, &t)) return 0;
+      if (rule(&t) != on_fires(idea, &t)) return 0;
     }
   return 1;
 }
@@ -566,13 +685,13 @@ void on_box_meet(ob_world_t *W, ob_one_t *O, on_rule_t rule, unsigned long momen
       mark_c = W->chimes;
     }
     if (known) {
-      /* it uses what it knows: the simplest acts it says will chime */
+      /* it uses what it knows: the least it fires for */
       of_test_t t = {0u, 0u}, done;
       unsigned a, p;
       for (p = 0u; p < 4u && !t.acts; p++)
         for (a = 1u; a < 64u && !t.acts; a++) {
           of_test_t c = {a, p};
-          if (on_says(&out->known, &c)) t = c;
+          if (on_fires(&out->known, &c)) t = c;
         }
       try_it(&M, W, &t, &done);
       continue;
@@ -606,7 +725,7 @@ void on_box_meet(ob_world_t *W, ob_one_t *O, on_rule_t rule, unsigned long momen
       if (bits) {
         t.acts = bits;
         remember(&M, &t, heard);
-        mfg(&M, &t, heard);
+        mfg(&M, &t, heard, 0);
       }
     }
     /* between tests, idle a moment: the default mode network */
@@ -616,11 +735,13 @@ void on_box_meet(ob_world_t *W, ob_one_t *O, on_rule_t rule, unsigned long momen
     out->oxytocin += O->oxytocin;
     n_chem++;
   }
+  out->claimed = known;
   out->found = known && rule_equals(rule, &out->known);
   if (!known) out->tries = 0u;
   memcpy(out->arisen, M.arisen, sizeof out->arisen);
   out->rejected = M.rejected;
   out->struck = M.struck;
+  out->inhibitions = M.inhibitions;
   if (n_chem) {
     out->cortisol /= (float)n_chem;
     out->dopamine /= (float)n_chem;
