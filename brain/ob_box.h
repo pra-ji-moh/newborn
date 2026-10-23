@@ -6,7 +6,7 @@
  * and then a box is put in the crib. It chimes when the being does the right
  * acts with its eyes on the right quarter of the wall: one rule of 144 (one act
  * of its six, or both of two, or either of two, times the quarter). The chime
- * is high, on its cochlea's top band, and it is pleasant: dopamine, as the
+ * is high, on its cochlea's top band, and it is pleasant: dopamine (success), as the
  * mobile's answers were.
  *
  * Meeting a box, it reasons if it can: if its DLPFC holds anything, its frontal
@@ -31,6 +31,7 @@ typedef struct {
   ob_crib_t crib;
   int box_on;
   unsigned rule;
+  int (*judge)(const of_test_t *t);   /* a box of any other rule (0: rule `rule` of the 144) */
   int chime;                          /* its chime reaching the ear now */
   unsigned long moments, chimes;
 } ob_world_t;

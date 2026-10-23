@@ -55,14 +55,22 @@ float ob_world_moment(ob_world_t *W, ob_one_t *O, unsigned intent_on, unsigned i
   int lit;
   ob_crib_sense(&W->crib, in);
   if (W->chime) in[CHIME] = 1.0f;
-  O->reward_now = W->chime ? 1.0f : 0.0f;
+  O->success_now = W->chime ? 1.0f : 0.0f;   /* something it did worked */
+  /* its mother: her answer, her touch, being rocked */
+  O->social_now = W->crib.answer_heard || W->crib.touched || W->crib.mother_moved ? 1.0f : 0.0f;
   O->intent_on = intent_on;
   O->intent = intent;
   bits = ob_one_live(O, in);
   /* the box judges what it did, where its eyes were */
-  lit = W->box_on && bits != 0u && ob_box_says(W->rule, &(of_test_t){bits, quarter(&W->crib)});
+  {
+    of_test_t done = {bits, quarter(&W->crib)};
+    lit = W->box_on && bits != 0u && (W->judge ? W->judge(&done) : ob_box_says(W->rule, &done));
+  }
   W->chime = lit;
   W->chimes += (unsigned long)lit;
+  /* its mother hears the box too, and answers every other chime (serve and
+     return), when she is not already talking */
+  if (lit && (W->chimes & 1u) && W->crib.answer_in < 0 && W->crib.mother_talks == 0u) W->crib.answer_in = 2;
   ob_crib_act(&W->crib, bits);
   W->moments++;
   return in[CHIME];

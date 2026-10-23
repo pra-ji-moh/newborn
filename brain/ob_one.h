@@ -23,10 +23,15 @@
  *                    thalamus (touch, hearing and vision nuclei, from the genome)
  *                    learn by the delta rule to cancel what each sense will
  *                    bring. What is left in the thalamus is its surprise
- *   wanting          the tegmentum's dopamine is its learning progress, in each
- *                    situation; the basal ganglia, hearing the cortex, learn on
- *                    their synapses to the brainstem (from nothing) which urges
- *                    lead to it; a critic in them, how good a situation is
+ *   wanting          no reward and no punishment: three chemicals. The
+ *                    tegmentum's dopamine is success (its learning progress, in
+ *                    each situation, and what it did working); the
+ *                    hypothalamus's oxytocin is success with its mother; its
+ *                    cortisol is failure (what it expected did not come). The
+ *                    basal ganglia, hearing the cortex, strengthen on their
+ *                    synapses to the brainstem (from nothing) the urges that
+ *                    dopamine and oxytocin follow. Cortisol weakens nothing: it
+ *                    makes the brainstem more restless, to try something else
  *
  * It takes the same senses as ob_life.c (OL_INPUT floats, the same layout) and
  * returns the same acts, so the same worlds and the same checks serve both.
@@ -57,8 +62,6 @@ typedef struct {
   float w[OB_MAX_SYN];                /* every synapse's weight, while it lives */
   float restless[OB_MAX_NEURONS];     /* the brainstem's own activity */
   float elig[OB_MAX_SYN];             /* the basal ganglia's synapses: what each did lately */
-  float value[OB_MAX_NEURONS];        /* the critic, on the basal ganglia's neurons */
-  float vtrace[OB_MAX_NEURONS];
 
   unsigned fired[OL_MOTORS];
   float rate[OL_MOTORS];              /* how often each zone acts, of late */
@@ -72,8 +75,12 @@ typedef struct {
   float fast[OL_GROUPS][OL_PLACES], usual[OL_GROUPS];
   unsigned visits[OL_GROUPS][OL_PLACES];
   unsigned place[OL_GROUPS];
-  float dopamine, before;             /* this moment's, and the critic's last estimate */
-  float reward_now;                   /* what the world gives this moment (set by the world) */
+  /* its chemistry: no reward and no punishment, three chemicals with their
+     own causes and their own effects (see ob_one.c, step 3) */
+  float dopamine;                     /* success: getting better at something, or something it did working */
+  float oxytocin;                     /* success with its mother: her answering it, her touch, being rocked */
+  float cortisol;                     /* failure: what it expected did not come. Slow to fade */
+  float success_now, social_now, failure_now;   /* this moment's causes (set by the world, or its frontal cortex; spent) */
   unsigned intent_on, intent;         /* the frontal cortex's intention: which acts to do, deliberately */
 
   /* growing up: its age, and how far each region's axons are myelinated

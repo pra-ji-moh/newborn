@@ -659,32 +659,37 @@ unsigned ob_one_live(ob_one_t *O, const float *in) {
       if (O->curiosity == OL_PROGRESS) reward += O->progress[g][k];
       else if (O->curiosity == OL_ERROR) reward += O->fast[g][k] / (O->fast[g][k] + O->usual[g] + 1e-6f);
     }
-    /* and what the world gives (a light, a voice answering), when it does */
-    reward += O->reward_now;
-    O->reward_now = 0.0f;
-    O->dopamine = reward;
+    /* its chemistry. No reward and no punishment: each chemical has its own
+       cause and its own effect.
+         dopamine   success: learning progress (what it is getting better at),
+                    and something it did working. Never below nothing: a
+                    chemical is released or it is not
+         oxytocin   success with its mother (her answer, her touch, being
+                    rocked); lingers a few moments
+         cortisol   failure: what it expected did not come. Slow to rise and
+                    slower to fade; oxytocin calms it */
+    O->dopamine = (reward > 0.0f ? reward : 0.0f) + O->success_now;
+    O->oxytocin = 0.9f * O->oxytocin + O->social_now;
+    if (O->oxytocin > 1.0f) O->oxytocin = 1.0f;
+    O->cortisol = 0.995f * O->cortisol + 0.3f * O->failure_now;
+    O->cortisol -= 0.05f * O->oxytocin * O->cortisol;
+    if (O->cortisol > 1.0f) O->cortisol = 1.0f;
+    O->success_now = O->social_now = O->failure_now = 0.0f;
     for (i = 0u; i < b->n_neurons; i++) {
-      if (b->neuron[i].region == OB_TEGMENTUM) O->act[i] = reward < 0.0f ? 0.0f : reward > 1.0f ? 1.0f : reward;
+      if (b->neuron[i].region == OB_TEGMENTUM) O->act[i] = O->dopamine > 1.0f ? 1.0f : O->dopamine;
     }
-    /* 4. the basal ganglia: better than the critic expected? the urges that
-          brought it here grow on their synapses; worse, they shrink */
+    /* 4. the basal ganglia: the urges that dopamine and oxytocin follow grow on
+          their synapses (three factors: what the cortex carried, what the
+          brainstem did, the chemical). Nothing is punished: what is not used
+          fades slowly, as all of them do */
     if (O->curiosity != OL_NONE && O->learning) {
-      float now = 0.0f, delta, norm = 1.0f;
-      for (k = 0u; k < N_BG; k++) {
-        i = BG[k];
-        now += O->value[i] * O->act[i];
-        norm += O->vtrace[i] * O->vtrace[i];
-      }
-      delta = O->moments > 0u ? reward + 0.9f * now - O->before : 0.0f;
-      for (k = 0u; k < N_BG; k++) O->value[BG[k]] += 0.03f * delta * O->vtrace[BG[k]] / norm * 8.0f;
+      float success = O->dopamine + O->oxytocin;
       for (k = 0u; k < N_ACTION; k++) {
         s = ACTION_SYN[k];
-        O->w[s] += ACTOR * delta * O->elig[s] - FORGET * O->w[s];
+        O->w[s] += ACTOR * success * O->elig[s] - FORGET * O->w[s];
         if (O->w[s] > 3.0f) O->w[s] = 3.0f;
         if (O->w[s] < -3.0f) O->w[s] = -3.0f;
       }
-      O->before = 0.0f;
-      for (k = 0u; k < N_BG; k++) O->before += O->value[BG[k]] * O->act[BG[k]];
     }
   }
 
@@ -708,7 +713,7 @@ unsigned ob_one_live(ob_one_t *O, const float *in) {
     for (k = 0u; k < N_STEM; k++) {
       float p;
       i = STEM[k];
-      O->restless[i] = 0.8f * O->restless[i] + 0.6f * gauss(O);
+      O->restless[i] = 0.8f * O->restless[i] + 0.6f * (1.0f + O->cortisol) * gauss(O);   /* cortisol: more restless */
       if (ZONE[i] >= OL_MOTORS) continue;
       p = O->restless[i] + urge[ZONE[i]];
       if (p > push[ZONE[i]]) push[ZONE[i]] = p;
@@ -750,7 +755,6 @@ unsigned ob_one_live(ob_one_t *O, const float *in) {
       z = ZONE[TARGET[s]];
       O->elig[s] = 0.8f * O->elig[s] + ((float)O->fired[z] - O->rate[z]) * O->act[b->syn[s].from];
     }
-    for (k = 0u; k < N_BG; k++) O->vtrace[BG[k]] = 0.8f * O->vtrace[BG[k]] + O->act[BG[k]];
   }
 
   /* 6. the copy of what it just did reaches the cerebellum before the senses
