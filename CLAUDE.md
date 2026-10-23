@@ -17,7 +17,15 @@ Everything was moved here from the Ciall repo (`pra-ji-moh/ciall`, commit
 - `brain/`: the grown brain (`ob_grow.c`, `ob_womb.c`, `ob_one.c`,
   `ob_frontal.c`), the life brain (`ob_life.c`), their tests. Build a test:
   `cc -std=c99 -O2 ob_grow.c ob_view.c ob_womb.c ob_life.c ob_one.c ob_crib.c ob_box.c ob_frontal.c test_X.c -o test_X -lm`
-  (`test_frontal`, `test_one`, `test_cortex` take many minutes.)
+  (`test_frontal`, `test_one`, `test_cortex`, `test_novel` take many minutes.)
+- `brain/ob_novel.c`: ideas nobody writes (MFG, PPA, DMN, Broca + FEF
+  hyper-direct; DLPFC holds, ACC checks against remembered results).
+  `test_novel SNAPSHOT [q]` keeps the three-year life on file to rerun the
+  boxes in two minutes; a life loaded from file needs `ob_one_resume`.
+- No reward and no punishment anywhere new: dopamine and oxytocin for
+  success (learning follows their bursts above the steady level), cortisol
+  for failure (`ob_one.c` step 3). `ob_life.c` (the sketch) and the womb's
+  mobile still use the old critic.
 - `mind/`: baby Ciall's cognition (`smarsh_*`). Build a test:
   `cc -std=c99 -O2 smarsh_*.c arc_worldgen.c arc_standin.c test_X.c -o test_X -lm`
 - `phone/`: builds the page (`build_phone.sh`, needs clang with wasm32);

@@ -59,6 +59,39 @@ claims.
    optogenetics) stops that; without the hyper-direct links, it is slower.
    This is the core breakthrough to show. The handed list stays only as a
    yardstick in the old test.
+
+   **First result (Oct 23, `brain/ob_novel.c`, `brain/test_novel.c`, 8/8
+   checks).** One life to three years, chemistry dopamine / oxytocin /
+   cortisol (no reward critic). Handed no list:
+
+   | | found | tests (mean) |
+   |---|---|---|
+   | whole, six familiar forms | 6/6 | 34 |
+   | new forms (two of three acts; an act anywhere on the wall) | 2/2 | 41, 36 |
+   | "this act but not that" (one idea cannot stand for it) | not claimed | |
+   | no middle frontal gyrus | 4/6 | 27, at 21.5 moments a test (whole: 7.9) |
+   | no default mode network | 0/6 | |
+   | no scene area | 6/6 | 40 |
+   | no hyper-direct links | 5/6 | 36, at 8.0 moments a test |
+   | no ACC / no memory of results | 0/6 / 0/6 | |
+   | old circuit, handed the list of 144 | 6/6 | 11 |
+
+   Honest limits: one life, one box per rule, so small numbers; the
+   hyper-direct links' effect on speed is barely there (8.0 against 7.9
+   moments a test); not having the list costs about 3x the tests; ideas'
+   content is formed from features in code, held and tested in neurons
+   (ob_novel.h says which is which). The search was improved three times
+   by watching where it failed (exploring a silent new box; checking an idea
+   at both edges; merging thoughts that foretold a chime); each was a
+   condition from the research, not an answer written in, and the boxes it
+   was improved on are the boxes it is scored on. A fresh set of rules is
+   needed to score it fairly.
+
+   **Held out** (`brain/fresh_rules.c`, six rules never used in
+   development): 4/6 found (act 2 at a quarter, 48 tests; acts 0 and 3
+   together, 28; act 1 or 2, 38; act 1 anywhere, 45). Not found: two of
+   three acts at a quarter, and two acts together anywhere. No wrong claims.
+   This 4/6, not the 8/8, is the number to quote.
 3. **ARC-AGI-3 public set**, through its own eyes and acts, then the
    semi-private set.
 4. Everything else in the tracks below, on the way.
