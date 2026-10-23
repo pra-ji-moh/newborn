@@ -157,7 +157,7 @@ static int hold(on_mind_t *M, const on_idea_t *idea) {
 static void remember(on_mind_t *M, const of_test_t *t, int outcome) {
   on_result_t *r;
   float boost = 2.0f * M->O->cortisol + M->O->dopamine + M->O->oxytocin;
-  if (M->n_mem >= ON_MEMORY) return;
+  if (M->n_mem >= ON_MEMORY || t->acts == 0u) return;   /* nothing done: nothing to keep */
   r = &M->mem[M->n_mem++];
   r->t = *t;
   r->outcome = outcome;
@@ -317,7 +317,8 @@ static void dmn(on_mind_t *M) {
        smaller moment */
     unsigned sa = popcount(M->mem[a].t.acts), sb = popcount(M->mem[b].t.acts);
     idea.acts = M->mem[a].t.acts | M->mem[b].t.acts;
-    idea.need = 1u + rnd(M) % (sa < sb ? sa : sb ? sb : 1u);
+    unsigned smaller = sa < sb ? sa : sb;
+    idea.need = 1u + rnd(M) % (smaller ? smaller : 1u);
   }
   idea.places = (1u << M->mem[a].t.place) | (1u << M->mem[b].t.place);
   if (!(M->mem[a].outcome && M->mem[b].outcome)) {
