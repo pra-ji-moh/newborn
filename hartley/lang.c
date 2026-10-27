@@ -545,6 +545,105 @@ static int judge_pairs(int nsym, int nwords) {
     return n;
 }
 
+/* ---------- grouping histories by their future (non-abelian pooling) ----------
+ *
+ * The abelian corner pooled histories that had the same words in another
+ * order. Here, histories are pooled when they have the same future, however
+ * different they look; order still decides which group a history falls in.
+ * Start from the tree of every sentence beginning. Take the most-seen
+ * history not yet placed and try it against each group: compare what
+ * follows, word by word and on down the branches.
+ *   Shannon: the rates differ beyond chance (a Hoeffding bound at level
+ *   alpha, as in Carrasco and Oncina's ALERGIA, 1994): not the same.
+ *   Hartley: a word seen at least 3 times after one is impossible after the
+ *   other (never seen, where at least 5 were due): not the same, whatever
+ *   the rates say. Noise makes nothing impossible, so this veto fades with
+ *   noise by itself.
+ * If it fits a group, it joins it and its whole branch is folded in;
+ * otherwise it becomes a new group. Prediction runs the groups; a word never
+ * seen from a group spreads the belief to wherever that word has led. */
+static long (*tc)[MAXSYM];          /* tc[s][w]: times w followed history group s */
+static char *grp;                   /* a group of its own */
+static int gsym, *grp_list, ngrp;
+static double merge_alpha; static int use_veto; static long vetoes, rejects;
+
+static long outgoing(int s) { long n = 0; for (int w = 0; w < gsym; w++) n += tc[s][w]; return n; }
+static int compatible(int r, int b, int depth) {
+    long n1 = outgoing(r), n2 = outgoing(b);
+    if (depth > 40 || !n1 || !n2) return 1;
+    double bound = sqrt(0.5 * log(2 / merge_alpha)) * (1 / sqrt((double)n1) + 1 / sqrt((double)n2));
+    for (int w = 0; w < gsym; w++) {
+        long f1 = tc[r][w], f2 = tc[b][w];
+        if (fabs((double)f1 / n1 - (double)f2 / n2) > bound) { rejects++; return 0; }
+        if (use_veto && ((f1 >= 3 && f2 == 0 && n2 * (double)f1 / n1 >= 5) || (f2 >= 3 && f1 == 0 && n1 * (double)f2 / n2 >= 5))) { vetoes++; return 0; }
+    }
+    for (int w = 0; w < gsym; w++)
+        if (child[r][w] >= 0 && child[b][w] >= 0 && !compatible(child[r][w], child[b][w], depth + 1)) return 0;
+    return 1;
+}
+static void fold(int r, int b) {
+    for (int w = 0; w < gsym; w++) tc[r][w] += tc[b][w];
+    for (int w = 0; w < gsym; w++) { int cb = child[b][w]; if (cb < 0) continue;
+        if (child[r][w] < 0) child[r][w] = cb; else fold(child[r][w], cb); }
+}
+static void group_histories(const Set *S, int nsym) {
+    build_tree(S); gsym = nsym;
+    tc = realloc(tc, sizeof *tc * nnodes); grp = realloc(grp, nnodes); grp_list = realloc(grp_list, sizeof(int) * nnodes);
+    for (int v = 0; v < nnodes; v++) { grp[v] = 0; for (int w = 0; w < nsym; w++) tc[v][w] = child[v][w] >= 0 ? cnt[child[v][w]] : 0; }
+    grp[0] = 1; grp_list[0] = 0; ngrp = 1; vetoes = rejects = 0;
+    for (;;) {
+        int bp = -1, bw = -1; long best = -1;
+        for (int i = 0; i < ngrp; i++) for (int w = 0; w < nsym; w++) {
+            int c = child[grp_list[i]][w];
+            if (c >= 0 && !grp[c] && outgoing(c) > best) { best = outgoing(c); bp = grp_list[i]; bw = w; }
+        }
+        if (bp < 0) break;
+        int b = child[bp][bw], placed = 0;
+        for (int i = 0; i < ngrp && !placed; i++) if (compatible(grp_list[i], b, 0)) {
+            child[bp][bw] = grp_list[i]; fold(grp_list[i], b); placed = 1; }
+        if (!placed) { grp[b] = 1; grp_list[ngrp++] = b; }
+    }
+}
+
+static Score score_groups(const Set *T, int no_end, int V, double beta) {
+    int nsym = V + 1, *idx = malloc(sizeof(int) * nnodes);
+    for (int i = 0; i < ngrp; i++) idx[grp_list[i]] = i;
+    double *p = malloc(sizeof(double) * ngrp * nsym), *lead = calloc((size_t)nsym * ngrp, sizeof(double)), u[MAXSYM] = {0}, ut = 0;
+    for (int i = 0; i < ngrp; i++) for (int w = 0; w < nsym; w++) { u[w] += tc[grp_list[i]][w]; ut += tc[grp_list[i]][w]; }
+    for (int w = 0; w < nsym; w++) u[w] = (u[w] + 1) / (ut + nsym);
+    for (int i = 0; i < ngrp; i++) { int s = grp_list[i]; double n = outgoing(s);
+        for (int w = 0; w < nsym; w++) {
+            p[i * nsym + w] = (tc[s][w] + beta * u[w]) / (n + beta);
+            if (child[s][w] >= 0 && tc[s][w] > 0) lead[w * ngrp + idx[child[s][w]]] += tc[s][w];
+        } }
+    for (int w = 0; w < nsym; w++) { double z = 0; for (int j = 0; j < ngrp; j++) z += lead[w * ngrp + j];
+        for (int j = 0; j < ngrp; j++) lead[w * ngrp + j] = z > 0 ? lead[w * ngrp + j] / z : (j == 0); }
+    double *bel = malloc(sizeof(double) * ngrp), *nb = malloc(sizeof(double) * ngrp);
+    Score r = {0, 0, 0, 0, 0};
+    for (int i = 0; i < T->n; i++) {
+        for (int j = 0; j < ngrp; j++) bel[j] = j == 0;
+        for (int t = 0; t < T->len[i]; t++) {
+            int w = T->w[i][t]; double pw = 0, z = 0;
+            for (int j = 0; j < ngrp; j++) if (bel[j] > 0) {
+                double end = no_end ? p[j * nsym + V] : 0;
+                pw += bel[j] * p[j * nsym + w] / (1 - end); z += bel[j]; }
+            pw /= z;
+            r.bits -= log2(pw); r.words++;
+            if (t && T->w[i][t - 1] == answer_marker) { r.abits -= log2(pw); r.awords++; }
+            for (int j = 0; j < ngrp; j++) nb[j] = 0;
+            for (int j = 0; j < ngrp; j++) if (bel[j] > 0) {
+                double m = bel[j] * p[j * nsym + w]; int c = child[grp_list[j]][w];
+                if (c >= 0 && tc[grp_list[j]][w] > 0) nb[idx[c]] += m;
+                else for (int k = 0; k < ngrp; k++) nb[k] += m * lead[w * ngrp + k];
+            }
+            double s = 0; for (int j = 0; j < ngrp; j++) s += nb[j];
+            for (int j = 0; j < ngrp; j++) bel[j] = s > 0 ? nb[j] / s : (j == 0);
+        }
+    }
+    free(idx); free(p); free(lead); free(bel); free(nb);
+    return r;
+}
+
 /* ---------- main ---------- */
 
 int main(int argc, char **argv) {
@@ -613,7 +712,7 @@ int main(int argc, char **argv) {
         truly += ok && used;
     }
 
-    enum { NM = 8 };
+    enum { NM = 10 };
     Score r[NM][2];
     for (int lg = 0; lg < 2; lg++) {
         const Set *T = lg ? &lo : &te;
@@ -624,6 +723,19 @@ int main(int argc, char **argv) {
         r[6][lg] = score_wa(&bestS[1], &bestH[1], noisy ? SHANNON : PIVOT, T, lg, V);
         r[7][lg] = score_trigram(&tr, T, lg, V);
     }
+    /* Grouping histories, without and with Hartley's veto; the merge level
+     * and the smoothing are chosen on validation. */
+    const double alphas[] = {0.0005, 0.005, 0.05, 0.3}, betas[] = {0.1, 1, 5};
+    int groups[2]; long nveto[2];
+    for (int veto = 0; veto < 2; veto++) {
+        double bestv = 1e300, ba = 0, bb = 0;
+        use_veto = veto;
+        for (int i = 0; i < 4; i++) { merge_alpha = alphas[i]; group_histories(&tr, nsym);
+            for (int j = 0; j < 3; j++) { Score v = score_groups(&va, 0, V, betas[j]); if (v.bits < bestv) { bestv = v.bits; ba = alphas[i]; bb = betas[j]; } } }
+        merge_alpha = ba; group_histories(&tr, nsym);
+        groups[veto] = ngrp; nveto[veto] = vetoes;
+        for (int lg = 0; lg < 2; lg++) r[8 + veto][lg] = score_groups(lg ? &lo : &te, lg, V, bb);
+    }
     const char *lname[] = {"", "grammar", "tracking (S4)", "counters (Z6, abelian)"};
     printf("LANG %s, noise %.0f%%, %d training sentences (%ld words)\n", lname[lang], noise * 100, ntrain, tr.tokens);
     printf("pivot: rare-continuation share %.4f over %d prefixes, Hartley-Shannon gap %.3f bits -> %s\n", tail, judged, gap, noisy ? "SHANNON" : "HARTLEY rules out, Shannon weighs");
@@ -632,7 +744,9 @@ int main(int argc, char **argv) {
     printf("bands: Shannon %d/%d/%d, Hartley %d/%d/%d (order kept / per pair / never)\n", bestS[0].k, bestS[1].k, bestS[2].k, bestH[0].k, bestH[1].k, bestH[2].k);
     printf("RESULT model excess_test excess_long answer_excess_test answer_excess_long words_ruled_out_wrongly\n");
     const char *mn[] = {"shannon_nonabelian", "hartley_nonabelian", "shannon_abelian_per_pair", "hartley_abelian_per_pair",
-                        "shannon_abelian_all", "hartley_abelian_all", "four_domain_pivot", "trigram"};
+                        "shannon_abelian_all", "hartley_abelian_all", "four_domain_pivot", "trigram",
+                        "grouped_shannon", "grouped_shannon_hartley"};
+    printf("groups found: %d (Shannon), %d (Shannon + Hartley, %ld vetoes)\n", groups[0], groups[1], nveto[1]);
     double ft = fte / te.tokens, fl = flo / lo.tokens;
     for (int m = 0; m < NM; m++)
         printf("RESULT %s %.4f %.4f %.4f %.4f %ld\n", mn[m], r[m][0].bits / r[m][0].words - ft, r[m][1].bits / r[m][1].words - fl,
