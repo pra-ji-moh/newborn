@@ -183,3 +183,28 @@ With 5% noise, 30,000 sentences: grammar 0.065 (LSTM 0.012), S4 0.16
 - **Limits:** the languages are tiny and finite-state; state merging is
   known to suit exactly these. The LSTM got 90 s of CPU per run. Real
   language is far larger, with nesting and long-range meaning.
+
+## Real language: Penn Treebank (Oct 27, 2026)
+
+Newspaper English, 10,000-word vocabulary, 42,068 training sentences.
+Training clean or with web-like noise (an estimate; labs don't publish
+theirs): 2% of words garbled, 3% of sentences boilerplate, 2% scrambled.
+Test always clean. Perplexity (lower is better). LSTM and transformer got
+3, 6 and 15 minutes of CPU. Raw: `bench/results/real_sweep.txt`
+(`run_real.sh`; the last noisy run was cut off by the 2-hour limit).
+
+| Training sentences | 2,000 clean | 2,000 noisy | 10,000 clean | 10,000 noisy | 42,068 clean |
+|---|---|---|---|---|---|
+| Grouped, Shannon + Hartley | 639 | 650 | 458 | 473 | 354 |
+| Grouped + trigram | 465 | 484 | 284 | 296 | 190 |
+| Trigram counting | 444 | 465 | 280 | 292 | 187 |
+| LSTM | 458 | 485 | 272 | 280 | 161 |
+| Transformer | **431** | **451** | **240** | **252** | **148** |
+
+- **On real language grouping loses to everything**, plain counting
+  included, at every size. Real sentence beginnings rarely repeat, so there
+  is little evidence to group histories by their future; with the trigram
+  as backup it only ties the trigram.
+- The web-like noise costs every model about the same (3 to 5%).
+- The toy-language advantage does not carry over: those languages had 8 to
+  12 hidden situations; real language has no small set.
