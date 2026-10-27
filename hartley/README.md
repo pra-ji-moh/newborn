@@ -145,3 +145,41 @@ Bits per answer word above the floor (0 is perfect):
 - **Hartley abelian fails like Hartley non-abelian:** on sampled language it
   rules out real words.
 - The LSTM is still far ahead.
+
+## Grouping histories by their future (Oct 27, 2026)
+
+The author's direction for the Shannon non-abelian corner: the same set
+rules as the abelian corner, laid out by Shannon. Histories are pooled when
+they have the same future (state merging, after Carrasco and Oncina's
+ALERGIA, 1994): Shannon's test says when rates differ beyond chance,
+Hartley's veto says when a word seen after one is impossible after the
+other. Same data as the sweep above. Raw: `bench/results/lang_grouped.txt`.
+
+Error in bits per word above the floor (answers for S4 and Z6, all words
+for the grammar; 0 is perfect), clean data:
+
+| | 300 | 1,000 | 3,000 | 10,000 |
+|---|---|---|---|---|
+| Grammar: grouped, Shannon + Hartley | **0.005** | **0.0006** | **0.0000** | **0.0000** |
+| Grammar: LSTM | 0.080 | 0.025 | 0.011 | 0.004 |
+| S4: grouped, Shannon + Hartley | 2.00 | **0.0004** | **0.0001** | **0.0000** |
+| S4: LSTM | 1.78 | 0.050 | 0.010 | 0.001 |
+| Z6: grouped, Shannon + Hartley | 2.18 | 0.99 | **0.0002** | 0.010 |
+| Z6: grouped, Shannon only | 2.34 | 1.88 | **0.0002** | **0.0001** |
+| Z6: LSTM | 2.02 | **0.062** | 0.015 | 0.0006 |
+
+With 5% noise, 30,000 sentences: grammar 0.065 (LSTM 0.012), S4 0.16
+(LSTM 0.06), Z6 0.37 (LSTM 0.08), best of the two grouped versions.
+
+- **Clean: it beats the LSTM on data efficiency** in most cells, by about
+  10 to 30 times on the grammar and S4 (the LSTM needs 10,000 sentences for
+  what grouping does with 300 to 1,000). It loses on Z6 at 1,000 and wins
+  from 3,000. It stays exact at 120 words. No gradients; seconds of CPU.
+- **Hartley's veto is what makes small data work** (S4 at 1,000: 0.24
+  without, 0.0004 with). With lots of data it over-splits (Z6 at 30,000:
+  44 groups for 12 true states, 0.05 against 0.0000), so the switch should
+  lean on it when evidence is thin and let go as evidence grows.
+- **Noise is now the gap:** the LSTM is 2 to 5 times better on noisy data.
+- **Limits:** the languages are tiny and finite-state; state merging is
+  known to suit exactly these. The LSTM got 90 s of CPU per run. Real
+  language is far larger, with nesting and long-range meaning.
