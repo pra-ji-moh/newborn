@@ -31,5 +31,9 @@ Everything was moved here from the Ciall repo (`pra-ji-moh/ciall`, commit
 - `phone/`: builds the page (`build_phone.sh`, needs clang with wasm32);
   `index.html` at the root is the built page.
 - `bench/`: the hidden-rule benchmark against frontier models.
+- `hartley/`: the Hartley Non-Abelian Model's first test (ordered
+  elimination over hidden S5 acts). `cc -std=c99 -O2 hnam.c -o hnam -lm`,
+  then `./hnam 50 0` or `./hnam 50 1`. Hartley means the 1928 measure
+  (research Part 4).
 - `research/ciall/`: design notes from the earlier chats (`ONE_BRAIN.md`,
   `BEING.md`, `ARCHITECTURE.md`).

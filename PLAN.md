@@ -133,6 +133,21 @@ keeping every result and checking each idea against them, the design matches
 or beats the frontier model on this test. It has to be built into the grown
 brain to count.
 
+## Hartley Non-Abelian Model (Oct 27, 2026)
+
+The author's idea: possibilities held as ordered transformations, not sets,
+eliminated Hartley-style. First test in `hartley/` (plain C, not in neurons
+yet): hidden S5 acts, start and end of each episode only.
+**Result (50 worlds, episodes of 3 to 5 acts):** ordered pins every act in
+50/50 worlds after 19 episodes on average, then tracks 1000-act sequences
+exactly; 0 wrong claims in 57,600. The same model with order thrown away
+contradicts itself in 50/50 worlds, and 285 of its 300 claims were wrong.
+**Limits:** zero wrong claims is by construction (noise-free, sound
+elimination); the hypothesis shape (permutations of five) is handed to it;
+one noisy observation breaks pure elimination; no frontier comparison yet.
+**Next:** the same test against a frontier model told nothing; then noise;
+then into the DLPFC's neurons.
+
 ## Tracks, all at once
 
 Each track lists the research it builds and the test that decides it.
