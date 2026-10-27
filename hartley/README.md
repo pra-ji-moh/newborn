@@ -67,3 +67,53 @@ out of 1,047.
 - **No frontier comparison yet.** The reports that fixed-depth transformers
   can't exactly track non-abelian state (S5) are still unverified here; the
   head-to-head on this exact test is the next step.
+
+# The four domains on language (Oct 27, 2026)
+
+The author's idea: Hartley or Shannon, abelian or non-abelian, with Shannon
+as the pivot. Tested on the task ChatGPT and Claude are trained on: predict
+the next word. `lang.c` makes three hidden languages (a grammar; S4 tracking,
+where after "?" the next word must say where item 0 is; Z6 counters, which
+commute), clean and with 5% of words swapped, and knows the floor exactly.
+Models with no gradients: Shannon non-abelian (words as matrices, a sentence
+is their product in order, matrices from counts by spectral learning: Hsu,
+Kakade and Zhang 2009, Balle et al. 2014), Hartley non-abelian, the pivot,
+and trigram counting. Opponents trained by backprop (`lang_nets.py`): a
+transformer and an LSTM, 90 s each on 4 CPU cores. Run all: `./run_lang.sh`.
+Raw output: `bench/results/lang_sweep.txt`.
+
+Bits per answer word above the floor (0 is perfect; answers are where the
+hidden state must be tracked), clean data:
+
+| Training sentences | 1,000 | 3,000 | 10,000 | 30,000 |
+|---|---|---|---|---|
+| S4: Shannon non-abelian | 1.43 | 0.38 | 0.07 | **0.011** |
+| S4: LSTM | **0.05** | 0.010 | 0.001 | 0.002 |
+| S4: transformer | 1.77 | 1.58 | 1.60 | 1.64 |
+| Z6: Shannon non-abelian | 3.99 | 2.94 | 2.87 | 1.02 |
+| Z6: LSTM | **0.06** | 0.015 | 0.001 | 0.002 |
+
+Grammar, all words, clean, 30,000 sentences: Shannon non-abelian 0.49,
+trigram 0.17, transformer 0.20, LSTM 0.005.
+
+- **The pivots work.** Noise: clean and noisy were told apart in 30 of 30
+  runs. Order: grammar and S4 called non-abelian in every run with enough
+  data; Z6 called abelian in 6 of 8 runs from 1,000 sentences up (wrong at
+  30,000 noisy, 6.6% against a 5% line). With 300 sentences there is too
+  little to judge.
+- **Order as matrix products, with no gradients, learns hidden state:** S4
+  exactly at 30,000 sentences, 8 bands, 17 s of CPU, exact at 120 words.
+  Counting without order (trigram) never does. The small transformer never
+  does in this budget.
+- **It loses to the LSTM everywhere.** The LSTM needs about 30 times less
+  data on S4, solves Z6 and the grammar, and copes with noise; the spectral
+  learner is worse than trigram on the grammar and degrades with noise.
+- **Hartley on sampled language rules out real words** (thousands per run):
+  in a sample, never seen is not impossible. Hartley is safe only where the
+  evidence is exhaustive, as in the S5 tests.
+
+**Verdict:** the four-domain frame is sound (the pivots fire correctly, and
+order-as-product learns without gradients). It does not yet replace backprop:
+the learning engine for the Shannon non-abelian corner (spectral learning
+here) is far less data-efficient than an LSTM. That engine is the open
+problem.
