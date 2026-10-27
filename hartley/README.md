@@ -117,3 +117,31 @@ order-as-product learns without gradients). It does not yet replace backprop:
 the learning engine for the Shannon non-abelian corner (spectral learning
 here) is far less data-efficient than an LSTM. That engine is the open
 problem.
+
+## The abelian corners (Oct 27, 2026)
+
+The switch now decides per pair of words whether order matters (both
+orders seen at least 200 times, next two words never differ beyond chance).
+Pairs it lets go of are pooled: every ordering of a history counts as the
+same evidence. Order kept everywhere is the non-abelian model; no order
+anywhere is fully abelian.
+
+Bits per answer word above the floor (0 is perfect):
+
+| | Z6 clean 10k | Z6 clean 30k | S4 clean 30k | Z6 noisy 30k |
+|---|---|---|---|---|
+| Shannon, order kept | 2.87 | 1.02 | **0.011** | 1.72 |
+| Shannon, switch per pair | **0.98** | **0.29** | 0.037 | 1.72 |
+| Shannon, order never kept | 0.99 | 0.32 | 0.037 | |
+| LSTM (backprop), for scale | 0.001 | 0.002 | 0.002 | 0.08 |
+
+- **Shannon abelian gains about 3x data efficiency** where order truly
+  doesn't matter: 10,000 sentences pooled match 30,000 unpooled.
+- **The per-pair switch:** on Z6 it found 2 to 3 of the 3 order-free
+  pairs; on the grammar it found none, correctly. On S4 it wrongly freed 3
+  pairs at 30,000 sentences, which cost a little (0.037 against 0.011). With
+  noise it keeps order, and the gain is gone: noise really does make order
+  matter a little, because a corrupted word may have been a different one.
+- **Hartley abelian fails like Hartley non-abelian:** on sampled language it
+  rules out real words.
+- The LSTM is still far ahead.

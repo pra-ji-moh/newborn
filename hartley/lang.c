@@ -191,6 +191,53 @@ static long count_of(int node, const int *s, int n) {
     return node < 0 ? 0 : cnt[node];
 }
 
+/* ---------- the abelian corners: words whose order doesn't matter ----------
+ *
+ * commute[a][b] = 1 when the switch has found that "a b" and "b a" lead to
+ * the same future. A history is then rewritten in a fixed order (swap
+ * neighbours that commute until the smaller word comes first), so every
+ * ordering of the same history is counted as the same evidence. Only the
+ * history is pooled; what comes after stays in its real order. If the true
+ * state depends only on the pooled history, the counts are the true ones
+ * times a factor per history, which the factorisation absorbs.
+ * No pair commuting is the non-abelian model; every pair is fully abelian. */
+static int commute[MAXSYM][MAXSYM];
+static void canon(int *s, int n) {
+    for (int changed = 1; changed;) { changed = 0;
+        for (int i = 0; i + 1 < n; i++) if (s[i] > s[i + 1] && commute[s[i]][s[i + 1]]) { int t = s[i]; s[i] = s[i + 1]; s[i + 1] = t; changed = 1; } }
+}
+static unsigned long long hash_seq(const int *s, int n) {
+    unsigned long long h = 1469598103934665603ULL ^ (unsigned long long)n;
+    for (int i = 0; i < n; i++) { h ^= (unsigned long long)(s[i] + 1); h *= 1099511628211ULL; h ^= h >> 29; }
+    return h;
+}
+#define PH (1 << 23)
+static unsigned long long *pkey; static unsigned *pcont; static long *pval;
+static unsigned cont_key(const int *s, int n) { unsigned k = n; for (int i = 0; i < n; i++) k = k * 16 + s[i]; return k; }
+static long *pool_slot(unsigned long long hp, unsigned ck, int create) {
+    unsigned long long k = hp ^ ((unsigned long long)ck * 0x9E3779B97F4A7C15ULL);
+    unsigned h = (unsigned)(k >> 41) & (PH - 1);
+    while (pval[h] >= 0 && !(pkey[h] == hp && pcont[h] == ck)) h = (h + 1) & (PH - 1);
+    if (pval[h] < 0) { if (!create) return NULL; pkey[h] = hp; pcont[h] = ck; pval[h] = 0; }
+    return &pval[h];
+}
+static void build_pool(const Set *S, int maxcont) {
+    if (!pkey) { pkey = malloc(sizeof *pkey * PH); pcont = malloc(sizeof *pcont * PH); pval = malloc(sizeof *pval * PH); }
+    for (int h = 0; h < PH; h++) pval[h] = -1;
+    int buf[MAXLEN];
+    for (int i = 0; i < S->n; i++)
+        for (int t = 0; t <= S->len[i]; t++) {
+            memcpy(buf, S->w[i], t * sizeof(int)); canon(buf, t);
+            unsigned long long hp = hash_seq(buf, t);
+            for (int j = 0; j <= maxcont && t + j <= S->len[i]; j++) (*pool_slot(hp, cont_key(S->w[i] + t, j), 1))++;
+        }
+}
+static long pooled_count(const int *p, int pl, const int *c, int cl) {
+    int buf[16]; memcpy(buf, p, pl * sizeof(int)); canon(buf, pl);
+    long *v = pool_slot(hash_seq(buf, pl), cont_key(c, cl), 0);
+    return v ? *v : 0;
+}
+
 /* ---------- the basis: prefixes and suffixes ---------- */
 
 typedef struct { int len, s[8]; long c; int node; } Str;
@@ -268,10 +315,9 @@ typedef struct { int k, nsym; double a0[MAXK], ainf[MAXK], A[MAXSYM][MAXK][MAXK]
  * Hartley uses possible (1) or not (0). */
 static double hval_of(const int *p, int pl, int w, const Str *s, int hartley, long N) {
     int buf[24], n = 0;
-    for (int i = 0; i < pl; i++) buf[n++] = p[i];
     if (w >= 0) buf[n++] = w;
     for (int i = 0; i < s->len; i++) buf[n++] = s->s[i];
-    long c = count_of(0, buf, n);
+    long c = pooled_count(p, pl, buf, n);
     return hartley ? (c > 0) : (double)c / N;
 }
 
@@ -460,6 +506,45 @@ static void order_pivot(int nsym, double *share_sig, double *bits, int *pairs) {
     *pairs = n; *share_sig = n ? (double)sig / n : 0; *bits = wsum > 0 ? info / wsum : 0;
 }
 
+/* The switch, per pair: for every history where both "a b" and "b a" were
+ * seen, compare the next two words (a G-test). A pair commutes only if it
+ * was seen at least 200 times each way and never differed beyond chance
+ * (1%). Too little evidence keeps the order: the safe default. */
+static int judge_pairs(int nsym, int nwords) {
+    double G[MAXSYM][MAXSYM] = {{0}}, seen1[MAXSYM][MAXSYM] = {{0}}, seen2[MAXSYM][MAXSYM] = {{0}}; int df[MAXSYM][MAXSYM] = {{0}};
+    double *c1 = malloc(sizeof(double) * MAXSYM * MAXSYM), *c2 = malloc(sizeof(double) * MAXSYM * MAXSYM);
+    int nc = nsym * nsym;
+    for (int i = 0; i < npre; i++) {
+        if (pre[i].len < 2) continue;
+        const int *s = pre[i].s; int L = pre[i].len, a = s[L - 2], b = s[L - 1];
+        if (a >= b) continue;
+        int other[8]; memcpy(other, s, L * sizeof(int)); other[L - 2] = b; other[L - 1] = a;
+        int n1 = pre[i].node, n2 = 0; for (int t = 0; t < L && n2 >= 0; t++) n2 = child[n2][other[t]];
+        if (n2 < 0 || cnt[n1] < 10 || cnt[n2] < 10) continue;
+        double t1 = 0, t2 = 0;
+        for (int x = 0; x < nc; x++) c1[x] = c2[x] = 0;
+        for (int nd = 0; nd < 2; nd++) { int node = nd ? n2 : n1; double *c = nd ? c2 : c1;
+            for (int w = 0; w < nsym; w++) { int m = child[node][w]; if (m < 0) continue;
+                long below = 0;
+                for (int u = 0; u < nsym; u++) if (child[m][u] >= 0) { c[w * nsym + u] += cnt[child[m][u]]; below += cnt[child[m][u]]; }
+                if (cnt[m] > below) c[w * nsym + (nsym - 1)] += cnt[m] - below; } }
+        for (int x = 0; x < nc; x++) { t1 += c1[x]; t2 += c2[x]; }
+        int d = -1; double g = 0;
+        for (int x = 0; x < nc; x++) { double tw = c1[x] + c2[x]; if (tw == 0) continue; d++;
+            double e1 = tw * t1 / (t1 + t2), e2 = tw * t2 / (t1 + t2);
+            if (c1[x] > 0) g += 2 * c1[x] * log(c1[x] / e1);
+            if (c2[x] > 0) g += 2 * c2[x] * log(c2[x] / e2); }
+        if (d < 1) continue;
+        G[a][b] += g; df[a][b] += d; seen1[a][b] += t1; seen2[a][b] += t2;
+    }
+    free(c1); free(c2);
+    int n = 0;
+    memset(commute, 0, sizeof commute);
+    for (int a = 0; a < nwords; a++) for (int b = a + 1; b < nwords; b++)
+        if (seen1[a][b] >= 200 && seen2[a][b] >= 200 && chi2_sf(G[a][b], df[a][b]) >= 0.01) { commute[a][b] = commute[b][a] = 1; n++; }
+    return n;
+}
+
 /* ---------- main ---------- */
 
 int main(int argc, char **argv) {
@@ -494,33 +579,62 @@ int main(int argc, char **argv) {
     int noisy = judged == 0 || tail > 0.005;      /* can't judge: assume noise, stay Shannon */
     int ordered = pairs == 0 || sig > 0.05;
 
-    /* Shannon and Hartley machines; bands chosen on the validation set. */
-    static WA S, H, bestS, bestH; const int ks[] = {2, 4, 6, 8, 12, 16, 24, 32, 40, 48, 64};
-    double bestv = 1e300, besthv = 1e300;
-    factor(0, tr.n);
-    for (int i = 0; i < 11; i++) { build_wa(&S, ks[i], nsym, 0, tr.n); Score v = score_wa(&S, &S, SHANNON, &va, 0, V);
-        if (v.bits < bestv) { bestv = v.bits; bestS = S; } }
-    factor(1, tr.n);
-    for (int i = 0; i < 11; i++) { build_wa(&H, ks[i], nsym, 1, tr.n); Score v = score_wa(&H, &H, HARTLEY, &va, 0, V);
-        if (v.bits < besthv) { besthv = v.bits; bestH = H; } }
+    /* Shannon and Hartley machines, in three settings of the switch: order
+     * always kept, decided per pair, never kept. Bands chosen on validation. */
+    static WA S, H, bestS[3], bestH[3]; const int ks[] = {2, 4, 6, 8, 12, 16, 24, 32, 40, 48, 64};
+    int ncomm[3];
+    for (int mode = 0; mode < 3; mode++) {
+        ncomm[mode] = 0;
+        if (mode == 0) memset(commute, 0, sizeof commute);
+        else if (mode == 1) ncomm[1] = judge_pairs(nsym, V);
+        else { for (int a = 0; a < V; a++) for (int b = 0; b < V; b++) commute[a][b] = a != b; ncomm[2] = V * (V - 1) / 2; }
+        build_pool(&tr, Ls + 1);
+        double bestv = 1e300, besthv = 1e300;
+        factor(0, tr.n);
+        for (int i = 0; i < 11; i++) { build_wa(&S, ks[i], nsym, 0, tr.n); Score v = score_wa(&S, &S, SHANNON, &va, 0, V);
+            if (v.bits < bestv) { bestv = v.bits; bestS[mode] = S; } }
+        factor(1, tr.n);
+        for (int i = 0; i < 11; i++) { build_wa(&H, ks[i], nsym, 1, tr.n); Score v = score_wa(&H, &H, HARTLEY, &va, 0, V);
+            if (v.bits < besthv) { besthv = v.bits; bestH[mode] = H; } }
+        if (mode == 1) {
+            printf("pairs found order-free:");
+            for (int a = 0; a < V; a++) for (int b = a + 1; b < V; b++) if (commute[a][b]) printf(" %d-%d", a, b);
+            printf("\n");
+        }
+    }
+    /* The truth, from the generator: pairs that can both be said in some
+     * state and, wherever they can, end in the same state either way. */
+    int truly = 0;
+    for (int a = 0; a < V; a++) for (int b = a + 1; b < V; b++) {
+        int ok = 1, used = 0;
+        for (int q = 0; q < L.Q; q++) if (L.emit[q][a] > 0 && L.emit[q][b] > 0) { used = 1;
+            int qa = L.next[q][a], qb = L.next[q][b];
+            if (L.emit[qa][b] == 0 || L.emit[qb][a] == 0 || L.next[qa][b] != L.next[qb][a]) ok = 0; }
+        truly += ok && used;
+    }
 
-    Score r[4][2];
+    enum { NM = 8 };
+    Score r[NM][2];
     for (int lg = 0; lg < 2; lg++) {
         const Set *T = lg ? &lo : &te;
-        r[0][lg] = score_wa(&bestS, &bestH, SHANNON, T, lg, V);
-        r[1][lg] = score_wa(&bestS, &bestH, HARTLEY, T, lg, V);
-        r[2][lg] = score_wa(&bestS, &bestH, noisy ? SHANNON : PIVOT, T, lg, V);
-        r[3][lg] = score_trigram(&tr, T, lg, V);
+        for (int mode = 0; mode < 3; mode++) {
+            r[2 * mode][lg] = score_wa(&bestS[mode], &bestH[mode], SHANNON, T, lg, V);
+            r[2 * mode + 1][lg] = score_wa(&bestS[mode], &bestH[mode], HARTLEY, T, lg, V);
+        }
+        r[6][lg] = score_wa(&bestS[1], &bestH[1], noisy ? SHANNON : PIVOT, T, lg, V);
+        r[7][lg] = score_trigram(&tr, T, lg, V);
     }
     const char *lname[] = {"", "grammar", "tracking (S4)", "counters (Z6, abelian)"};
     printf("LANG %s, noise %.0f%%, %d training sentences (%ld words)\n", lname[lang], noise * 100, ntrain, tr.tokens);
     printf("pivot: rare-continuation share %.4f over %d prefixes, Hartley-Shannon gap %.3f bits -> %s\n", tail, judged, gap, noisy ? "SHANNON" : "HARTLEY rules out, Shannon weighs");
     printf("pivot: order changes the next word in %.1f%% of %d pairs, %.4f bits/word -> %s\n", 100 * sig, pairs, obits, ordered ? "NON-ABELIAN" : "ABELIAN");
-    printf("bands: Shannon %d, Hartley %d\n", bestS.k, bestH.k);
+    printf("pairs order-free: switch found %d, truly %d, of %d\n", ncomm[1], truly, V * (V - 1) / 2);
+    printf("bands: Shannon %d/%d/%d, Hartley %d/%d/%d (order kept / per pair / never)\n", bestS[0].k, bestS[1].k, bestS[2].k, bestH[0].k, bestH[1].k, bestH[2].k);
     printf("RESULT model excess_test excess_long answer_excess_test answer_excess_long words_ruled_out_wrongly\n");
-    const char *mn[] = {"shannon_nonabelian", "hartley_nonabelian", "four_domain_pivot", "trigram"};
+    const char *mn[] = {"shannon_nonabelian", "hartley_nonabelian", "shannon_abelian_per_pair", "hartley_abelian_per_pair",
+                        "shannon_abelian_all", "hartley_abelian_all", "four_domain_pivot", "trigram"};
     double ft = fte / te.tokens, fl = flo / lo.tokens;
-    for (int m = 0; m < 4; m++)
+    for (int m = 0; m < NM; m++)
         printf("RESULT %s %.4f %.4f %.4f %.4f %ld\n", mn[m], r[m][0].bits / r[m][0].words - ft, r[m][1].bits / r[m][1].words - fl,
                r[m][0].awords ? r[m][0].abits / r[m][0].awords - fat : 0, r[m][1].awords ? r[m][1].abits / r[m][1].awords - fal : 0, r[m][0].excluded_truth + r[m][1].excluded_truth);
     printf("floor (bits/word): test %.4f, long %.4f; answers: test %.4f, long %.4f\n", ft, fl, fat, fal);
