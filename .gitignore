@@ -4,3 +4,4 @@ hartley/transform
 hartley/hnam
 hartley/real
 hartley/real_dbg
+bench/results/*.nets.*

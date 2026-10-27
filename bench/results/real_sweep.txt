@@ -1,0 +1,6 @@
+=== train_clean_2000.txt
+TRAIN train_clean_2000.txt: 2000 sentences, 44772 words
+RESULT trigram bits 8.7960 perplexity 444.5
+RESULT grouped bits 9.3205 perplexity 639.4 groups 1176 alpha 0.5 beta 1000
+RESULT grouped_hartley bits 9.3197 perplexity 639.0 groups 1187 alpha 0.5 beta 1000
+RESULT grouped+trigram bits 8.8611 perplexity 465.0 groups 1176 alpha 0.5 beta 1000
