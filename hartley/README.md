@@ -330,3 +330,23 @@ newspaper text with facts about people made up per document, questions
   their window; beyond it (8,000 here, past 1,024) they cannot by design.
 - The facts are in fixed wording ("X lives in Y"); real text says things
   many ways, which this test does not cover.
+
+### Long text, the fairer run (`run_long_fair.sh`, raw `bench/results/long_fair.txt`)
+
+The nets got their best chance: 6,000 short training documents (fact and
+question within 0-120 words), a 256-word window and a small transformer
+(6,668 steps in 30 CPU minutes), an LSTM (18,314 steps).
+
+| Answers right | 50 words | 500 | 2,000 | 8,000 |
+|---|---|---|---|---|
+| **Relations (full design, seconds of CPU)** | **100%** | **100%** | **100%** | **100%** |
+| Transformer, 256-word window | 12% | 4% | 4% | 3% |
+| LSTM | 7% | 6% | 5% | 7% |
+
+- Inside its window (50 words) the transformer begins to learn
+  ("who likes" 24%), then falls to chance outside it, as a fixed window
+  must. The LSTM did not learn to look back.
+- What this shows: on this task the design learns from far less data and
+  compute than these nets on this machine. It does not show that a fully
+  trained large transformer fails inside its window: such models do this
+  kind of look-up well. Beyond the window, a windowed model cannot answer.

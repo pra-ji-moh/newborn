@@ -7,3 +7,7 @@ RESULT transformer gap 50 right 0.122 (city 0.017, country 0.110, who-likes 0.23
 RESULT transformer gap 500 right 0.039 (city 0.008, country 0.103, who-likes 0.008) answer_bits 6.216 steps 6668 train_secs 1800 window 256 trained_on train_short.txt
 RESULT transformer gap 2000 right 0.036 (city 0.017, country 0.071, who-likes 0.023) answer_bits 6.093 steps 6668 train_secs 1800 window 256 trained_on train_short.txt
 RESULT transformer gap 8000 right 0.028 (city 0.008, country 0.056, who-likes 0.018) answer_bits 5.930 steps 6668 train_secs 1800 window 256 trained_on train_short.txt
+RESULT lstm gap 50 right 0.067 (city 0.017, country 0.178, who-likes 0.008) answer_bits 5.622 steps 18314 train_secs 1800 window all trained_on train_short.txt
+RESULT lstm gap 500 right 0.056 (city 0.017, country 0.147, who-likes 0.008) answer_bits 5.696 steps 18314 train_secs 1800 window all trained_on train_short.txt
+RESULT lstm gap 2000 right 0.053 (city 0.034, country 0.133, who-likes 0.000) answer_bits 5.741 steps 18314 train_secs 1800 window all trained_on train_short.txt
+RESULT lstm gap 8000 right 0.072 (city 0.041, country 0.152, who-likes 0.018) answer_bits 5.501 steps 18314 train_secs 1800 window all trained_on train_short.txt
