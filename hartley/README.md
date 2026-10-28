@@ -350,3 +350,42 @@ question within 0-120 words), a 256-word window and a small transformer
   compute than these nets on this machine. It does not show that a fully
   trained large transformer fails inside its window: such models do this
   kind of look-up well. Beyond the window, a windowed model cannot answer.
+
+## Harder long text (Oct 28, 2026)
+
+`gen_long2.py`: facts in many wordings (some reversed: "C is where P
+lives", "Q is liked by P", "X contains K"), moves ("P moved to C"; the
+answer is the latest), three-step questions (continent), eight people per
+document, and a test in wordings never seen in training. `longtext.c` now
+follows chains of up to three relations; a learned Hartley cut keeps words
+that turn out to be answers (so the four continents stay though common);
+Shannon trusts a chain by times right times how often it is right when
+present; a relation in unseen wording counts as "some relation, this way
+round". Moves need no rule: the counts learn that "moved to" is the
+stronger evidence. `run_long2.sh`; raw `bench/results/long2.txt`.
+
+| Answers right | 50 words | 500 | 2,000 | 8,000 |
+|---|---|---|---|---|
+| **Relations, seen wordings** | **98.0%** | **97.9%** | **98.1%** | **98.5%** |
+| Relations, never-seen wordings | 74.3% | | 71.6% | |
+| Transformer, 512-word window, 1 h CPU (4,340 steps) | 9.5% | 7.6% | 7.8% | 8.0% |
+| LSTM, 20 min CPU (22,138 steps) | 11.6% | 8.5% | 9.7% | 10.9% |
+
+The CPU-trained nets did not learn the task, so they are not the real
+comparison; that is a chat model on the same documents (`bench/gpt_test`).
+
+### Against ChatGPT (bench/gpt_test)
+
+The same documents, as prompts; replies scored against the key. So far the
+three 50-word documents (48 questions):
+
+| | Relations | ChatGPT |
+|---|---|---|
+| City | 12/12 | 12/12 |
+| Country | 8/8 | 8/8 |
+| Continent (three steps) | 12/14 | 10/14 |
+| Who likes whom | **14/14** | **9/14** |
+| Total | **46/48** | **39/48** |
+
+All five of ChatGPT's "who likes" errors read "X is liked by Y" the wrong
+way round. Three documents are a small sample; the other twelve are next.
