@@ -1,0 +1,16 @@
+1. country8
+2. continent2
+3. continent0
+4. country3
+5. person66
+6. city9
+7. city33
+8. country11
+9. continent0
+10. city16
+11. person302
+12. continent0
+13. city33
+14. country8
+15. person361
+16. person550

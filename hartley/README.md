@@ -376,17 +376,38 @@ comparison; that is a chat model on the same documents (`bench/gpt_test`).
 
 ### Against ChatGPT, GPT-6 (bench/gpt_test)
 
-The same documents, as prompts, run by the author in ChatGPT on GPT-6
-(Oct 28, 2026); replies scored against the key. So far the
-three 50-word documents (48 questions):
+All 15 documents (240 questions), run by the author in ChatGPT on GPT-6,
+Oct 28, 2026, one fresh chat per document; replies scored against the key
+(`score_gpt.py`). The relational model ran on exactly the same documents.
 
-| | Relations | ChatGPT |
+| Set | Relations | GPT-6 |
 |---|---|---|
-| City | 12/12 | 12/12 |
-| Country | 8/8 | 8/8 |
-| Continent (three steps) | 12/14 | 10/14 |
-| Who likes whom | **14/14** | **9/14** |
-| Total | **46/48** | **39/48** |
+| 50 words (3 docs) | **46/48** | 39/48 |
+| 500 words | **47/48** | 37/48 |
+| 2,000 words | **46/48** | 40/48 |
+| 8,000 words | **46/48** | 42/48 |
+| Seen wordings, all | **185/192 (96.4%)** | 158/192 (82.3%) |
+| Never-seen wordings, 2,000 words | 34/48 (70.8%) | **46/48 (95.8%)** |
+| **All 240** | **219 (91.3%)** | 204 (85.0%) |
 
-All five of ChatGPT's "who likes" errors read "X is liked by Y" the wrong
-way round. Three documents are a small sample; the other twelve are next.
+Where GPT-6 went wrong (`gpt_errors.py`, `bench/gpt_test/gpt6_by_wording.txt`):
+
+| Kind of question | GPT-6 |
+|---|---|
+| "Who likes Q?" when the fact is active ("P likes Q") | 40/44 (91%) |
+| "Who likes Q?" when the fact is passive ("Q is liked by P") | **6/14 (43%)** |
+| One step (where someone lives), any wording, moves included | 62/62 (100%) |
+| Two steps, plain | 11/11 (100%) |
+| Two steps after a move and through a reversed fact | 1/4 |
+| Three steps after a move | 15/25 (60%) |
+
+- GPT-6 never missed a one-step question. Its errors cluster where a fact
+  is worded in reverse (passive "is liked by": wrong more often than right)
+  and where a chain of three facts runs through a move. Distance did not
+  hurt it: 8,000 words was its best set.
+- The relational model was 42/42 on "who likes" in the wordings it had
+  seen, and 96% on seen wordings overall; on wordings never seen in
+  training it fell to 71%, where GPT-6 scored 96%.
+- Fair reading: the relational model learned from 1,500 documents of this
+  kind and reads questions in its own short form; GPT-6 saw none and read
+  natural questions. One run of GPT-6 per document; its answers may vary.

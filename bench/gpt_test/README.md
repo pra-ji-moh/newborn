@@ -36,5 +36,8 @@ was not trained on this kind of document; the relational model learned from
 
 ## Runs so far
 
-- GPT-6 in ChatGPT, Oct 28, 2026 (run by the author): prompts 50_1, 50_2,
-  50_3; replies in `reply_*.txt`.
+- GPT-6 in ChatGPT, Oct 28, 2026 (run by the author): all 15 prompts, one
+  fresh chat each; replies in `reply_*.txt`. GPT-6 204/240 (85.0%), the
+  relational model 219/240 (91.3%); seen wordings 158/192 against 185/192,
+  never-seen wordings 46/48 against 34/48. Breakdown by wording in
+  `gpt6_by_wording.txt` (made by `hartley/gpt_errors.py`).
