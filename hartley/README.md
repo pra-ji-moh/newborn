@@ -298,3 +298,35 @@ Real English is unchanged (perplexity 368 / 237 / 165 clean at 2,000 /
 10,000 / 42,068). The pairs it confirms there are names ("fannie ... mae",
 "freddie ... mac"), not nesting; English nesting (clauses inside clauses)
 has no fixed bracket words, which this does not reach.
+
+## Long text through relations (Oct 28, 2026)
+
+The author's design for long text: divide it into pieces (sentences);
+Hartley cuts each piece to its surprising words; every ordered pair of kept
+words becomes a relation named by the words between them ("lives in",
+"likes"), direction kept (non-abelian); Shannon values each relation by its
+evidence and by how useful its kind has been, and the memory (64 relations)
+drops the least valued when full; questions are answered by following the
+chain of relations that has answered that kind of question before, in
+order ("lives in" then "is in"). `longtext.c`; test `gen_long.py`: real
+newspaper text with facts about people made up per document, questions
+50 to 8,000 words later; `run_long.sh`; raw `bench/results/long_sweep.txt`.
+
+| Answers right | 50 words | 500 | 2,000 | 8,000 |
+|---|---|---|---|---|
+| **Relations (full design)** | **100%** | **100%** | **100%** | **100%** |
+| Without relations (trigram only) | 5% | 5% | 4% | 7% |
+| Order ignored (abelian) | 82% | 76% | 79% | 79% |
+| No priority (forget the oldest) | 19% | 21% | 19% | 18% |
+| Transformer, 1,024-word window, 20 min CPU (179 steps) | 4% | 5% | 4% | 6% |
+| LSTM, whole stream, 20 min CPU | 7% | 5% | 5% | 6% |
+
+- The full design answers every question (city, country in two steps, who
+  likes whom) at every gap, with a fixed memory; about 8 seconds in all.
+- The controls show each part is needed: order for "who likes" (a coin
+  flip without it), Shannon's priority to keep facts through filler text.
+- **The nets did not learn the task in 20 CPU minutes, so this is not a
+  fair comparison.** Trained transformers do this kind of look-up within
+  their window; beyond it (8,000 here, past 1,024) they cannot by design.
+- The facts are in fixed wording ("X lives in Y"); real text says things
+  many ways, which this test does not cover.

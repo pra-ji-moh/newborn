@@ -8,3 +8,21 @@ RESULT relations gap 50 right 0.047 (city 0.018, country 0.115, who-likes 0.000)
 RESULT relations gap 500 right 0.047 (city 0.000, country 0.156, who-likes 0.000) answer_bits 6.349
 RESULT relations gap 2000 right 0.044 (city 0.047, country 0.083, who-likes 0.000) answer_bits 6.124
 RESULT relations gap 8000 right 0.069 (city 0.043, country 0.160, who-likes 0.000) answer_bits 6.115
+control abelian; theta 9.5 (Hartley cut, bits of surprise); memory 64 relations
+RESULT relations gap 50 right 0.822 (city 0.920, country 1.000, who-likes 0.534) answer_bits 0.614
+RESULT relations gap 500 right 0.764 (city 0.868, country 1.000, who-likes 0.469) answer_bits 0.653
+RESULT relations gap 2000 right 0.794 (city 0.891, country 1.000, who-likes 0.464) answer_bits 0.623
+RESULT relations gap 8000 right 0.789 (city 0.922, country 1.000, who-likes 0.442) answer_bits 0.614
+control oldest; theta 7 (Hartley cut, bits of surprise); memory 64 relations
+RESULT relations gap 50 right 0.189 (city 0.161, country 0.208, who-likes 0.195) answer_bits 4.921
+RESULT relations gap 500 right 0.206 (city 0.149, country 0.257, who-likes 0.215) answer_bits 4.964
+RESULT relations gap 2000 right 0.194 (city 0.125, country 0.242, who-likes 0.223) answer_bits 4.880
+RESULT relations gap 8000 right 0.175 (city 0.122, country 0.224, who-likes 0.175) answer_bits 5.003
+RESULT transformer gap 50 right 0.036 (city 0.027, country 0.077, who-likes 0.000) answer_bits 5.627 steps 179 train_secs 1200
+RESULT transformer gap 500 right 0.053 (city 0.033, country 0.138, who-likes 0.000) answer_bits 5.923 steps 179 train_secs 1200
+RESULT transformer gap 2000 right 0.036 (city 0.016, country 0.092, who-likes 0.000) answer_bits 5.650 steps 179 train_secs 1200
+RESULT transformer gap 8000 right 0.056 (city 0.017, country 0.136, who-likes 0.008) answer_bits 5.614 steps 179 train_secs 1200
+RESULT lstm gap 50 right 0.067 (city 0.018, country 0.169, who-likes 0.000) answer_bits 5.624 steps 7183 train_secs 1200
+RESULT lstm gap 500 right 0.047 (city 0.050, country 0.092, who-likes 0.008) answer_bits 5.845 steps 7183 train_secs 1200
+RESULT lstm gap 2000 right 0.050 (city 0.031, country 0.108, who-likes 0.009) answer_bits 5.588 steps 7183 train_secs 1200
+RESULT lstm gap 8000 right 0.058 (city 0.017, country 0.144, who-likes 0.008) answer_bits 5.694 steps 7183 train_secs 1200
