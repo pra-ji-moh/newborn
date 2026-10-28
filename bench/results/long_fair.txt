@@ -1,0 +1,5 @@
+control none; theta 9.5 (Hartley cut, bits of surprise); memory 64 relations
+RESULT relations gap 50 right 1.000 (city 1.000, country 1.000, who-likes 1.000) answer_bits 0.214
+RESULT relations gap 500 right 1.000 (city 1.000, country 1.000, who-likes 1.000) answer_bits 0.214
+RESULT relations gap 2000 right 1.000 (city 1.000, country 1.000, who-likes 1.000) answer_bits 0.232
+RESULT relations gap 8000 right 1.000 (city 1.000, country 1.000, who-likes 1.000) answer_bits 0.209

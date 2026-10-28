@@ -13,6 +13,7 @@ about 50, 500, 2,000 or 8,000.
 
 Files (one document per line, words as numbers):
     train.txt                      training documents, all gaps mixed
+    train_short.txt                short documents (gaps 0-120), for the nets
     valid.txt
     test_<gap>.txt, test_<gap>_mask.txt   test documents at one gap; the mask
                                    marks each answer with its class
@@ -88,6 +89,9 @@ def write(name, docs):
 
 gaps = [50, 500, 2000, 8000]
 write("train", [document(rng.choice(gaps[:3])) for _ in range(1500)])
+# For the nets' best chance: short documents (gap 0-120 words), so a fact and
+# its question fit in a small window while they learn to look back.
+write("train_short", [document(rng.randint(0, 120)) for _ in range(6000)])
 write("valid", [document(rng.choice(gaps[:3])) for _ in range(100)])
 for g in gaps:
     write(f"test_{g}", [document(g) for _ in range(60)])

@@ -3,7 +3,10 @@ the last 1,024 words (a fixed window, as real models have one) and an LSTM
 that reads the whole document. Trained by backpropagation to predict every
 next word; scored on the answers, within their class, as longtext.c is.
 
-Run: python3 long_nets.py DATA_DIR seconds_per_model
+Run: python3 long_nets.py DATA_DIR seconds_per_model [window] [train_file] [width] [layers]
+The fair run (run_long_fair.sh) gives the nets their best chance: short
+training documents (train_short.txt), a 256-word window and a small,
+fast transformer, so it trains for thousands of steps.
 """
 import math
 import sys
@@ -15,8 +18,11 @@ import torch.nn as nn
 torch.manual_seed(0)
 torch.set_num_threads(4)
 D, BUDGET = sys.argv[1], float(sys.argv[2])
+W = int(sys.argv[3]) if len(sys.argv) > 3 else 1024
+TRAIN = sys.argv[4] if len(sys.argv) > 4 else "train.txt"
+WIDTH = int(sys.argv[5]) if len(sys.argv) > 5 else 256
+LAYERS = int(sys.argv[6]) if len(sys.argv) > 6 else 4
 V = int(open(f"{D}/meta.txt").readline().split()[1])
-W = 1024
 
 
 def load(name):
@@ -24,12 +30,12 @@ def load(name):
         return [[int(x) for x in line.split()] for line in f if line.strip()]
 
 
-train = load("train.txt")
+train = load(TRAIN)
 classes = [[int(x) for x in line.split()] for line in open(f"{D}/classes.txt")]
 
 
 class Transformer(nn.Module):
-    def __init__(self, d=256, layers=4, heads=4):
+    def __init__(self, d=WIDTH, layers=LAYERS, heads=4):
         super().__init__()
         self.emb = nn.Embedding(V, d)
         self.pos = nn.Embedding(W, d)
@@ -44,7 +50,7 @@ class Transformer(nn.Module):
 
 
 class LSTM(nn.Module):
-    def __init__(self, d=256):
+    def __init__(self, d=WIDTH):
         super().__init__()
         self.emb = nn.Embedding(V, d)
         self.rnn = nn.LSTM(d, d, num_layers=2, batch_first=True)
@@ -56,7 +62,7 @@ class LSTM(nn.Module):
 
 
 def train_transformer(model):
-    opt = torch.optim.Adam(model.parameters(), lr=3e-4)
+    opt = torch.optim.Adam(model.parameters(), lr=1e-3 if W <= 256 else 3e-4)
     g = torch.Generator().manual_seed(1)
     start, steps = time.time(), 0
     while time.time() - start < BUDGET:
@@ -143,4 +149,4 @@ for name, model, fit, pred in (("transformer", Transformer(), train_transformer,
     for gap in (50, 500, 2000, 8000):
         r, by, b = score(pred(model), gap)
         print(f"RESULT {name} gap {gap} right {r:.3f} (city {by[0]:.3f}, country {by[1]:.3f}, who-likes {by[2]:.3f}) "
-              f"answer_bits {b:.3f} steps {steps} train_secs {BUDGET:.0f}", flush=True)
+              f"answer_bits {b:.3f} steps {steps} train_secs {BUDGET:.0f} window {W if name == 'transformer' else 'all'} trained_on {TRAIN}", flush=True)
