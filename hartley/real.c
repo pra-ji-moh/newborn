@@ -224,13 +224,43 @@ static void build_leads(void) {
     for (int w = 0; w <= V; w++) for (int j = 0; j < nlead[w]; j++) lead[w][j].p /= tot[w];
     free(capl); free(tot);
 }
-static double score_groups(const Set *T, double beta, int backup_trigram) {
+/* The tests of structure: some words are scored on their own, within their
+ * class (the answers, the closing brackets): bits among the class, and
+ * whether the class word given the most chance was the right one. */
+#define MAXCLS 4
+static int ncls, cls_n[MAXCLS + 1], cls_w[MAXCLS + 1][256];
+typedef struct { int **mask; double bits; long n, right; } Probe;
+static void probe_word(Probe *pr, int i, int t, int w, double (*prob)(int, void *), void *ctx) {
+    if (!pr || !pr->mask || !pr->mask[i][t]) return;
+    int k = pr->mask[i][t]; double tot = 0, pw = 0, best = -1; int arg = -1;
+    for (int j = 0; j < cls_n[k]; j++) { double p = prob(cls_w[k][j], ctx); tot += p; if (cls_w[k][j] == w) pw = p; if (p > best) { best = p; arg = cls_w[k][j]; } }
+    pr->bits -= log2(pw / tot); pr->n++; pr->right += arg == w;
+}
+typedef struct { double *bel; int *act, nact, a, b, backup; double beta; } GroupCtx;
+static double group_prob(int w, void *v) {
+    GroupCtx *g = v; double q = g->backup ? trigram(g->a, g->b, w) : uni[w], p = 0;
+    for (int k = 0; k < g->nact; k++) { int j = g->act[k], s = grp[j]; int e = find(s, w); long c = e < 0 ? 0 : E[e].c;
+        p += g->bel[j] * (c + g->beta * q) / (nout[s] + g->beta); }
+    return p;
+}
+typedef struct { int a, b; } TriCtx;
+static double tri_prob(int w, void *v) { TriCtx *c = v; return trigram(c->a, c->b, w); }
+static double score_trigram_probe(const Set *T, Probe *pr) {
+    double bits = 0; long n = 0;
+    for (int i = 0; i < T->n; i++) { int a = -1, b = -1;
+        for (int t = 0; t < T->len[i]; t++) { int w = T->w[i][t]; TriCtx c = {a, b}; probe_word(pr, i, t, w, tri_prob, &c);
+            bits -= log2(trigram(a, b, w)); n++; a = b; b = w; } }
+    return bits / n;
+}
+
+static double score_groups_probe(const Set *T, double beta, int backup_trigram, Probe *pr) {
     double *bel = calloc(ngrp, sizeof(double)), *nb = calloc(ngrp, sizeof(double)), bits = 0; long n = 0;
     int *act = malloc(sizeof(int) * ngrp), nact, *nxt = malloc(sizeof(int) * ngrp), nnx; char *on = calloc(ngrp, 1);
     for (int i = 0; i < T->n; i++) {
         nact = 1; act[0] = 0; bel[0] = 1; int a = -1, b = -1;
         for (int t = 0; t < T->len[i]; t++) {
             int w = T->w[i][t]; double q = backup_trigram ? trigram(a, b, w) : uni[w], pw = 0;
+            if (pr) { GroupCtx g = {bel, act, nact, a, b, backup_trigram, beta}; probe_word(pr, i, t, w, group_prob, &g); }
             nnx = 0;
             for (int k = 0; k < nact; k++) { int j = act[k], s = grp[j]; if (bel[j] <= 0) continue;
                 int e = find(s, w); long c = e < 0 ? 0 : E[e].c;
@@ -253,6 +283,66 @@ static double score_groups(const Set *T, double beta, int backup_trigram) {
     free(bel); free(nb); free(act); free(nxt); free(on);
     return bits / n;
 }
+static double score_groups(const Set *T, double beta, int backup_trigram) { return score_groups_probe(T, beta, backup_trigram, NULL); }
+
+/* Writing: draw sentences from the groups (with the trigram as backup). */
+static void sample_groups(int count, double beta, unsigned long long seed) {
+    double *bel = calloc(ngrp, sizeof(double)), *nb = calloc(ngrp, sizeof(double)), *p = malloc(sizeof(double) * (V + 1));
+    int *act = malloc(sizeof(int) * ngrp);
+    for (int k = 0; k < count; k++) {
+        int nact = 1; act[0] = 0; bel[0] = 1; int a = -1, b = -1;
+        printf("SAMPLE grouped_hartley+trigram");
+        for (int t = 0; t < 60; t++) {
+            GroupCtx g = {bel, act, nact, a, b, 1, beta}; double tot = 0;
+            for (int w = 0; w <= V; w++) { p[w] = group_prob(w, &g); tot += p[w]; }
+            seed ^= seed << 13; seed ^= seed >> 7; seed ^= seed << 17;
+            double r = (double)(seed >> 11) / 9007199254740992.0 * tot; int w = 0;
+            while (w < V && (r -= p[w]) > 0) w++;
+            if (w == END) break;
+            printf(" %d", w);
+            int nn2 = 0;
+            for (int x = 0; x < nact; x++) { int j = act[x], s = grp[j]; int e = find(s, w); long c = e < 0 ? 0 : E[e].c;
+                double m = bel[j] * (c + beta * trigram(a, b, w)) / (nout[s] + beta);
+                if (e >= 0 && E[e].to >= 0) nb[gidx[E[e].to]] += m; else for (int l = 0; l < nlead[w]; l++) nb[lead[w][l].g] += m * lead[w][l].p; }
+            for (int x = 0; x < nact; x++) bel[act[x]] = 0;
+            double z = 0; for (int j = 0; j < ngrp; j++) z += nb[j];
+            nact = 0; for (int j = 0; j < ngrp; j++) { if (nb[j] / z > 1e-6) { bel[j] = nb[j] / z; act[nact++] = j; } nb[j] = 0; }
+            if (!nact) { nact = 1; act[0] = 0; bel[0] = 1; }
+            (void)nn2; a = b; b = w;
+        }
+        printf("\n");
+        for (int x = 0; x < nact; x++) bel[act[x]] = 0;
+    }
+    free(bel); free(nb); free(p); free(act);
+}
+static void sample_trigram(int count, unsigned long long seed) {
+    for (int k = 0; k < count; k++) { int a = -1, b = -1; printf("SAMPLE trigram");
+        for (int t = 0; t < 60; t++) { double tot = 0; for (int w = 0; w <= V; w++) tot += trigram(a, b, w);
+            seed ^= seed << 13; seed ^= seed >> 7; seed ^= seed << 17;
+            double r = (double)(seed >> 11) / 9007199254740992.0 * tot; int w = 0;
+            while (w < V && (r -= trigram(a, b, w)) > 0) w++;
+            if (w == END) break; printf(" %d", w); a = b; b = w; }
+        printf("\n"); }
+}
+
+static int **load_mask(const char *path, const Set *T) {
+    FILE *f = fopen(path, "r"); if (!f) return NULL;
+    int **m = malloc(sizeof(int *) * T->n); char line[1 << 16];
+    for (int i = 0; i < T->n; i++) {
+        m[i] = calloc(T->len[i], sizeof(int));
+        if (!fgets(line, sizeof line, f)) break;
+        char *p = line, *e; for (int t = 0; t < T->len[i] - 1; t++) { long x = strtol(p, &e, 10); if (e == p) break; m[i][t] = (int)x; p = e; }
+    }
+    fclose(f); return m;
+}
+static void load_classes(const char *dir) {
+    char path[1024]; snprintf(path, sizeof path, "%s/classes.txt", dir);
+    FILE *f = fopen(path, "r"); ncls = 0; if (!f) return;
+    char line[1 << 14];
+    while (fgets(line, sizeof line, f) && ncls < MAXCLS) { ncls++; char *p = line, *e; cls_n[ncls] = 0;
+        for (;;) { long x = strtol(p, &e, 10); if (e == p) break; cls_w[ncls][cls_n[ncls]++] = (int)x; p = e; } }
+    fclose(f);
+}
 
 int main(int argc, char **argv) {
     if (argc < 3) { fprintf(stderr, "usage: real DATA_DIR TRAIN_FILE\n"); return 1; }
@@ -265,6 +355,39 @@ int main(int argc, char **argv) {
     snprintf(path, sizeof path, "%s/test.txt", argv[1]); load(&te, path);
     build_ngrams(&tr);
     printf("TRAIN %s: %d sentences, %ld words\n", argv[2], tr.n, tr.tokens);
+    const char *mode = argc > 3 ? argv[3] : "";
+    if (!strcmp(mode, "task") || !strcmp(mode, "sample")) {
+        /* the structure tests (masked words, a long test) or writing */
+        load_classes(argv[1]);
+        Set tl; int have_long = 0;
+        snprintf(path, sizeof path, "%s/test_long.txt", argv[1]);
+        FILE *ft = fopen(path, "r"); if (ft) { fclose(ft); load(&tl, path); have_long = 1; }
+        Probe pt = {0}, pl = {0};
+        snprintf(path, sizeof path, "%s/test_mask.txt", argv[1]); pt.mask = load_mask(path, &te);
+        if (have_long) { snprintf(path, sizeof path, "%s/test_long_mask.txt", argv[1]); pl.mask = load_mask(path, &tl); }
+        const double al[] = {0.001, 0.05, 0.5}, be[] = {1, 10, 100, 1000};
+        use_veto = 1;
+        if (!strcmp(mode, "task")) {
+            Probe q = pt, ql = pl;
+            double b0 = score_trigram_probe(&te, &q); if (have_long) score_trigram_probe(&tl, &ql);
+            printf("RESULT trigram bits %.4f probe_bits %.4f probe_right %.4f long_probe_bits %.4f long_probe_right %.4f\n", b0,
+                   q.n ? q.bits / q.n : 0, q.n ? (double)q.right / q.n : 0, ql.n ? ql.bits / ql.n : 0, ql.n ? (double)ql.right / ql.n : 0);
+        }
+        for (int backup = 0; backup < 2; backup++) {
+            if (!strcmp(mode, "sample") && !backup) continue;
+            double best = 1e300, ba = 0.5, bb = 1000;   /* writing: the settings validation chose on this data before */
+            if (strcmp(mode, "sample")) for (int i = 0; i < 3; i++) { alpha = al[i]; group_histories(&tr); build_leads();
+                for (int j = 0; j < 4; j++) { double v = score_groups(&va, be[j], backup); if (v < best) { best = v; ba = al[i]; bb = be[j]; } } }
+            alpha = ba; group_histories(&tr); build_leads();
+            if (!strcmp(mode, "sample")) { sample_groups(8, bb, 12345); sample_trigram(8, 777); break; }
+            Probe q = pt, ql = pl;
+            double b0 = score_groups_probe(&te, bb, backup, &q); if (have_long) score_groups_probe(&tl, bb, backup, &ql);
+            printf("RESULT grouped_hartley%s bits %.4f probe_bits %.4f probe_right %.4f long_probe_bits %.4f long_probe_right %.4f groups %d\n",
+                   backup ? "+trigram" : "", b0, q.n ? q.bits / q.n : 0, q.n ? (double)q.right / q.n : 0,
+                   ql.n ? ql.bits / ql.n : 0, ql.n ? (double)ql.right / ql.n : 0, ngrp);
+        }
+        return 0;
+    }
     double tri = score_trigram(&te);
     printf("RESULT trigram bits %.4f perplexity %.1f\n", tri, pow(2, tri));
     const double alphas[] = {0.001, 0.05, 0.5}, betas[] = {1, 10, 100, 1000};
