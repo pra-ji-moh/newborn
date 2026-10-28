@@ -208,3 +208,31 @@ Test always clean. Perplexity (lower is better). LSTM and transformer got
 - The web-like noise costs every model about the same (3 to 5%).
 - The toy-language advantage does not carry over: those languages had 8 to
   12 hidden situations; real language has no small set.
+
+## Tests 7-10: long-range, nesting, scale, knowledge and writing (Oct 28, 2026)
+
+`gen_struct.py` writes the tests; `run_struct.sh` runs them. The key words
+are scored within their class (share right; guessing gets 1 in the class
+size). Raw: `bench/results/struct_sweep.txt`, sentences in
+`bench/results/struct_samples.txt`.
+
+| Test (share of key words right) | Grouped, Shannon + Hartley | Trigram | LSTM | Transformer |
+|---|---|---|---|---|
+| Memory: answer set by the first word, 5-20 words back (10,000 sentences) | 11% (chance 12.5%) | 12% | **100%** | **100%** |
+| Memory, 50-100 words back | 11% | 15% | 61% | **100%** |
+| Nesting: right closing bracket, up to 4 deep (10,000) | 70% | 64% | **98%** | 78% |
+| Nesting, 5-8 deep | 64% | 60% | **93%** | 69% |
+| Facts: questions about people never asked about (city, or country in two steps) | 26% | 17% | **85%** | **86%** |
+
+- **Long-range meaning:** it cannot carry a word across a gap. Grouping
+  by future merges the histories that differ only in the far-back word,
+  because the next few words don't depend on it. At chance at every size.
+- **Nesting:** a little better than counting, far below the LSTM.
+- **Scale** (Penn Treebank, 2,000 to 42,068 sentences): perplexity 639 to
+  354 (1.8 times better) while the groups grew 13 times; transformer 431
+  to 148 (2.9 times). The gap widens with data.
+- **Knowledge and reasoning:** it cannot use a fact from one sentence to
+  answer a question in another; each sentence starts from the root.
+- **Writing:** sentences drawn from it read like the trigram's: local
+  phrases, no sense; the small nets here are not much better.
+- **Images:** the model has no way to take in an image. Not testable.

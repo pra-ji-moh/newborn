@@ -4,3 +4,82 @@ RESULT trigram bits 2.0599 probe_bits 3.0915 probe_right 0.1380 long_probe_bits 
 RESULT grouped_hartley bits 2.6504 probe_bits 3.0117 probe_right 0.1225 long_probe_bits 3.0118 long_probe_right 0.1280 groups 48
 RESULT grouped_hartley+trigram bits 2.1753 probe_bits 3.0659 probe_right 0.1435 long_probe_bits 3.1248 long_probe_right 0.1100 groups 238
 RESULT lstm bits 1.9399 perplexity 3.8 probe_bits 0.2329 probe_right 0.9960 long_probe_bits 0.5403 long_probe_right 0.9120 steps 2323 secs 165
+RESULT transformer bits 1.9331 perplexity 3.8 probe_bits 0.0019 probe_right 1.0000 long_probe_bits 0.0048 long_probe_right 1.0000 steps 927 secs 155
+=== memory 3000
+TRAIN train_3000.txt: 3000 sentences, 49239 words
+RESULT trigram bits 2.0425 probe_bits 3.0468 probe_right 0.1290 long_probe_bits 3.0690 long_probe_right 0.1140
+RESULT grouped_hartley bits 2.0768 probe_bits 3.0078 probe_right 0.1195 long_probe_bits 3.0046 long_probe_right 0.1320 groups 44
+RESULT grouped_hartley+trigram bits 2.0481 probe_bits 3.0109 probe_right 0.1160 long_probe_bits 3.0109 long_probe_right 0.1400 groups 44
+RESULT lstm bits 1.8457 perplexity 3.6 probe_bits 0.0233 probe_right 1.0000 long_probe_bits 1.3723 long_probe_right 0.7100 steps 2659 secs 153
+RESULT transformer bits 1.8486 perplexity 3.6 probe_bits 0.0002 probe_right 1.0000 long_probe_bits 0.0003 long_probe_right 1.0000 steps 934 secs 155
+=== memory 10000
+TRAIN train_10000.txt: 10000 sentences, 164850 words
+RESULT trigram bits 2.0317 probe_bits 3.0103 probe_right 0.1150 long_probe_bits 3.0096 long_probe_right 0.1460
+RESULT grouped_hartley bits 2.0500 probe_bits 3.0023 probe_right 0.1120 long_probe_bits 3.0031 long_probe_right 0.1120 groups 91
+RESULT grouped_hartley+trigram bits 2.0383 probe_bits 3.0013 probe_right 0.1140 long_probe_bits 3.0010 long_probe_right 0.1120 groups 91
+RESULT lstm bits 1.8201 perplexity 3.5 probe_bits 0.0300 probe_right 1.0000 long_probe_bits 1.8503 long_probe_right 0.6060 steps 2753 secs 154
+RESULT transformer bits 1.8337 perplexity 3.6 probe_bits 0.0001 probe_right 1.0000 long_probe_bits 0.0002 long_probe_right 1.0000 steps 975 secs 155
+=== nesting 1000
+TRAIN train_1000.txt: 1000 sentences, 48682 words
+RESULT trigram bits 3.1309 probe_bits 0.8627 probe_right 0.6436 long_probe_bits 0.9625 long_probe_right 0.5981
+RESULT grouped_hartley bits 3.6360 probe_bits 1.1865 probe_right 0.5391 long_probe_bits 1.2527 long_probe_right 0.5034 groups 25
+RESULT grouped_hartley+trigram bits 3.1928 probe_bits 0.8918 probe_right 0.6452 long_probe_bits 0.9871 long_probe_right 0.6031 groups 765
+RESULT lstm bits 2.7105 perplexity 6.5 probe_bits 0.1238 probe_right 0.9716 long_probe_bits 0.3563 long_probe_right 0.9053 steps 437 secs 164
+RESULT transformer bits 3.1887 perplexity 9.1 probe_bits 0.8012 probe_right 0.7413 long_probe_bits 1.0179 long_probe_right 0.6562 steps 131 secs 179
+=== nesting 3000
+TRAIN train_3000.txt: 3000 sentences, 155805 words
+RESULT trigram bits 3.1088 probe_bits 0.8511 probe_right 0.6472 long_probe_bits 0.9507 long_probe_right 0.6056
+RESULT grouped_hartley bits 3.4697 probe_bits 0.8806 probe_right 0.6634 long_probe_bits 0.9915 long_probe_right 0.6118 groups 59
+RESULT grouped_hartley+trigram bits 3.1930 probe_bits 0.8934 probe_right 0.6475 long_probe_bits 0.9888 long_probe_right 0.6075 groups 2105
+RESULT lstm bits 2.6826 perplexity 6.4 probe_bits 0.1023 probe_right 0.9786 long_probe_bits 0.3077 long_probe_right 0.9202 steps 403 secs 163
+RESULT transformer bits 3.1432 perplexity 8.8 probe_bits 0.7563 probe_right 0.7613 long_probe_bits 0.9669 long_probe_right 0.6706 steps 118 secs 178
+=== nesting 10000
+TRAIN train_10000.txt: 10000 sentences, 508812 words
+RESULT trigram bits 3.1018 probe_bits 0.8474 probe_right 0.6430 long_probe_bits 0.9460 long_probe_right 0.6047
+RESULT grouped_hartley bits 3.2732 probe_bits 0.7757 probe_right 0.7029 long_probe_bits 0.9086 long_probe_right 0.6445 groups 140
+RESULT grouped_hartley+trigram bits 3.2135 probe_bits 0.9059 probe_right 0.6505 long_probe_bits 1.0020 long_probe_right 0.6092 groups 5973
+RESULT lstm bits 2.6761 perplexity 6.4 probe_bits 0.0919 probe_right 0.9820 long_probe_bits 0.2810 long_probe_right 0.9295 steps 421 secs 164
+RESULT transformer bits 3.1051 perplexity 8.6 probe_bits 0.6968 probe_right 0.7834 long_probe_bits 0.9232 long_probe_right 0.6904 steps 128 secs 178
+=== facts
+TRAIN train_all.txt: 1530 sentences, 7650 words
+RESULT trigram bits 4.2554 probe_bits 3.9828 probe_right 0.1667 long_probe_bits 0.0000 long_probe_right 0.0000
+RESULT grouped_hartley bits 3.8558 probe_bits 3.4462 probe_right 0.2583 long_probe_bits 0.0000 long_probe_right 0.0000 groups 168
+RESULT grouped_hartley+trigram bits 4.5751 probe_bits 3.5917 probe_right 0.2583 long_probe_bits 0.0000 long_probe_right 0.0000 groups 168
+RESULT lstm bits 3.1117 perplexity 8.6 probe_bits 0.4630 probe_right 0.8500 steps 5853 secs 151
+RESULT transformer bits 3.2010 perplexity 9.2 probe_bits 0.6306 probe_right 0.8583 steps 2477 secs 150
+=== writing (Penn Treebank, all 42,068 sentences)
+TRAIN train_clean_42068.txt: 42068 sentences, 929589 words
+SAMPLE grouped_hartley+trigram 0 44 5666 423 4747 9605 4747 43 1290 9351 1779 2484 47 9009 9118 216 6141 2252 3631
+SAMPLE grouped_hartley+trigram 2799 9 43 9011 1822
+SAMPLE grouped_hartley+trigram 8419 9002 730 7829 7740 44 1476 47 8088 9969 9118 2928 4713 7119 43 7823 4763 9837 43 9 6141 47 7630 9565
+SAMPLE grouped_hartley+trigram 7204 4796 9118 3901 5824 6353 6184 4469 9011 9912
+SAMPLE grouped_hartley+trigram 1278 9033 7823
+SAMPLE grouped_hartley+trigram 47 5046 3326 5489 6141 9640 9011 44 3714 7119 8036 9340 423 453 43 6412 6141 43 423 43 3850 8888 656 43 47 3496 43 4143 43 423 43 9868 3411 5781 1849 9006 3649 9679 9011 5069 7346 4154
+SAMPLE grouped_hartley+trigram 9009 9957 6141 9731 6531 6378 6141 7669 43 2277 9975 3411 4244 9006 4164 4747 8101 5380 6187 4334 4402 9011 7828
+SAMPLE grouped_hartley+trigram 3178 423 164 7585 4728 5284 554 4509 4469 9351 7970 3566 4164 8210 4143 6016 9326 3262 1131 9804 4944
+SAMPLE trigram 0 44 986
+SAMPLE trigram 9028 4747 47 8713 5196 9118 2177 9011 6744 9730 4154 5859 2372 6141 44 44 3771 1 44 5666 3771 1 44 47 8088 4469 5974 6257 4344 1882 7823
+SAMPLE trigram 9810 9 8952 9011 6429 9429 6529 4717 2458 3658 4769 6869
+SAMPLE trigram 9868 9065 3806 6756 47 5963 5283 6141 1 44 47 8088
+SAMPLE trigram 1278 3931 8237 5772 6141 1780 3461 6522 9118 1 44 44 111 9118 47 5376 8494 608 412 276 6236 3035 6945 423 9118 43 9137 9011 4232 887 6607 5853 5264 656 9032 6153 423 5379 4176 1273 8691 9985 1417 9535 6141 9017 6964 8036 44 44 3771 44 9964 6171 4143 43 8214 9011 43 4384
+SAMPLE trigram 1278 6187 9617 423 43 5422 9512 5501 1320 8903 9704 9118 5377 47 1377 1815 9 8581 3241 3391 1282 6960 9118 6447 6142 44 1476 47 8088 5652 9048 5235
+SAMPLE trigram 4469 47 5142 6941 9792 9011 5620 5950 4954 4769 9127 3907 4763 4143 896 3922 47 5400 3658 4264 4713 5222 6184 43 1273
+SAMPLE trigram 43 5192 6141 44 9267 9967
+RESULT lstm bits 7.8412 perplexity 229.3 steps 1740 secs 625
+SAMPLE lstm 1451 2095 7823 9011 6934 9 9904 2900 4620 9927 872 43 1290 9707 9006 1351 9198 3658 9011 3504 3274 6141 9011 5797 5597 9009 3202 1290 9011 1562 1039 7823 608 9771 8937 3658 9651 2223 656 5252 423 5828 8354 4747 3956
+SAMPLE lstm 1290 8237 1929 1788 1927 9837 3993 3658 47 6203 7201 6141 1 44 5666 6141 47 1366 5046 9009 5055 8214 47 6835 7324 3658 6956 608 608 8354 423 9011 9959 6922
+SAMPLE lstm 9011 9351 7478 4143 896 43 8806 6699 2525 888 9009 9011 2347 8345 8556 3658 43 47 5071 3759 43 5296 6184 9011 9623 8678 4469 9011 2025 6141 9011 9972 9 5243
+SAMPLE lstm 7201 6141 9308 4402 4763 9837 872 6703 3828 1290 7272 9756 73 9011 1218 5033
+SAMPLE lstm 4469 9009 5991 9957 1342 554 6016 43 9704 4877
+SAMPLE lstm 2883 3708 2802 9011 3263 9778 6399 3658 9053 4469 9011 9782 2195 5164 6141 6627 3 3137 3818 2113 423 8754 63 9118 7099 4769 6872 9118 2113 3094 4283
+SAMPLE lstm 9011 3686 8160 608 9011 1415 4747 6671 47 8409 1944 6187 9118 872 5094 4345 3202 43 475 7915 608
+SAMPLE lstm 378 5856 43 5418 9502 5654 9118 8001 9011 8908 9211 6141 9011 3843 9011 3741 4747 8577 9118 5113 1272 6141 5441 9376 7478 6141 8768 6077 9118 5377 47 7392 5429
+RESULT transformer bits 7.6001 perplexity 194.0 steps 1129 secs 629
+SAMPLE transformer 1451 2095 47 1 44 5666 6236 44 1476 6146 2095 4412 1 44 5666 6236 44 1476 9011 3504 3274 6141 44 1476 47 8088 47 6770 8494 7342 6721 7823 4665 1803 7823
+SAMPLE transformer 9651 2223 9704 5019 9792 5828 8354 4747 910 7131 1290 8237 1929 1788 9473 44 44 3658 47 6203 5224 9194
+SAMPLE transformer 9032 1799 8092 9778 8271 4469 9011 5034 7119
+SAMPLE transformer 4469 9011 3580 5772 43 608 8354 423 9011 9959 43
+SAMPLE transformer 9011 9351 4545 6732 5884 43 8806 6699 2525 888 9009 9011 2347 8345 9118 2266 43 47 5071 4352 43 5296 6184 9011 9623 8013 43 1463 8156 8950 9011 433 156 6141 9782 2251
+SAMPLE transformer 9308 4402 9033 6 872 6703 3828 4636 6184 4344
+SAMPLE transformer 3160 1218 6156 9189 4469 9009 5991 9957 9 6512 9118 44 9704 6871
+SAMPLE transformer 2883 3708 9756 9011 3263 9778 6399 8978 656 9011 6429 9065 2331 6141 47 4796 6141 471 3818 6872 423 8754 5991 9033 3286 4769 6872 423 3806
