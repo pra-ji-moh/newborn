@@ -236,3 +236,43 @@ size). Raw: `bench/results/struct_sweep.txt`, sentences in
 - **Writing:** sentences drawn from it read like the trigram's: local
   phrases, no sense; the small nets here are not much better.
 - **Images:** the model has no way to take in an image. Not testable.
+
+## Memory: Shannon stores, Hartley boils down, Hopfield recalls (Oct 28, 2026)
+
+`memory.c`, the author's design: Shannon decides what to store (words that
+tell about what comes later, measured by counting); Hartley crosses items
+off when their job is done and, when memory is full, rules out the one
+that tells least; recall is a dense associative (Hopfield) memory whose
+sharpness is the Hartley-Shannon dial; a strong recall is chained one step
+("Ann" brings "Paris", which brings "France"); Shannon decides from the
+validation text how much to trust memory after each word. Mixed with the
+trigram for the next word. No gradients. Prior art: trigger and cache
+models (Rosenfeld 1996; Kuhn and De Mori 1990), dense associative memory
+(Krotov and Hopfield 2016; Demircigil et al. 2017; Ramsauer et al. 2020).
+
+| Test | Memory model | Grouping (before) | LSTM | Transformer |
+|---|---|---|---|---|
+| Memory, 5-20 back (right, from 300 / 1,000 / 10,000) | **100% / 100% / 100%** | 11% | 100% (1k+) | 100% |
+| Memory, 50-100 back | **100%** at every size | 11% | 61-91% | 100% |
+| Facts never asked about | 66% | 26% | **85%** | **86%** |
+| Nesting | 64% (no gain over trigram) | 70% | **98%** | 78% |
+
+Real English (Penn Treebank), perplexity, lower is better:
+
+| Training sentences | 2,000 | 2,000 noisy | 10,000 | 10,000 noisy | 42,068 | 42,068 noisy |
+|---|---|---|---|---|---|---|
+| Memory model | **368** | **381** | **237** | **246** | 165 | 171 |
+| Transformer | 431 | 451 | 240 | 252 | **148** | - |
+| LSTM | 458 | 485 | 272 | 280 | 161 | - |
+| Trigram | 444 | 465 | 280 | 292 | 187 | - |
+| Grouping (before) | 639 | 650 | 458 | 473 | 354 | - |
+
+- **Memory solved:** the far-back word is kept and recalled at any gap,
+  from 300 sentences.
+- **Real English: best at small and middle data, behind at full data.**
+  The nets here got 3, 6 and 15 minutes of CPU; well-trained LSTMs reach
+  about 80-115 on this data in published work, so at full size the gap to a
+  properly trained net is large.
+- **Facts:** 66%, up from 26%, still below the nets' 85%.
+- **Nesting is not helped:** memory keeps each bracket kind once and does
+  not know which was opened last. That needs a stack.
