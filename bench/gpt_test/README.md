@@ -33,3 +33,8 @@ does person110 live in now?"); the relational model reads the same facts
 with questions in the test's own form ("person110 city ?"). The chat model
 was not trained on this kind of document; the relational model learned from
 1,500 training documents of it. Say both when you report.
+
+## Runs so far
+
+- GPT-6 in ChatGPT, Oct 28, 2026 (run by the author): prompts 50_1, 50_2,
+  50_3; replies in `reply_*.txt`.

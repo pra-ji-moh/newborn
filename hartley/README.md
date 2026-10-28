@@ -374,9 +374,10 @@ stronger evidence. `run_long2.sh`; raw `bench/results/long2.txt`.
 The CPU-trained nets did not learn the task, so they are not the real
 comparison; that is a chat model on the same documents (`bench/gpt_test`).
 
-### Against ChatGPT (bench/gpt_test)
+### Against ChatGPT, GPT-6 (bench/gpt_test)
 
-The same documents, as prompts; replies scored against the key. So far the
+The same documents, as prompts, run by the author in ChatGPT on GPT-6
+(Oct 28, 2026); replies scored against the key. So far the
 three 50-word documents (48 questions):
 
 | | Relations | ChatGPT |
