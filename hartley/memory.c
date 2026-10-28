@@ -136,18 +136,70 @@ static double lift_of(int k, int w) {      /* the same value as row[k], straight
 
 #define CAP 8
 static double tau, beta, gamma_;
-typedef struct { int k[CAP * 2]; int age[CAP * 2]; int n; } Mem;
+typedef struct { int k[CAP * 2]; int age[CAP * 2]; int n; int st[64]; int ns; } Mem;
+
+/* ---------- nesting: a stack of open pairs ----------
+ * Shannon proposes pairs: an opener is a word whose sharpest later word c
+ * follows it nearly always. Hartley confirms or rules out: the pair must
+ * nest in the training text - no c without an opener still open before it,
+ * every opener closed by the end - in all but 1% of the sentences that use
+ * it (the 1% lets a little noise through). The end of a sentence is not a
+ * closer. Confirmed openers go on a stack;
+ * the top says, with certainty, which closer must come next. */
+static int *closer_of; static char *is_closer; static int npairs;
+static void find_pairs(const Set *S) {
+    closer_of = malloc(sizeof(int) * (V + 1)); is_closer = calloc(V + 1, 1); npairs = 0;
+    for (int k = 0; k <= V; k++) closer_of[k] = -1;
+    int *depth = calloc(V + 1, sizeof(int)), *bad = calloc(V + 1, sizeof(int)), *used = calloc(V + 1, sizeof(int)), *occ = calloc(V + 1, sizeof(int)), *follow = calloc(V + 1, sizeof(int));
+    char *in = calloc(V + 1, 1);
+    for (int i = 0; i < S->n; i++) {
+        for (int k = 0; k <= V; k++) depth[k] = 0, in[k] = 0;
+        for (int t = 0; t < S->len[i]; t++) { int w = S->w[i][t]; occ[w]++;
+            if (best_w[w] >= 0 && best_w[w] != w) { depth[w]++; in[w] = 1; }
+            for (int k = 0; k <= V; k++) if (best_w[k] == w && k != w && in[k]) { if (--depth[k] < 0) { bad[k]++; depth[k] = 0; } else follow[k]++; } }
+        for (int k = 0; k <= V; k++) if (in[k]) { used[k]++; if (depth[k] != 0) bad[k]++; }
+    }
+    /* candidates, most used first */
+    int *cand = malloc(sizeof(int) * (V + 1)), nc = 0;
+    for (int k = 0; k <= V; k++) {
+        int c = best_w[k];
+        if (c < 0 || c == k || c == END || occ[k] < 20 || follow[k] < 0.9 * occ[k] || bad[k] > 0.01 * used[k]) continue;
+        cand[nc++] = k;
+    }
+    for (int i = 1; i < nc; i++) for (int j = i; j > 0 && occ[cand[j]] > occ[cand[j - 1]]; j--) { int t = cand[j]; cand[j] = cand[j - 1]; cand[j - 1] = t; }
+    /* Hartley: real pairs never cross ("( [ ) ]"). A candidate is ruled out
+     * if, with the pairs already confirmed, a closer arrives while another
+     * pair's opener is still on top, in more than 1% of its sentences. */
+    for (int ci = 0; ci < nc; ci++) {
+        int k = cand[ci], c = best_w[k], cross = 0, uses = 0;
+        if (closer_of[c] >= 0 || is_closer[k] || is_closer[c] || closer_of[k] >= 0) continue;
+        closer_of[k] = c; is_closer[c] = 1;
+        for (int i = 0; i < S->n; i++) { int st[256], ns = 0, has = 0, crossed = 0;
+            for (int t = 0; t < S->len[i]; t++) { int w = S->w[i][t];
+                if (w == k) has = 1;
+                if (closer_of[w] >= 0) { if (ns < 256) st[ns++] = w; }
+                else if (is_closer[w]) { int j = ns - 1; while (j >= 0 && closer_of[st[j]] != w) j--;
+                    if (j >= 0) { if (j != ns - 1 && (closer_of[st[ns - 1]] == c || w == c)) crossed = 1; memmove(st + j, st + j + 1, sizeof(int) * (ns - 1 - j)); ns--; } } }
+            uses += has; cross += crossed; }
+        if (cross > 0.01 * uses) { closer_of[k] = -1; is_closer[c] = 0; } else npairs++;
+    }
+    free(cand); free(depth); free(bad); free(used); free(occ); free(follow); free(in);
+}
 static double *zrow;         /* per item: normaliser of P(w) 2^(beta lift) */
 static void prepare_z(void) {
     free(zrow); zrow = malloc(sizeof(double) * (V + 1));
     for (int k = 0; k <= V; k++) { double z = 1; for (int j = 0; j < nrow[k]; j++) z += later_p[row[k][j].w] * (pow(2, beta * row[k][j].lift) - 1); zrow[k] = z; }
 }
 static double mem_prob(const Mem *m, int w) {
-    if (!m->n) return -1;
-    double num = 0, den = 0;
-    for (int i = 0; i < m->n; i++) { double r = pow(gamma_, m->age[i]); int k = m->k[i];
-        num += r * later_p[w] * pow(2, beta * lift_of(k, w)) / zrow[k]; den += r; }
-    return num / den;
+    if (!m->n && !m->ns) return -1;
+    double items = 0;
+    if (m->n) { double num = 0, den = 0;
+        for (int i = 0; i < m->n; i++) { double r = pow(gamma_, m->age[i]); int k = m->k[i];
+            num += r * later_p[w] * pow(2, beta * lift_of(k, w)) / zrow[k]; den += r; }
+        items = num / den; }
+    if (!m->ns) return items;
+    double top = w == closer_of[m->st[m->ns - 1]];     /* Hartley: this closer, no other */
+    return m->n ? 0.5 * items + 0.5 * top : top;
 }
 static void mem_store(Mem *m, int k, int depth) {
     if (info[k] < tau) return;
@@ -160,6 +212,10 @@ static void mem_store(Mem *m, int k, int depth) {
 }
 static void mem_see(Mem *m, int w) {
     for (int i = 0; i < m->n; i++) m->age[i]++;
+    if (closer_of[w] >= 0) { if (m->ns < 64) m->st[m->ns++] = w; return; }
+    if (is_closer[w]) {       /* take off the nearest opener this closes */
+        for (int j = m->ns - 1; j >= 0; j--) if (closer_of[m->st[j]] == w) { memmove(m->st + j, m->st + j + 1, sizeof(int) * (m->ns - 1 - j)); m->ns--; break; }
+        return; }
     for (int i = 0; i < m->n;) {  /* Hartley: an item whose job is done is crossed off */
         if (best_w[m->k[i]] == w) { m->k[i] = m->k[m->n - 1]; m->age[i] = m->age[m->n - 1]; m->n--; } else i++; }
     mem_store(m, w, 0);
@@ -170,7 +226,7 @@ typedef struct { double *loc, *mem; int *prev; long n; } Trace;
 static void trace(const Set *T, Trace *tr) {
     tr->n = T->tokens; tr->loc = malloc(sizeof(double) * tr->n); tr->mem = malloc(sizeof(double) * tr->n); tr->prev = malloc(sizeof(int) * tr->n);
     long j = 0;
-    for (int i = 0; i < T->n; i++) { Mem m = {.n = 0}; int a = -1, b = -1;
+    for (int i = 0; i < T->n; i++) { Mem m = {.n = 0, .ns = 0}; int a = -1, b = -1;
         for (int t = 0; t < T->len[i]; t++, j++) { int w = T->w[i][t];
             tr->loc[j] = trigram(a, b, w); tr->mem[j] = mem_prob(&m, w); tr->prev[j] = b;
             mem_see(&m, w); a = b; b = w; } }
@@ -220,7 +276,7 @@ static double prob(int a, int b, const Mem *m, int w) {
 }
 static void score(const Set *T, int **mask, double *bits, double *pbits, double *pright) {
     double bt = 0, pb = 0; long n = 0, pn = 0, pr = 0;
-    for (int i = 0; i < T->n; i++) { Mem m = {.n = 0}; int a = -1, b = -1;
+    for (int i = 0; i < T->n; i++) { Mem m = {.n = 0, .ns = 0}; int a = -1, b = -1;
         for (int t = 0; t < T->len[i]; t++) { int w = T->w[i][t];
             bt -= log2(prob(a, b, &m, w)); n++;
             if (mask && mask[i][t]) { int k = mask[i][t]; double tot = 0, pw = 0, best = -1; int arg = -1;
@@ -244,8 +300,8 @@ int main(int argc, char **argv) {
         snprintf(path, sizeof path, "%s/test_mask.txt", argv[1]); mt = load_mask(path, &te);
         snprintf(path, sizeof path, "%s/test_long.txt", argv[1]); FILE *ft = fopen(path, "r");
         if (ft) { fclose(ft); load(&tl, path); have_long = 1; snprintf(path, sizeof path, "%s/test_long_mask.txt", argv[1]); ml = load_mask(path, &tl); } }
-    count_all(&tr); build_lift();
-    printf("TRAIN %s: %d sentences, %ld words\n", argv[2], tr.n, tr.tokens);
+    count_all(&tr); build_lift(); find_pairs(&tr);
+    printf("TRAIN %s: %d sentences, %ld words; nesting pairs confirmed: %d\n", argv[2], tr.n, tr.tokens, npairs);
     const double taus[] = {0.05, 0.3, 1, 3}, betas[] = {0.5, 1, 2, 4}, gammas[] = {1, 0.9};
     double best = 1e300, bt = 0, bb = 0, bg = 0;
     for (int i = 0; i < 4; i++) for (int j = 0; j < 4; j++) for (int g = 0; g < 2; g++) {

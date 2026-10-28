@@ -276,3 +276,25 @@ Real English (Penn Treebank), perplexity, lower is better:
 - **Facts:** 66%, up from 26%, still below the nets' 85%.
 - **Nesting is not helped:** memory keeps each bracket kind once and does
   not know which was opened last. That needs a stack.
+
+## Nesting: Shannon proposes pairs, Hartley confirms, a stack keeps order (Oct 28, 2026)
+
+Added to `memory.c`. Shannon proposes a pair when a word is nearly always
+followed later by one particular word. Hartley confirms or rules out: the
+pair must nest in the training text (no closer without an open opener, all
+closed by the end) and must never cross a pair already confirmed ("( [ ) ]"),
+each allowing 1% of sentences for noise; the end of a sentence is not a
+closer. Confirmed openers go on a stack; the top says, with certainty, which
+closer comes next.
+
+| Test (key words right) | Memory + stack | Before | LSTM | Transformer |
+|---|---|---|---|---|
+| Nesting up to 4 deep (300 / 1,000 / 10,000 sentences) | **100% / 100% / 100%** | 64% | 97-98% | 74-78% |
+| Nesting 5-8 deep, never seen | **100%** at every size | 60% | 91-93% | 66-69% |
+| Memory, 5-20 and 50-100 back | **100%** (more sure: 0.01 bits) | 100% | 61-100% | 100% |
+| Facts never asked about | 66% | 66% | **85%** | **86%** |
+
+Real English is unchanged (perplexity 368 / 237 / 165 clean at 2,000 /
+10,000 / 42,068). The pairs it confirms there are names ("fannie ... mae",
+"freddie ... mac"), not nesting; English nesting (clauses inside clauses)
+has no fixed bracket words, which this does not reach.
