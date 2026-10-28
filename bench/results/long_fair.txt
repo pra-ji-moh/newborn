@@ -3,3 +3,7 @@ RESULT relations gap 50 right 1.000 (city 1.000, country 1.000, who-likes 1.000)
 RESULT relations gap 500 right 1.000 (city 1.000, country 1.000, who-likes 1.000) answer_bits 0.214
 RESULT relations gap 2000 right 1.000 (city 1.000, country 1.000, who-likes 1.000) answer_bits 0.232
 RESULT relations gap 8000 right 1.000 (city 1.000, country 1.000, who-likes 1.000) answer_bits 0.209
+RESULT transformer gap 50 right 0.122 (city 0.017, country 0.110, who-likes 0.238) answer_bits 4.523 steps 6668 train_secs 1800 window 256 trained_on train_short.txt
+RESULT transformer gap 500 right 0.039 (city 0.008, country 0.103, who-likes 0.008) answer_bits 6.216 steps 6668 train_secs 1800 window 256 trained_on train_short.txt
+RESULT transformer gap 2000 right 0.036 (city 0.017, country 0.071, who-likes 0.023) answer_bits 6.093 steps 6668 train_secs 1800 window 256 trained_on train_short.txt
+RESULT transformer gap 8000 right 0.028 (city 0.008, country 0.056, who-likes 0.018) answer_bits 5.930 steps 6668 train_secs 1800 window 256 trained_on train_short.txt
