@@ -1,0 +1,7 @@
+control none; theta 9.5 (Hartley cut, bits of surprise); 662 words kept as answers; memory 64 relations
+RESULT relations set 50 right 0.935 (city 0.987, country 0.896, continent 0.864, who-likes 1.000) answer_bits 0.397
+RESULT relations set 500 right 0.940 (city 1.000, country 0.900, continent 0.867, who-likes 1.000) answer_bits 0.412
+RESULT relations set 2000 right 0.943 (city 0.992, country 0.908, continent 0.865, who-likes 1.000) answer_bits 0.388
+RESULT relations set 8000 right 0.940 (city 1.000, country 0.883, continent 0.877, who-likes 1.000) answer_bits 0.382
+RESULT relations set new_50 right 0.240 (city 0.421, country 0.198, continent 0.292, who-likes 0.063) answer_bits 6.459
+RESULT relations set new_2000 right 0.242 (city 0.397, country 0.151, continent 0.342, who-likes 0.079) answer_bits 6.499

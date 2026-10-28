@@ -4,11 +4,13 @@ that reads the whole document. Trained by backpropagation to predict every
 next word; scored on the answers, within their class, as longtext.c is.
 
 Run: python3 long_nets.py DATA_DIR seconds_per_model [window] [train_file] [width] [layers]
+     (LSTM_SECS in the environment gives the LSTM its own budget)
 The fair run (run_long_fair.sh) gives the nets their best chance: short
 training documents (train_short.txt), a 256-word window and a small,
 fast transformer, so it trains for thousands of steps.
 """
 import math
+import os
 import sys
 import time
 
@@ -80,16 +82,17 @@ def train_transformer(model):
 
 
 def train_lstm(model):
+    budget = float(os.environ.get("LSTM_SECS", BUDGET))
     opt = torch.optim.Adam(model.parameters(), lr=1e-3)
     g = torch.Generator().manual_seed(1)
     start, steps = time.time(), 0
-    while time.time() - start < BUDGET:
+    while time.time() - start < budget:
         docs = [train[torch.randint(len(train), (1,), generator=g).item()] for _ in range(8)]
         n = max(len(d) for d in docs)
         x = torch.tensor([d + [0] * (n - len(d)) for d in docs])
         h = None
         for s in range(0, n - 1, 200):    # carry the state across pieces of 200 words
-            if time.time() - start > BUDGET:
+            if time.time() - start > budget:
                 break
             inp, tgt = x[:, s : s + 200], x[:, s + 1 : s + 201]
             inp = inp[:, : tgt.shape[1]]
@@ -107,7 +110,8 @@ def answers(name):
 
 
 def score(predict, gap):
-    right, n, bits = [0, 0, 0, 0], [0, 0, 0, 0], 0.0
+    nk = len(classes)
+    right, n, bits = [0] * (nk + 1), [0] * (nk + 1), 0.0
     for d, m in answers(gap):
         lp_all = predict(d, [t for t, k in enumerate(m) if k])
         for t, lp in lp_all.items():
@@ -119,7 +123,7 @@ def score(predict, gap):
             right[k] += int(sub.argmax().item() == j)
             n[k] += 1
     tot = sum(n)
-    return sum(right) / tot, [right[k] / n[k] if n[k] else 0 for k in (1, 2, 3)], bits / tot
+    return sum(right) / tot, [right[k] / n[k] if n[k] else 0 for k in range(1, nk + 1)], bits / tot
 
 
 def transformer_predict(model):
@@ -146,7 +150,11 @@ for name, model, fit, pred in (("transformer", Transformer(), train_transformer,
     t0 = time.time()
     steps = fit(model)
     model.eval()
-    for gap in (50, 500, 2000, 8000):
+    names = ["city", "country", "who-likes"] if len(classes) == 3 else ["city", "country", "continent", "who-likes"]
+    for gap in ("50", "500", "2000", "8000", "new_50", "new_2000"):
+        if not os.path.exists(f"{D}/test_{gap}.txt"):
+            continue
         r, by, b = score(pred(model), gap)
-        print(f"RESULT {name} gap {gap} right {r:.3f} (city {by[0]:.3f}, country {by[1]:.3f}, who-likes {by[2]:.3f}) "
-              f"answer_bits {b:.3f} steps {steps} train_secs {BUDGET:.0f} window {W if name == 'transformer' else 'all'} trained_on {TRAIN}", flush=True)
+        per = ", ".join(f"{nm} {v:.3f}" for nm, v in zip(names, by))
+        print(f"RESULT {name} set {gap} right {r:.3f} ({per}) answer_bits {b:.3f} steps {steps} train_secs {BUDGET:.0f} "
+              f"window {W if name == 'transformer' else 'all'} trained_on {TRAIN}", flush=True)

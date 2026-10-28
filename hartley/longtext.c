@@ -4,15 +4,21 @@
  * Reading a document (a stream of sentences, cut at "."):
  *   divide       each sentence is a piece.
  *   Hartley cut  keep only the surprising words of a piece (Shannon's
- *                surprise, -log2 P(w), at least theta): names and places stay,
- *                common words go.
+ *                surprise, -log2 P(w), at least theta), and the words that
+ *                turned out to be answers in a first pass with a lower cut
+ *                (8.5 bits) - answers to question-like templates (ones
+ *                answered at least half the time), at least half the times
+ *                they follow one. Common but important words, such as the
+ *                names of the four continents, stay; common filler goes.
  *   relations    every ordered pair of kept words x ... y in a piece is a
  *                relation x -> y, named by the common words between them
  *                ("lives in", "is in", "likes"). Order kept: x -> y is not
  *                y -> x (non-abelian).
  *   value        Shannon: each relation's value is its evidence (times seen)
  *                times how useful its kind of relation has been for
- *                answering, learned by counting on the training documents.
+ *                answering, learned by counting on the training documents. A
+ *                kind never seen in training, between two answer words, gets
+ *                what relations between answers have had in general.
  *   priority     memory holds at most CAP relations; when full, Hartley
  *                rules out the lowest-valued one. Cost per word does not
  *                grow with the length of the text.
@@ -22,8 +28,10 @@
  * reaches the word that comes next: one step or two, forward or backward
  * ("lives in" then "is in" for a country; "likes" backward for "who likes").
  * Following a chain is composing relations in order. At test the chain's
- * answers, weighted by Shannon (how often that chain answered the template,
- * and the relations' values), are mixed with a trigram; how much to trust
+ * answers, weighted by Shannon (how often that chain answered the template
+ * times how often it was right when present, and the evidence along it), are
+ * mixed with a trigram. A relation in wording never seen in training counts
+ * as "some relation, this way round" (direction kept, wording ignored); how much to trust
  * them after each word is set by counting (EM) on the validation documents.
  *
  * Build: cc -std=c99 -O2 longtext.c -o longtext -lm
@@ -96,14 +104,21 @@ static double theta;                       /* Hartley cut: surprise in bits */
 static int order_blind, oldest_out;       /* controls: direction ignored; forget the oldest, not the least valued */
 typedef struct { int x, y; u64 rel; double count, value; long seen; } Rel;
 typedef struct { Rel r[CAP + 1]; int n; long clock; } Store;
-static int kept(int w) { return w != DOT && -log2(uni[w]) >= theta; }
-static double usefulness(u64 rel) { Ent *u = get(K(9, rel, 0), 0), *s = get(K(10, rel, 0), 0);
+static char *useful;                       /* words that have turned out to be answers */
+static int kept(int w) { return w != DOT && (-log2(uni[w]) >= theta || (useful && useful[w])); }
+/* How useful a kind of relation has been for answering. A kind never seen
+ * in training, between two words that are answers, gets what relations
+ * between answers have had in general (K 17 useful, K 18 stored). */
+static double usefulness(u64 rel, int x, int y) {
+    Ent *s = get(K(10, rel, 0), 0), *u = get(K(9, rel, 0), 0);
+    if (!s && useful && useful[x] && useful[y]) { Ent *a = get(K(17, 0, 0), 0), *b = get(K(18, 0, 0), 0);
+        return ((a ? a->c : 0) + 0.01) / ((b ? b->c : 0) + 1); }
     return ((u ? u->c : 0) + 0.01) / ((s ? s->c : 0) + 1); }
 static void store_rel(Store *S, int x, int y, u64 rel) {
     S->clock++;
     for (int i = 0; i < S->n; i++) if (S->r[i].x == x && S->r[i].y == y && S->r[i].rel == rel) {
-        S->r[i].count++; S->r[i].seen = S->clock; S->r[i].value = S->r[i].count * usefulness(rel); return; }
-    S->r[S->n++] = (Rel){x, y, rel, 1, usefulness(rel), S->clock};
+        S->r[i].count++; S->r[i].seen = S->clock; S->r[i].value = S->r[i].count * usefulness(rel, x, y); return; }
+    S->r[S->n++] = (Rel){x, y, rel, 1, usefulness(rel, x, y), S->clock};
     if (S->n > CAP) {               /* Hartley: rule out the least valuable, oldest first among equals */
         int worst = 0;
         for (int i = 1; i < S->n; i++)
@@ -112,37 +127,46 @@ static void store_rel(Store *S, int x, int y, u64 rel) {
         S->r[worst] = S->r[--S->n]; }
 }
 /* A finished piece: relations between its kept words, named by the common
- * words between them (at most 3). */
+ * words between them (at most 5). */
 static void absorb(Store *S, const int *s, int n, int learning) {
     int kp[64], nk = 0;
     for (int t = 0; t < n && nk < 64; t++) if (kept(s[t])) kp[nk++] = t;
     for (int i = 0; i < nk; i++) for (int j = i + 1; j < nk; j++) {
-        int a = kp[i], b = kp[j]; if (b - a - 1 > 3) continue;
+        int a = kp[i], b = kp[j]; if (b - a - 1 > 5) continue;
         u64 rel = 7; for (int t = a + 1; t < b; t++) rel = rel * 1000003ULL + (u64)s[t] + 1;
-        if (learning) get(K(10, rel, 0), 1)->c++;
+        if (learning) { get(K(10, rel, 0), 1)->c++; if (useful && useful[s[a]] && useful[s[b]]) get(K(18, 0, 0), 1)->c++; }
         store_rel(S, s[a], s[b], rel);
     }
 }
 
 /* ---------- chains: one or two relations, forward or backward ---------- */
 
-typedef struct { u64 rel; int dir; } Step;
-typedef struct { Step s[2]; int n; } Chain;
-static u64 chain_key(const Chain *c) { u64 k = c->n; for (int i = 0; i < c->n; i++) k = k * 0x9E3779B97F4A7C15ULL + c->s[i].rel * 2 + (u64)c->s[i].dir; return k; }
-/* every chain from x, with where it ends and its weight */
+typedef struct { u64 rel; int dir, idx; } Step;   /* idx: which stored relation (not part of the key) */
+#define MAXSTEP 3
+typedef struct { Step s[MAXSTEP]; int n; } Chain;
+static u64 chain_key_m(const Chain *c, int wild) {   /* wild: steps whose wording is ignored, direction kept */
+    u64 k = c->n + 0x51ULL * (u64)(wild != 0);
+    for (int i = 0; i < c->n; i++) k = k * 0x9E3779B97F4A7C15ULL + (wild >> i & 1 ? 0 : c->s[i].rel) * 2 + (u64)c->s[i].dir;
+    return k; }
+/* every chain from x (one to three relations, each forward or backward),
+ * with where it ends and its weight */
 typedef struct { Chain c; int end; double w; } Reach;
-static int reach_all(const Store *S, int x, Reach *out, int max) {
-    int n = 0;
-    for (int i = 0; i < S->n && n < max; i++) for (int d = 0; d < 2 && n < max; d++) {
+static int reach_n, reach_max; static Reach *reach_out;
+static void extend(const Store *S, int at, int origin, Chain *c, double w, char *used) {
+    for (int i = 0; i < S->n && reach_n < reach_max; i++) for (int d = 0; d < 2 && reach_n < reach_max; d++) {
         const Rel *r = &S->r[i]; int from = d ? r->y : r->x, to = d ? r->x : r->y;
-        if (from != x) continue;
-        Reach a = {{{{r->rel, order_blind ? 0 : d}}, 1}, to, r->count}; out[n++] = a;
-        for (int j = 0; j < S->n && n < max; j++) for (int e = 0; e < 2 && n < max; e++) {
-            const Rel *q = &S->r[j]; int f2 = e ? q->y : q->x, t2 = e ? q->x : q->y;
-            if (j == i || f2 != to || t2 == x) continue;
-            Reach b = {{{{r->rel, order_blind ? 0 : d}, {q->rel, order_blind ? 0 : e}}, 2}, t2, r->count * q->count}; out[n++] = b; }
+        if (used[i] || from != at || to == origin) continue;
+        c->s[c->n] = (Step){r->rel, order_blind ? 0 : d, i}; c->n++;
+        reach_out[reach_n++] = (Reach){*c, to, w * r->count};
+        if (c->n < MAXSTEP) { used[i] = 1; extend(S, to, origin, c, w * r->count, used); used[i] = 0; }
+        c->n--;
     }
-    return n;
+}
+static int reach_all(const Store *S, int x, Reach *out, int max) {
+    char used[CAP + 1] = {0}; Chain c = {.n = 0};
+    reach_n = 0; reach_max = max; reach_out = out;
+    extend(S, x, x, &c, 1, used);
+    return reach_n;
 }
 
 /* the template of the sentence so far: common words, kept words as a slot */
@@ -155,33 +179,67 @@ static u64 templ(const int *s, int n, int *slot) {
 
 /* Learning chains: for every kept word that comes next, count which chains
  * from the slot word reach it; and how often each template is seen. */
-#define MAXR 4096
+#define MAXR 32768
 static Reach reach_buf[MAXR];
+static int count_useful;     /* second pass: count which words question-like templates answer */
+typedef struct { u64 key; int hit, idx; } KeyHit;
+static KeyHit keybuf[MAXR * 8];
+static int by_key(const void *a, const void *b) { u64 x = ((const KeyHit *)a)->key, y = ((const KeyHit *)b)->key; return (x > y) - (x < y); }
 static void learn(const Docs *D) {
     for (int i = 0; i < D->n; i++) {
         Store S = {.n = 0, .clock = 0}; int start = 0;
         for (int t = 0; t < D->len[i]; t++) {
             int w = D->w[i][t];
             if (t > start) { int slot; u64 T = templ(D->w[i] + start, t - start, &slot);
-                if (slot >= 0) { get(K(6, T, 0), 1)->c++;
-                    if (kept(w)) { int n = reach_all(&S, slot, reach_buf, MAXR);
-                        for (int j = 0; j < n; j++) if (reach_buf[j].end == w) { get(K(7, T, chain_key(&reach_buf[j].c)), 1)->c++;
-                            for (int q = 0; q < reach_buf[j].c.n; q++) get(K(9, reach_buf[j].c.s[q].rel, 0), 1)->c++; } } } }
+                if (slot >= 0) {
+                    get(K(6, T, 0), 1)->c++;
+                    if (kept(w)) { int n = reach_all(&S, slot, reach_buf, MAXR), hit = 0;
+                        for (int j = 0; j < n && !hit; j++) hit = reach_buf[j].end == w;
+                        if (hit) get(K(15, T, 0), 1)->c++;            /* this template got answered */
+                        if (count_useful) { Ent *a = get(K(15, T, 0), 0), *o = get(K(6, T, 0), 0);
+                            if (a && o && o->c >= 50 && a->c >= 0.5 * o->c) {   /* a question-like template */
+                                get(K(14, w, 0), 1)->c++; if (hit) get(K(13, w, 0), 1)->c++; } }
+                        /* each chain present once: was it present (K 16), did it hit (K 7) */
+                        /* every chain, and every version of it with some wordings ignored */
+                        int nk = 0;
+                        for (int j = 0; j < n; j++) for (int wm = 0; wm < 1 << reach_buf[j].c.n; wm++)
+                            keybuf[nk++] = (KeyHit){chain_key_m(&reach_buf[j].c, wm), reach_buf[j].end == w, j};
+                        qsort(keybuf, nk, sizeof(KeyHit), by_key);
+                        n = nk;
+                        for (int j = 0; j < n; j++) {
+                            if (j && keybuf[j].key == keybuf[j - 1].key) continue;
+                            int any = 0, at = j; for (int q = j; q < n && keybuf[q].key == keybuf[j].key; q++) if (keybuf[q].hit) { any = 1; at = keybuf[q].idx; }
+                            get(K(16, T, keybuf[j].key), 1)->c++;
+                            if (any) { get(K(7, T, keybuf[j].key), 1)->c++;
+                                for (int q = 0; q < reach_buf[at].c.n; q++) { get(K(9, reach_buf[at].c.s[q].rel, 0), 1)->c++;
+                                    const Rel *r = &S.r[reach_buf[at].c.s[q].idx]; if (useful && useful[r->x] && useful[r->y]) get(K(17, 0, 0), 1)->c++; } } } } } }
             if (w == DOT) { absorb(&S, D->w[i] + start, t - start, 1); start = t + 1; }
         }
     }
 }
 
 /* What memory says the next word is, as a distribution over a few words. */
+/* Answers reached by the chains that answered this template before,
+ * weighted by Shannon: how often each chain was right when it was present
+ * (its precision), times the evidence along the chain. Updates ("P moved to C") need no rule of their own: the
+ * counts learn that a "moved to" chain is the stronger evidence. */
 static int mem_answer(const Store *S, const int *s, int n, int *words, double *p) {
     int slot; u64 T = templ(s, n, &slot); if (slot < 0) return 0;
     Ent *tt = get(K(6, T, 0), 0); if (!tt) return 0;
     int nr = reach_all(S, slot, reach_buf, MAXR), m = 0; double tot = 0;
-    for (int j = 0; j < nr; j++) { Ent *c = get(K(7, T, chain_key(&reach_buf[j].c)), 0); if (!c) continue;
-        double w = c->c / tt->c * reach_buf[j].w; int e = reach_buf[j].end, k;
+    for (int j = 0; j < nr; j++) {
+        /* a relation in wording never seen in training counts as "some
+         * relation, this way round": its chain is judged by the version
+         * with that wording ignored */
+        int wild = 0; for (int q = 0; q < reach_buf[j].c.n; q++) if (!get(K(10, reach_buf[j].c.s[q].rel, 0), 0)) wild |= 1 << q;
+        u64 ck = chain_key_m(&reach_buf[j].c, wild);
+        Ent *c = get(K(7, T, ck), 0); if (!c) continue;
+        Ent *av = get(K(16, T, ck), 0);
+        double w = c->c * c->c / ((av ? av->c : 0) + 1) / tt->c * reach_buf[j].w; int e = reach_buf[j].end, k;   /* times right, times precision */
         for (k = 0; k < m; k++) if (words[k] == e) break;
         if (k == m) { if (m == 64) continue; words[m] = e; p[m] = 0; m++; }
         p[k] += w; tot += w; }
+    if (tot <= 0) return 0;
     for (int k = 0; k < m; k++) p[k] /= tot;
     return m;
 }
@@ -189,7 +247,7 @@ static int mem_answer(const Store *S, const int *s, int n, int *words, double *p
 /* ---------- reading and scoring ---------- */
 
 #define MAXCLS 4
-static int cls_n[MAXCLS + 1], cls_w[MAXCLS + 1][512];
+static int cls_n[MAXCLS + 1], cls_w[MAXCLS + 1][1024];
 static double *lam;                 /* trust in memory after each word */
 typedef struct { double loc, mem; int prev; } Obs;
 
@@ -250,9 +308,16 @@ int main(int argc, char **argv) {
     if (!dq || fscanf(dq, "%d %d", &DOT, &QMARK) != 2) { fprintf(stderr, "no dot_q.txt\n"); return 1; } fclose(dq);
     hmask = (1u << 25) - 1; H = calloc(hmask + 1, sizeof(Ent));
     count_trigram(&tr);
-    const double thetas[] = {7, 8.5, 9.5};
+    /* first pass, with a lower cut: see which words get answered */
+    theta = 8.5; learn(&tr);                 /* which templates get answered */
+    count_useful = 1; learn(&tr); count_useful = 0;   /* which words they answer */
+    useful = calloc(V, 1); int nuseful = 0;
+    for (int w = 0; w < V; w++) { Ent *h = get(K(13, w, 0), 0), *o = get(K(14, w, 0), 0);
+        if (h && o && h->c >= 5 && h->c >= 0.5 * o->c) { useful[w] = 1; nuseful++; } }
+    for (unsigned h = 0; h <= hmask; h++) { int kind = (int)(H[h].key >> 58); if (kind >= 6) H[h].c = 0; }
+    const double thetas[] = {7, 8.5, 9.5, 11};
     double best = 1e300, bt = 8.5;
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         theta = thetas[i];
         /* fresh chain counts for this cut */
         for (unsigned h = 0; h <= hmask; h++) { int kind = (int)(H[h].key >> 58); if (kind >= 6) { H[h].c = 0; } }
@@ -264,16 +329,20 @@ int main(int argc, char **argv) {
     for (unsigned h = 0; h <= hmask; h++) { int kind = (int)(H[h].key >> 58); if (kind >= 6) H[h].c = 0; }
     learn(&tr); fit_lam(&va);
     if (!strcmp(ctl, "trigram")) for (int c = 0; c <= V + 1; c++) lam[c] = 0;
-    printf("control %s; theta %g (Hartley cut, bits of surprise); memory %d relations\n", *ctl ? ctl : "none", theta, CAP);
-    const int gaps[] = {50, 500, 2000, 8000};
-    for (int g = 0; g < 4; g++) {
-        Docs te; snprintf(p1, sizeof p1, "%s/test_%d.txt", argv[1], gaps[g]); snprintf(p2, sizeof p2, "%s/test_%d_mask.txt", argv[1], gaps[g]);
+    printf("control %s; theta %g (Hartley cut, bits of surprise); %d words kept as answers; memory %d relations\n", *ctl ? ctl : "none", theta, nuseful, CAP);
+    const char *sets[] = {"50", "500", "2000", "8000", "new_50", "new_2000"};
+    const char *cname[] = {"", "city", "country", "who-likes"};
+    const char *cname4[] = {"", "city", "country", "continent", "who-likes"};
+    for (int g = 0; g < 6; g++) {
+        Docs te; snprintf(p1, sizeof p1, "%s/test_%s.txt", argv[1], sets[g]); snprintf(p2, sizeof p2, "%s/test_%s_mask.txt", argv[1], sets[g]);
+        FILE *ex = fopen(p1, "r"); if (!ex) continue; fclose(ex);
         load(&te, p1, p2);
         double bits = 0, pb = 0; long nb = 0, pn[MAXCLS + 1] = {0}, pr[MAXCLS + 1] = {0};
         walk(&te, NULL, NULL, &bits, &nb, &pb, pn, pr);
-        long an = pn[1] + pn[2] + pn[3], ar = pr[1] + pr[2] + pr[3];
-        printf("RESULT relations gap %d right %.3f (city %.3f, country %.3f, who-likes %.3f) answer_bits %.3f\n", gaps[g],
-               (double)ar / an, (double)pr[1] / pn[1], (double)pr[2] / pn[2], (double)pr[3] / pn[3], pb / an);
+        long an = 0, ar = 0; for (int k = 1; k <= nc; k++) { an += pn[k]; ar += pr[k]; }
+        printf("RESULT relations set %s right %.3f (", sets[g], (double)ar / an);
+        for (int k = 1; k <= nc; k++) printf("%s%s %.3f", k > 1 ? ", " : "", nc == 4 ? cname4[k] : cname[k], pn[k] ? (double)pr[k] / pn[k] : 0);
+        printf(") answer_bits %.3f\n", pb / an);
         fflush(stdout);
     }
     return 0;
