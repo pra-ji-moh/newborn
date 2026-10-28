@@ -1,0 +1,5 @@
+RESULT relations set 50 right 0.958 (city 1.000, country 1.000, continent 0.857, who-likes 1.000) 
+RESULT relations set 500 right 0.979 (city 1.000, country 1.000, continent 0.923, who-likes 1.000) 
+RESULT relations set 2000 right 0.958 (city 1.000, country 1.000, continent 0.846, who-likes 1.000) 
+RESULT relations set 8000 right 0.958 (city 1.000, country 1.000, continent 0.833, who-likes 1.000) 
+RESULT relations set new_2000 right 0.708 (city 0.700, country 0.769, continent 0.222, who-likes 0.938) 

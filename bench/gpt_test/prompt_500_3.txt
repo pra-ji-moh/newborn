@@ -1,0 +1,26 @@
+Read the document below. It is newspaper text mixed with facts about people, cities, countries and continents. Some facts change later in the document (for example, someone moves to another city); always use the latest. In the newspaper text, "<unk>" stands for a rare word and "N" for a number; ignore them.
+
+Answer every question at the end using only the document. Reply with only the answers, numbered, one word per line, like:
+1. city7
+2. person12
+
+DOCUMENT:
+robert <unk> of <unk> & <unk> <unk> <unk> stock prices falling N N to N N in N perhaps N N if there 's a recession . continent3 contains country4 . person502 is liked by person117 . country8 is part of continent3 . person380 is a fan of person577 . person146 is a fan of person188 . continent2 contains country7 . city16 belongs to country7 . city19 is in country7 . person188 is a fan of person380 . country1 is in continent0 . person577 has a home in city33 . city16 is where person146 lives . city9 belongs to country2 . person188 lives in city20 . continent2 contains country2 . person502 likes person146 . person577 likes person63 . city33 is where person502 lives . person380 lives in city52 . person63 lives in city33 . city52 is in country4 . city20 belongs to country2 . person12 lives in city20 . person12 is liked by person63 . city4 is in country4 . person12 is a fan of person117 . city20 is where person117 lives . continent1 contains country3 . city55 belongs to country2 . country3 includes city33 . this market is <unk> away my <unk> said <unk> <unk> head equity trader at <unk> <unk> north america inc . he is <unk> in his <unk> room <unk> a huge <unk> of his late <unk> <unk> <unk> <unk> <unk> 's <unk> and south <unk> prime minister from N to N . big auction houses want to make <unk> <unk> for lower capital-gains taxes . but since the N model year began oct. N <unk> sales have plunged N N . the preliminary <unk> from a survey of N <unk> <unk> is that we were <unk> <unk> said <unk> <unk> san francisco 's chief building <unk> . <unk> motor corp. is still considering its options but it <unk> <unk> to double its annual domestic sales to N cars in the next four years . but the news was even <unk> for sears 's core u.s. <unk> operation the largest in the nation . asked for comment <unk> <unk> a vice president of the <unk> institute said new efforts to <unk> <unk> advertising in the u.s. could <unk> the first amendment protection of free <unk> . but <unk> were spread in a broad range by the end of the session . <unk> <unk> and jack <unk> attorneys for mr. <unk> both declined to comment on the matter . the <unk> of course could <unk> care less whether people do or do n't believe in them . using federal express delivery last year mr. <unk> says december was our biggest month . <unk> <unk> <unk> new <unk> 's director of securities <unk> said his state had n't received any <unk> about drexel so it really could n't press the issue . person117 moved to city52 . person380 moved to city33 . person12 moved to city9 . in april when many of them bought their cds six-month certificates were <unk> more than N N investors willing to look could find <unk> yields at some banks and thrifts . john <unk> was accused of <unk> and <unk> during his <unk> bid to win <unk> as secretary of defense earlier this year . the company is <unk> to <unk> chemicals however . the numbers were adjusted for usual <unk> <unk> . warner executives also filed new <unk> <unk> <unk> claims by <unk> guber and peters that the two sides had an <unk> agreement that <unk> the producers to <unk> their contract with warner should the opportunity to run a major <unk> come up . <unk> <unk> corp. which is selling three automotive <unk> parts <unk> said it will <unk> its automotive <unk> and <unk> impact <unk> . already scientists are developing tests based on the <unk> <unk> <unk> that for the first time can <unk> whether an <unk> healthy individual is likely to get cancer . <unk> the <unk> or <unk> of the water would <unk> almost all of the <unk> energy . columbia savings & loan association <unk> from <unk> changes <unk> by congress and the recent collapse of the junk-bond market announced a loss for the third quarter of $ N million or $ N a share . guarantee by credit <unk> . <unk> assets have been rising at an average rate of $ N billion a week in recent months ms. <unk> said reflecting the relatively high yields .
+
+QUESTIONS:
+1. Which city does person117 live in now?
+2. Which country is person577's city in?
+3. Which continent is person188's country in?
+4. Who likes person577?
+5. Which continent is person117's country in?
+6. Which continent is person380's country in?
+7. Which country is person63's city in?
+8. Who likes person146?
+9. Which city does person12 live in now?
+10. Which country is person12's city in?
+11. Which country is person146's city in?
+12. Which city does person146 live in now?
+13. Which continent is person146's country in?
+14. Who likes person380?
+15. Who likes person502?
+16. Which country is person502's city in?
