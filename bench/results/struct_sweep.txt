@@ -1,0 +1,5 @@
+=== memory 1000
+TRAIN train_1000.txt: 1000 sentences, 16568 words
+RESULT trigram bits 2.0599 probe_bits 3.0915 probe_right 0.1380 long_probe_bits 3.1548 long_probe_right 0.1120
+RESULT grouped_hartley bits 2.6504 probe_bits 3.0117 probe_right 0.1225 long_probe_bits 3.0118 long_probe_right 0.1280 groups 48
+RESULT grouped_hartley+trigram bits 2.1753 probe_bits 3.0659 probe_right 0.1435 long_probe_bits 3.1248 long_probe_right 0.1100 groups 238
