@@ -1,0 +1,26 @@
+Read the document below. It is newspaper text mixed with facts about people, cities, countries and continents. Some facts change later in the document (for example, someone moves to another city); always use the latest. In the newspaper text, "<unk>" stands for a rare word and "N" for a number; ignore them.
+
+Answer every question at the end using only the document. Reply with only the answers, numbered, one word per line, like:
+1. city7
+2. person12
+
+DOCUMENT:
+the charge on loans to brokers on stock exchange <unk> . <unk> to some <unk> the trading activities of <unk> and other market makers do not provide liquidity to the market as a whole . in city14 lives person287 . city32 is in country5 . person19 has a home in city11 . person53 likes person287 . country3 is in continent2 . city11 is in country10 . person53 is liked by person120 . city2 is in country5 . city0 is where person120 lives . city24 is where person148 lives . person19 likes person455 . person491 likes person148 . country5 includes city0 . person561 is liked by person287 . country3 includes city14 . person491 lives in city32 . in city47 lives person561 . city26 is where person53 lives . person491 is liked by person455 . person19 is liked by person561 . continent1 contains country5 . country7 includes city47 . continent2 contains country0 . city26 is in country4 . person148 is a fan of person120 . country10 is part of continent2 . country4 is part of continent3 . in city47 lives person455 . country7 is part of continent0 . city24 belongs to country7 . <unk> and mr. <unk> wo n't talk about mr. <unk> at all . <unk> has about $ N billion of assets and is the largest independent bank in northern california . person148 moved to city26 . person53 moved to city24 . person561 moved to city0 . if the government can <unk> with them it will be able to <unk> this year 's N billion <unk> us$ N billion deficit . <unk> wants to make it clear to other <unk> companies that it 's on first <unk> as <unk> gas from the <unk> to southern markets mr. <unk> said .
+
+QUESTIONS:
+1. Who likes person455?
+2. Which city does person19 live in now?
+3. Which city does person455 live in now?
+4. Which continent is person120's country in?
+5. Which continent is person491's country in?
+6. Which continent is person53's country in?
+7. Who likes person287?
+8. Which country is person19's city in?
+9. Which city does person287 live in now?
+10. Which country is person491's city in?
+11. Which country is person455's city in?
+12. Which country is person120's city in?
+13. Who likes person120?
+14. Which country is person561's city in?
+15. Which country is person148's city in?
+16. Who likes person19?

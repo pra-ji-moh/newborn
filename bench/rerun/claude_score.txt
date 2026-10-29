@@ -1,0 +1,43 @@
+50_1: 16/16 right
+50_2: 16/16 right
+50_3: 16/16 right
+500_1: 16/16 right
+500_2: 16/16 right
+500_3: 16/16 right
+2000_1: 16/16 right
+2000_2: 16/16 right
+2000_3: 16/16 right
+8000_1: 16/16 right
+8000_2: 16/16 right
+8000_3: 16/16 right
+new_2000_1: 16/16 right
+new_2000_2: 16/16 right
+new_2000_3: 16/16 right
+pas_2000_1: 16/16 right
+pas_2000_2: 16/16 right
+pas_2000_3: 16/16 right
+
+set 2000      city       12/12
+set 2000      continent  10/10
+set 2000      country    15/15
+set 2000      who-likes  11/11
+set 50        city       10/10
+set 50        continent  11/11
+set 50        country    16/16
+set 50        who-likes  11/11
+set 500       city       13/13
+set 500       continent  13/13
+set 500       country    13/13
+set 500       who-likes  9/9
+set 8000      city       11/11
+set 8000      continent  15/15
+set 8000      country    10/10
+set 8000      who-likes  12/12
+set new_2000  city       10/10
+set new_2000  continent  11/11
+set new_2000  country    13/13
+set new_2000  who-likes  14/14
+set pas_2000  city       11/11
+set pas_2000  continent  10/10
+set pas_2000  country    11/11
+set pas_2000  who-likes  16/16

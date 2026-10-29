@@ -1,0 +1,26 @@
+Read the document below. It is newspaper text mixed with facts about people, cities, countries and continents. Some facts change later in the document (for example, someone moves to another city); always use the latest. In the newspaper text, "<unk>" stands for a rare word and "N" for a number; ignore them.
+
+Answer every question at the end using only the document. Reply with only the answers, numbered, one word per line, like:
+1. city7
+2. person12
+
+DOCUMENT:
+already the N legislation has <unk> an estimated $ N million . continent0 contains country10 . city49 is in country5 . person96 is a fan of person409 . city14 is where person390 lives . country1 is in continent2 . country7 is part of continent3 . person532 likes person130 . city52 is where person532 lives . city3 is in country3 . city16 is in country10 . person110 likes person532 . country2 is part of continent3 . person96 is liked by person130 . person390 likes person110 . country10 includes city38 . city0 belongs to country5 . in city16 lives person96 . person110 has a home in city3 . person385 likes person390 . city52 belongs to country7 . person385 is liked by person373 . person409 has a home in city35 . country3 is part of continent0 . city16 is where person373 lives . country5 is part of continent3 . person385 has a home in city38 . person130 has a home in city52 . country3 includes city35 . person373 is liked by person409 . city14 belongs to country5 . roughly <unk> of its stock is believed held by takeover stock traders who could vote to <unk> the board if they become <unk> . a <unk> fire <unk> part of an interstate highway this summer . person532 moved to city0 . person110 moved to city52 . person96 moved to city14 . when the going gets <unk> china <unk> the <unk> and <unk> the <unk> says a western economist . mr. <unk> has been with the new york u.s. attorney 's office for nearly five years .
+
+QUESTIONS:
+1. Which city does person110 live in now?
+2. Which city does person96 live in now?
+3. Which city does person409 live in now?
+4. Who likes person96?
+5. Which continent is person96's country in?
+6. Which city does person390 live in now?
+7. Which city does person130 live in now?
+8. Which continent is person373's country in?
+9. Who likes person409?
+10. Which continent is person110's country in?
+11. Which country is person96's city in?
+12. Which country is person390's city in?
+13. Who likes person532?
+14. Which continent is person390's country in?
+15. Who likes person110?
+16. Which continent is person532's country in?

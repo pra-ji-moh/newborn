@@ -1,0 +1,26 @@
+Read the document below. It is newspaper text mixed with facts about people, cities, countries and continents. Some facts change later in the document (for example, someone moves to another city); always use the latest. In the newspaper text, "<unk>" stands for a rare word and "N" for a number; ignore them.
+
+Answer every question at the end using only the document. Reply with only the answers, numbered, one word per line, like:
+1. city7
+2. person12
+
+DOCUMENT:
+while <unk> does n't own the french <unk> its close <unk> with them offers distribution <unk> . santa <unk> <unk> agency $ N million of tax <unk> bonds N series <unk> via a <unk> <unk> & <unk> securities corp. group . person588 has a home in city4 . city29 belongs to country4 . person489 lives in city5 . country5 includes city23 . person489 is liked by person588 . person588 is liked by person71 . continent2 contains country5 . city11 is in country2 . country4 is part of continent0 . person545 likes person89 . city23 is where person372 lives . city5 is where person185 lives . country7 is part of continent2 . in city29 lives person388 . continent2 contains country8 . person71 is liked by person89 . city5 is where person89 lives . person545 is liked by person372 . continent2 contains country0 . country8 includes city46 . city5 belongs to country5 . city26 is in country4 . city27 belongs to country4 . person489 is a fan of person388 . country2 is part of continent0 . person185 is liked by person388 . city4 is in country8 . person71 lives in city4 . person185 is a fan of person372 . person545 lives in city46 . <unk> <unk> N was named to the new post of deputy head of the <unk> division and a managing director . some cut their earnings estimates for the stock this year and predicted more efforts to control costs ahead . since its <unk> sept. N the show on which ms. <unk> appears has used an <unk> to <unk> the <unk> <unk> <unk> a <unk> leader and one to play a <unk> drug <unk> . the <unk> over <unk> a growth <unk> that makes <unk> <unk> and <unk> but may be <unk> made consumers <unk> away from the <unk> though they were less affected than the <unk> . an <unk> bear <unk> . the <unk> bring <unk> <unk> 's N <unk> <unk> to $ N billion and its total volume to $ N billion since the program began in february N . <unk> <unk> may <unk> former california <unk> <unk> brown in a <unk> <unk> on <unk> <unk> the last man to be <unk> in california in N . <unk> airlines <unk> <unk> said it <unk> its offer to acquire <unk> airlines because the <unk> <unk> carrier did n't <unk> to its offer by the close of business yesterday a <unk> <unk> had set for a response . <unk> gulf corp. hurt by declining sales and falling chemical prices said third-quarter earnings fell N N to $ N million from $ N million in the year-earlier period . he did n't say much but what he said was important because it 's not in the <unk> . person185 moved to city29 . person372 moved to city4 . person588 moved to city11 . the purchasing management association of chicago 's october index rose to N N after three previous months of <unk> below N N . the japanese <unk> has <unk> up at least $ N million the japanese government has put up just about as much or so it is reported and at least one estimate puts the total <unk> at $ N million . <unk> an industry leader in the field of <unk> <unk> which is a new technology used in <unk> tests last year signed an agreement for <unk> to <unk> market its <unk> products in japan for <unk> <unk> and cancer . officials said N companies from N countries including the u.s. had <unk> down from about N firms from more than N countries at the last show in . when a <unk> <unk> <unk> by <unk> <unk> a <unk> <unk> the call to one of six attorneys . <unk> <unk> of the u.s. japan britain west germany canada france and italy . these <unk> wanted to do something to show how powerful they are . reports of dr. <unk> 's <unk> in the british press have <unk> <unk> concern among <unk> there . <unk> attributed record third-quarter and <unk> results to world-wide gains for <unk> medical instruments and <unk> products despite poor exchange rates for the dollar that <unk> sales abroad . he and a <unk> <unk> established a company that <unk> three <unk> power plants in <unk> . for example in <unk> on mr. <unk> 's attempt to gain <unk> information about a deal 's collapse one does not <unk> think about the <unk> side of the <unk> what if the <unk> had been <unk> .
+
+QUESTIONS:
+1. Which country is person489's city in?
+2. Which continent is person545's country in?
+3. Which continent is person588's country in?
+4. Which continent is person372's country in?
+5. Which city does person372 live in now?
+6. Which city does person545 live in now?
+7. Who likes person372?
+8. Who likes person71?
+9. Which country is person545's city in?
+10. Who likes person89?
+11. Which country is person89's city in?
+12. Which continent is person185's country in?
+13. Which continent is person489's country in?
+14. Which city does person388 live in now?
+15. Which city does person489 live in now?
+16. Which city does person185 live in now?

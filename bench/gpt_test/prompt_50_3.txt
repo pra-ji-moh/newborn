@@ -1,0 +1,26 @@
+Read the document below. It is newspaper text mixed with facts about people, cities, countries and continents. Some facts change later in the document (for example, someone moves to another city); always use the latest. In the newspaper text, "<unk>" stands for a rare word and "N" for a number; ignore them.
+
+Answer every question at the end using only the document. Reply with only the answers, numbered, one word per line, like:
+1. city7
+2. person12
+
+DOCUMENT:
+but the chief <unk> <unk> for <unk> backed off one part of its original proposal made earlier this year that would have required a <unk> of certain <unk> items related to <unk> <unk> instruments . person43 lives in city56 . in city58 lives person295 . person533 likes person399 . country8 is part of continent2 . city51 is where person450 lives . person81 lives in city29 . person450 is liked by person295 . person533 is liked by person43 . person255 is a fan of person43 . country7 includes city28 . country3 includes city29 . person255 is liked by person566 . person399 likes person81 . in city58 lives person566 . country9 includes city56 . city51 is in country6 . country3 is part of continent0 . person566 is liked by person450 . city58 belongs to country9 . in city58 lives person255 . city53 belongs to country8 . country4 is part of continent2 . in city6 lives person399 . person81 is a fan of person295 . country7 is part of continent2 . continent1 contains country9 . country6 is part of continent1 . country3 includes city25 . city29 is where person533 lives . country9 includes city6 . if someone actually <unk> down and thought about what they were being sold says <unk> <unk> editor of the mutual fund letter in chicago they might <unk> away . person566 moved to city28 . person43 moved to city25 . person533 moved to city53 . but as the <unk> <unk> <unk> failed to come up with another <unk> and filed for <unk> protection in july N . frank <unk> a lawyer for the <unk> estate with the <unk> law firm of morgan <unk> & <unk> declines to comment on the financial <unk> .
+
+QUESTIONS:
+1. Which continent is person255's country in?
+2. Which continent is person566's country in?
+3. Which city does person566 live in now?
+4. Which country is person81's city in?
+5. Which country is person255's city in?
+6. Who likes person295?
+7. Which city does person81 live in now?
+8. Who likes person81?
+9. Who likes person399?
+10. Which continent is person450's country in?
+11. Which continent is person399's country in?
+12. Which continent is person43's country in?
+13. Who likes person43?
+14. Which country is person450's city in?
+15. Which country is person399's city in?
+16. Who likes person450?

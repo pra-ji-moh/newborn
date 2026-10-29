@@ -1,0 +1,26 @@
+Read the document below. It is newspaper text mixed with facts about people, cities, countries and continents. Some facts change later in the document (for example, someone moves to another city); always use the latest. In the newspaper text, "<unk>" stands for a rare word and "N" for a number; ignore them.
+
+Answer every question at the end using only the document. Reply with only the answers, numbered, one word per line, like:
+1. city7
+2. person12
+
+DOCUMENT:
+indeed it would be <unk> to <unk> such sources of information . some may have <unk> and some <unk> ones may never have <unk> what it 's like to <unk> during a recession . person179 is liked by person157 . country9 includes city34 . in city22 lives person346 . person436 is a fan of person157 . person436 lives in city8 . person179 likes person346 . country11 is part of continent3 . person116 lives in city30 . city35 belongs to country10 . country11 includes city30 . country6 is in continent2 . city1 belongs to country11 . country6 includes city52 . city1 is where person179 lives . city22 belongs to country6 . person18 lives in city15 . person312 likes person206 . continent0 contains country10 . city8 is in country6 . person116 is liked by person206 . continent1 contains country3 . person157 lives in city30 . person312 is liked by person346 . city15 is in country11 . person116 is a fan of person18 . person206 lives in city52 . country9 is in continent1 . person436 is liked by person18 . in city34 lives person312 . country0 is in continent0 . the london exchange 's electronic <unk> system provided only <unk> or <unk> prices for about N minutes on <unk> monday . because it 's <unk> to <unk> how long the <unk> by N <unk> <unk> and file will last the <unk> impact on boeing 's sales earnings cash flow and short-term investment position could n't be determined . the computers use the company 's own <unk> called <unk> sun said . its <unk> offices were designed by <unk> <unk> morgan who built the <unk> <unk> at san <unk> . but <unk> <unk> industry analysts last month by <unk> that it expected <unk> to post an operating loss for this year . industry officials say the bay bridge unlike some <unk> has no earthquake <unk> either so the cost of <unk> it probably would have to be paid out of state general operating funds . in <unk> of u.s. dollars not <unk> adjusted . mr. <unk> of gm meanwhile still <unk> japanese <unk> . fees N N . among the <unk> stocks that sold off yesterday were <unk> which closed down N N to N N . santa <unk> pacific <unk> owns N million <unk> of property including N buildings with more than N million <unk> feet of space . his <unk> campaign is almost <unk> all <unk> <unk> and <unk> words . it 's a <unk> <unk> . other large firms including bear <unk> & co. and morgan stanley & co. last week announced a <unk> from index arbitrage but only for the firms ' own accounts . person157 moved to city15 . person346 moved to city1 . person436 moved to city1 . terms were n't disclosed . she won <unk> money for the school <unk> <unk> <unk> the <unk> <unk> proposed and <unk> a new <unk> <unk> class in western <unk> and was <unk> by the school <unk> as <unk> of the year . the <unk> managers ' report also added evidence that inflation is under control . <unk> that it took mr. <unk> many months in what became known as the <unk> <unk> to <unk> <unk> <unk> <unk> in N and N . and my newspaper can <unk> the <unk> of those <unk> . <unk> corp. said it wo n't <unk> u.s. <unk> the group that <unk> to battle the japanese in the market for computer <unk> chips . earnings at the <unk> giant were boosted by a gain of $ N million or about N cents a share <unk> from last month 's settlement of litigation with three of <unk> 's competitors over <unk> on <unk> 's <unk> <unk> <unk> . sun also reported a record <unk> of orders . <unk> the monetary crime losses they may not be nearly as important to <unk> as the risk of personal <unk> . merrill lynch ready assets trust N N . individual <unk> of the magazine sell for $ N and <unk> <unk> cost $ N . to the <unk> that the $ N million budget will allow it mr. <unk> will <unk> on <unk> <unk> rather than <unk> or <unk> board to limit the <unk> of <unk> . <unk> much like <unk> purchases are <unk> for investment .
+
+QUESTIONS:
+1. Who likes person206?
+2. Which city does person312 live in now?
+3. Who likes person312?
+4. Which city does person157 live in now?
+5. Which continent is person116's country in?
+6. Which country is person206's city in?
+7. Which continent is person18's country in?
+8. Which city does person206 live in now?
+9. Who likes person346?
+10. Which continent is person312's country in?
+11. Which continent is person157's country in?
+12. Which city does person346 live in now?
+13. Which country is person116's city in?
+14. Which country is person157's city in?
+15. Which country is person436's city in?
+16. Which city does person116 live in now?

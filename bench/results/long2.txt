@@ -1,0 +1,19 @@
+control none; theta 11 (Hartley cut, bits of surprise); 662 words kept as answers; memory 64 relations
+RESULT relations set 50 right 0.980 (city 1.000, country 0.996, continent 0.928, who-likes 1.000) answer_bits 0.302
+RESULT relations set 500 right 0.979 (city 1.000, country 0.996, continent 0.921, who-likes 1.000) answer_bits 0.305
+RESULT relations set 2000 right 0.981 (city 1.000, country 1.000, continent 0.919, who-likes 1.000) answer_bits 0.281
+RESULT relations set 8000 right 0.985 (city 1.000, country 1.000, continent 0.943, who-likes 1.000) answer_bits 0.279
+RESULT relations set new_50 right 0.743 (city 0.745, country 0.781, continent 0.412, who-likes 1.000) answer_bits 2.013
+RESULT relations set new_2000 right 0.716 (city 0.772, country 0.808, continent 0.405, who-likes 0.917) answer_bits 2.343
+RESULT transformer set 50 right 0.095 (city 0.025, country 0.092, continent 0.244, who-likes 0.009) answer_bits 5.148 steps 4340 train_secs 3600 window 512 trained_on train_short.txt
+RESULT transformer set 500 right 0.076 (city 0.000, country 0.069, continent 0.228, who-likes 0.000) answer_bits 5.100 steps 4340 train_secs 3600 window 512 trained_on train_short.txt
+RESULT transformer set 2000 right 0.078 (city 0.013, country 0.064, continent 0.251, who-likes 0.000) answer_bits 5.285 steps 4340 train_secs 3600 window 512 trained_on train_short.txt
+RESULT transformer set 8000 right 0.080 (city 0.008, country 0.075, continent 0.234, who-likes 0.000) answer_bits 5.186 steps 4340 train_secs 3600 window 512 trained_on train_short.txt
+RESULT transformer set new_50 right 0.094 (city 0.009, country 0.053, continent 0.332, who-likes 0.000) answer_bits 5.302 steps 4340 train_secs 3600 window 512 trained_on train_short.txt
+RESULT transformer set new_2000 right 0.114 (city 0.018, country 0.123, continent 0.290, who-likes 0.000) answer_bits 5.186 steps 4340 train_secs 3600 window 512 trained_on train_short.txt
+RESULT lstm set 50 right 0.116 (city 0.025, country 0.075, continent 0.348, who-likes 0.000) answer_bits 5.204 steps 22138 train_secs 3600 window all trained_on train_short.txt
+RESULT lstm set 500 right 0.085 (city 0.013, country 0.081, continent 0.241, who-likes 0.000) answer_bits 5.160 steps 22138 train_secs 3600 window all trained_on train_short.txt
+RESULT lstm set 2000 right 0.097 (city 0.017, country 0.076, continent 0.309, who-likes 0.004) answer_bits 5.426 steps 22138 train_secs 3600 window all trained_on train_short.txt
+RESULT lstm set 8000 right 0.109 (city 0.008, country 0.100, continent 0.316, who-likes 0.008) answer_bits 5.324 steps 22138 train_secs 3600 window all trained_on train_short.txt
+RESULT lstm set new_50 right 0.081 (city 0.004, country 0.085, continent 0.248, who-likes 0.000) answer_bits 5.368 steps 22138 train_secs 3600 window all trained_on train_short.txt
+RESULT lstm set new_2000 right 0.094 (city 0.014, country 0.105, continent 0.238, who-likes 0.000) answer_bits 5.338 steps 22138 train_secs 3600 window all trained_on train_short.txt

@@ -1,0 +1,26 @@
+Read the document below. It is newspaper text mixed with facts about people, cities, countries and continents. Some facts change later in the document (for example, someone moves to another city); always use the latest. In the newspaper text, "<unk>" stands for a rare word and "N" for a number; ignore them.
+
+Answer every question at the end using only the document. Reply with only the answers, numbered, one word per line, like:
+1. city7
+2. person12
+
+DOCUMENT:
+at last report <unk> had N million shares outstanding . maybe people do n't believe i want to give this money away . country8 is in continent0 . person180 is a fan of person461 . person419 lives in city5 . country0 includes city39 . person561 is a fan of person428 . person419 is liked by person126 . city44 belongs to country8 . person176 likes person180 . country8 includes city11 . continent0 contains country9 . city56 is where person180 lives . in city11 lives person428 . person561 is liked by person461 . person461 lives in city36 . in city29 lives person31 . country2 is in continent1 . person419 likes person176 . city29 is in country7 . country2 includes city36 . person31 is liked by person428 . continent2 contains country0 . city56 belongs to country2 . country9 includes city5 . country1 is part of continent2 . city56 is where person126 lives . city45 is where person176 lives . country7 is in continent1 . city45 is in country1 . person561 has a home in city36 . person126 is liked by person31 . results for the quarter included $ N million in pretax gains from property transactions including the sale of one <unk> <unk> hotel and $ N million of <unk> costs associated with the acquisition of the <unk> <unk> business by <unk> . consider the <unk> <unk> between mr. <unk> 's <unk> of <unk> this week and the <unk> defense of everyone concerned with the <unk> <unk> . he adds i think it was a fairly <unk> call . at the same time <unk> and its <unk> have <unk> <unk> competition from <unk> american competitors that have <unk> them from building strong <unk> to u.s. corporations and institutional investors . it 's so <unk> to have to decide what 's really important to you said <unk> may . the california thrift has just announced a $ N million third-quarter loss . the <unk> index of N <unk> issues fell N points to N . the agency will <unk> from the production of nine food products <unk> production of the two most important ones corn and <unk> . stocks that <unk> on the day were those with active u.s. operations dealers noted . these decisions <unk> more attention than they have received from <unk> and from <unk> as well . gm officials also see a lot of potential in <unk> jaguar 's cars to the <unk> <unk> of group <unk> plc a british engineering and <unk> car maker gm bought in N . <unk> said it would charge me $ N a year for $ N of <unk> and would pay me back all the <unk> i put in if i <unk> the policy after N years . person428 moved to city45 . person31 moved to city11 . person419 moved to city45 . in washington the senate voted to <unk> <unk> 's threat to <unk> the <unk> and bush said he would review u.s. policy toward <unk> including the <unk> of <unk> military aid to the <unk> . and to protect their reduced capital investment from <unk> further market makers became <unk> to lower price <unk> when sell programs are in <unk> . the stock closed yesterday at $ N giving mr. <unk> 's N million shares a value of $ N billion . when you do that there is not a cut but there is in fact a program increase of $ N million each for the <unk> and the justice department rep. <unk> smith d. <unk> said during house debate . mrs. <unk> had been <unk> by <unk> <unk> and many <unk> <unk> their country might split <unk> . the dealers immediately showed their new acquisition to an <unk> and came to see it as a <unk> . <unk> holdings inc. said in <unk> that it bought airline <unk> <unk> a <unk> <unk> school based at <unk> regional <unk> near <unk> <unk> . i would <unk> to trust their <unk> . because of budget <unk> in washington the u.s. <unk> japan to share economic <unk> in the region . his election increases <unk> 's board to N members . the move <unk> at about $ N million actually came in at about $ N million he said . <unk> is an international engineering and construction concern . workers at two <unk> <unk> los <unk> and <unk> <unk> which <unk> to the <unk> <unk> <unk> group will vote thursday on whether to strike after a <unk> labor <unk> <unk> today .
+
+QUESTIONS:
+1. Which city does person561 live in now?
+2. Which country is person180's city in?
+3. Which city does person31 live in now?
+4. Who likes person561?
+5. Who likes person176?
+6. Which continent is person561's country in?
+7. Which city does person461 live in now?
+8. Which country is person31's city in?
+9. Which country is person561's city in?
+10. Who likes person428?
+11. Which city does person419 live in now?
+12. Which country is person176's city in?
+13. Which continent is person31's country in?
+14. Which country is person428's city in?
+15. Which continent is person180's country in?
+16. Which continent is person428's country in?

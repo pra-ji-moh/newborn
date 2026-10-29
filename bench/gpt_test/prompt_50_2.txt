@@ -1,0 +1,26 @@
+Read the document below. It is newspaper text mixed with facts about people, cities, countries and continents. Some facts change later in the document (for example, someone moves to another city); always use the latest. In the newspaper text, "<unk>" stands for a rare word and "N" for a number; ignore them.
+
+Answer every question at the end using only the document. Reply with only the answers, numbered, one word per line, like:
+1. city7
+2. person12
+
+DOCUMENT:
+the <unk> union has suggested it may <unk> a <unk> that includes a special dividend for holders and a minority ownership stake for employees . in city9 lives person13 . country3 is in continent1 . person462 is a fan of person23 . city58 belongs to country3 . person522 is liked by person13 . person462 has a home in city42 . person533 lives in city9 . person13 is liked by person72 . person522 is a fan of person130 . in city8 lives person522 . person130 has a home in city48 . country4 is part of continent3 . continent1 contains country9 . person585 is liked by person23 . city40 is in country8 . person130 likes person462 . country8 is part of continent3 . city42 belongs to country4 . person533 is liked by person585 . city4 belongs to country1 . country9 includes city9 . country8 includes city48 . person72 is liked by person533 . country5 is in continent0 . city8 belongs to country9 . person72 lives in city4 . city9 is where person23 lives . city25 belongs to country3 . continent3 contains country1 . in city4 lives person585 . one recent <unk> morning he <unk> <unk> the <unk> <unk> <unk> talks instead of <unk> to san francisco for a <unk> and then to his <unk> of chicago for the <unk> <unk> of st. <unk> high school . person72 moved to city40 . person585 moved to city8 . person462 moved to city8 . buying from willing shareholders makes an <unk> takeover <unk> mr. <unk> <unk> . <unk> american a credit <unk> concern jumped N N to N N on volume of N and mail <unk> <unk> a private <unk> services company advanced N to N N on volume of N .
+
+QUESTIONS:
+1. Which city does person13 live in now?
+2. Who likes person533?
+3. Which city does person130 live in now?
+4. Who likes person13?
+5. Which country is person585's city in?
+6. Which continent is person462's country in?
+7. Which city does person462 live in now?
+8. Which country is person130's city in?
+9. Which continent is person72's country in?
+10. Which city does person585 live in now?
+11. Who likes person72?
+12. Which city does person23 live in now?
+13. Which continent is person533's country in?
+14. Which continent is person522's country in?
+15. Who likes person130?
+16. Who likes person23?

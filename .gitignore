@@ -1,0 +1,10 @@
+hartley/lang
+hartley/band
+hartley/transform
+hartley/hnam
+hartley/real
+hartley/real_dbg
+bench/results/*.nets.*
+hartley/memory
+hartley/longtext
+hartley/newborn_lang

@@ -1,0 +1,73 @@
+from 0: one pass over 1500 documents; every answer tried before it is seen
+CHECK after 0 documents
+  test 50        right 0.062 (city 0.000, country 0.062, continent 0.182, who-likes 0.000) of 48
+  test 500       right 0.167 (city 0.000, country 0.231, continent 0.385, who-likes 0.000) of 48
+  test 2000      right 0.083 (city 0.000, country 0.200, continent 0.100, who-likes 0.000) of 48
+  test 8000      right 0.042 (city 0.000, country 0.000, continent 0.133, who-likes 0.000) of 48
+  test new_2000  right 0.104 (city 0.100, country 0.000, continent 0.364, who-likes 0.000) of 48
+  test pas_2000  right 0.021 (city 0.000, country 0.000, continent 0.100, who-likes 0.000) of 48
+CHECK after 1 documents
+  first tries, documents 1-1: right 0.188 (city 0.167, country 0.250, continent 0.500, who-likes 0.000) of 16
+  test 50        right 0.021 (city 0.000, country 0.062, continent 0.000, who-likes 0.000) of 48
+  test 500       right 0.062 (city 0.000, country 0.231, continent 0.000, who-likes 0.000) of 48
+  test 2000      right 0.062 (city 0.000, country 0.200, continent 0.000, who-likes 0.000) of 48
+  test 8000      right 0.042 (city 0.000, country 0.000, continent 0.133, who-likes 0.000) of 48
+  test new_2000  right 0.104 (city 0.100, country 0.000, continent 0.364, who-likes 0.000) of 48
+  test pas_2000  right 0.021 (city 0.000, country 0.000, continent 0.100, who-likes 0.000) of 48
+CHECK after 3 documents
+  first tries, documents 2-3: right 0.188 (city 0.000, country 0.400, continent 0.571, who-likes 0.000) of 32
+  test 50        right 0.021 (city 0.000, country 0.062, continent 0.000, who-likes 0.000) of 48
+  test 500       right 0.146 (city 0.000, country 0.231, continent 0.308, who-likes 0.000) of 48
+  test 2000      right 0.188 (city 0.083, country 0.200, continent 0.500, who-likes 0.000) of 48
+  test 8000      right 0.146 (city 0.000, country 0.000, continent 0.467, who-likes 0.000) of 48
+  test new_2000  right 0.062 (city 0.000, country 0.000, continent 0.273, who-likes 0.000) of 48
+  test pas_2000  right 0.104 (city 0.182, country 0.000, continent 0.300, who-likes 0.000) of 48
+CHECK after 10 documents
+  first tries, documents 4-10: right 0.134 (city 0.036, country 0.067, continent 0.375, who-likes 0.000) of 112
+  test 50        right 0.021 (city 0.000, country 0.062, continent 0.000, who-likes 0.000) of 48
+  test 500       right 0.146 (city 0.000, country 0.231, continent 0.308, who-likes 0.000) of 48
+  test 2000      right 0.188 (city 0.083, country 0.200, continent 0.500, who-likes 0.000) of 48
+  test 8000      right 0.146 (city 0.000, country 0.000, continent 0.467, who-likes 0.000) of 48
+  test new_2000  right 0.062 (city 0.000, country 0.000, continent 0.273, who-likes 0.000) of 48
+  test pas_2000  right 0.062 (city 0.000, country 0.000, continent 0.300, who-likes 0.000) of 48
+CHECK after 30 documents
+  first tries, documents 11-30: right 0.191 (city 0.102, country 0.162, continent 0.368, who-likes 0.146) of 320
+  test 50        right 0.646 (city 0.600, country 0.500, continent 0.545, who-likes 1.000) of 48
+  test 500       right 0.646 (city 0.462, country 0.692, continent 0.538, who-likes 1.000) of 48
+  test 2000      right 0.604 (city 0.417, country 0.533, continent 0.500, who-likes 1.000) of 48
+  test 8000      right 0.542 (city 0.636, country 0.000, continent 0.467, who-likes 1.000) of 48
+  test new_2000  right 0.104 (city 0.000, country 0.154, continent 0.273, who-likes 0.000) of 48
+  test pas_2000  right 0.062 (city 0.000, country 0.000, continent 0.300, who-likes 0.000) of 48
+CHECK after 100 documents
+  first tries, documents 31-100: right 0.741 (city 0.602, country 0.657, continent 0.720, who-likes 1.000) of 1120
+  test 50        right 0.771 (city 0.700, country 0.688, continent 0.727, who-likes 1.000) of 48
+  test 500       right 0.771 (city 0.615, country 0.769, continent 0.769, who-likes 1.000) of 48
+  test 2000      right 0.750 (city 0.583, country 0.800, continent 0.600, who-likes 1.000) of 48
+  test 8000      right 0.688 (city 0.636, country 0.700, continent 0.467, who-likes 1.000) of 48
+  test new_2000  right 0.083 (city 0.000, country 0.000, continent 0.364, who-likes 0.000) of 48
+  test pas_2000  right 0.021 (city 0.000, country 0.000, continent 0.100, who-likes 0.000) of 48
+CHECK after 300 documents
+  first tries, documents 101-300: right 0.910 (city 0.887, country 0.880, continent 0.876, who-likes 1.000) of 3200
+  test 50        right 0.979 (city 1.000, country 1.000, continent 0.909, who-likes 1.000) of 48
+  test 500       right 1.000 (city 1.000, country 1.000, continent 1.000, who-likes 1.000) of 48
+  test 2000      right 1.000 (city 1.000, country 1.000, continent 1.000, who-likes 1.000) of 48
+  test 8000      right 1.000 (city 1.000, country 1.000, continent 1.000, who-likes 1.000) of 48
+  test new_2000  right 0.375 (city 0.300, country 0.538, continent 0.636, who-likes 0.071) of 48
+  test pas_2000  right 0.312 (city 0.273, country 0.636, continent 0.400, who-likes 0.062) of 48
+CHECK after 1000 documents
+  first tries, documents 301-1000: right 0.997 (city 1.000, country 1.000, continent 0.989, who-likes 1.000) of 11200
+  test 50        right 1.000 (city 1.000, country 1.000, continent 1.000, who-likes 1.000) of 48
+  test 500       right 1.000 (city 1.000, country 1.000, continent 1.000, who-likes 1.000) of 48
+  test 2000      right 0.979 (city 1.000, country 1.000, continent 0.900, who-likes 1.000) of 48
+  test 8000      right 1.000 (city 1.000, country 1.000, continent 1.000, who-likes 1.000) of 48
+  test new_2000  right 0.688 (city 0.600, country 0.923, continent 0.545, who-likes 0.643) of 48
+  test pas_2000  right 0.875 (city 0.909, country 1.000, continent 0.800, who-likes 0.812) of 48
+CHECK after 1500 documents
+  first tries, documents 1001-1500: right 0.990 (city 1.000, country 0.999, continent 0.960, who-likes 1.000) of 8000
+  test 50        right 1.000 (city 1.000, country 1.000, continent 1.000, who-likes 1.000) of 48
+  test 500       right 1.000 (city 1.000, country 1.000, continent 1.000, who-likes 1.000) of 48
+  test 2000      right 0.979 (city 1.000, country 1.000, continent 0.900, who-likes 1.000) of 48
+  test 8000      right 1.000 (city 1.000, country 1.000, continent 1.000, who-likes 1.000) of 48
+  test new_2000  right 0.771 (city 0.700, country 0.923, continent 0.455, who-likes 0.929) of 48
+  test pas_2000  right 1.000 (city 1.000, country 1.000, continent 1.000, who-likes 1.000) of 48
+Wernicke: chance a wording runs reversed, by its last word (overall 0.40): by 0.60 in 0.20 likes 0.27 lives 0.60 of 0.27 to 0.27 where 0.60

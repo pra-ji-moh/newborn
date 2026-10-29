@@ -1,0 +1,45 @@
+=== train_clean_2000.txt
+TRAIN train_clean_2000.txt: 2000 sentences, 44772 words
+RESULT trigram bits 8.7960 perplexity 444.5
+RESULT grouped bits 9.3205 perplexity 639.4 groups 1176 alpha 0.5 beta 1000
+RESULT grouped_hartley bits 9.3197 perplexity 639.0 groups 1187 alpha 0.5 beta 1000
+RESULT grouped+trigram bits 8.8611 perplexity 465.0 groups 1176 alpha 0.5 beta 1000
+RESULT grouped_hartley+trigram bits 8.8601 perplexity 464.7 groups 1187 alpha 0.5 beta 1000
+RESULT lstm bits 8.8395 perplexity 458.1 steps 500 secs 209
+RESULT transformer bits 8.7508 perplexity 430.8 steps 350 secs 204
+=== train_noisy_2000.txt
+TRAIN train_noisy_2000.txt: 2000 sentences, 44202 words
+RESULT trigram bits 8.8610 perplexity 465.0
+RESULT grouped bits 9.3563 perplexity 655.4 groups 1176 alpha 0.5 beta 1000
+RESULT grouped_hartley bits 9.3448 perplexity 650.2 groups 1176 alpha 0.5 beta 1000
+RESULT grouped+trigram bits 8.9173 perplexity 483.5 groups 1176 alpha 0.5 beta 1000
+RESULT grouped_hartley+trigram bits 8.9179 perplexity 483.7 groups 1176 alpha 0.5 beta 1000
+RESULT lstm bits 8.9220 perplexity 485.1 steps 530 secs 195
+RESULT transformer bits 8.8155 perplexity 450.5 steps 391 secs 198
+=== train_clean_10000.txt
+TRAIN train_clean_10000.txt: 10000 sentences, 221630 words
+RESULT trigram bits 8.1301 perplexity 280.2
+RESULT grouped bits 8.8944 perplexity 475.9 groups 4596 alpha 0.5 beta 100
+RESULT grouped_hartley bits 8.8401 perplexity 458.3 groups 4446 alpha 0.5 beta 100
+RESULT grouped+trigram bits 8.1551 perplexity 285.0 groups 4596 alpha 0.5 beta 1000
+RESULT grouped_hartley+trigram bits 8.1510 perplexity 284.2 groups 4446 alpha 0.5 beta 1000
+RESULT lstm bits 8.0893 perplexity 272.4 steps 1247 secs 375
+RESULT transformer bits 7.9051 perplexity 239.7 steps 882 secs 378
+=== train_noisy_10000.txt
+TRAIN train_noisy_10000.txt: 10000 sentences, 218715 words
+RESULT trigram bits 8.1879 perplexity 291.6
+RESULT grouped bits 8.9280 perplexity 487.1 groups 4499 alpha 0.5 beta 100
+RESULT grouped_hartley bits 8.8858 perplexity 473.0 groups 4590 alpha 0.5 beta 100
+RESULT grouped+trigram bits 8.2187 perplexity 297.9 groups 4499 alpha 0.5 beta 1000
+RESULT grouped_hartley+trigram bits 8.2071 perplexity 295.5 groups 4590 alpha 0.5 beta 1000
+RESULT lstm bits 8.1271 perplexity 279.6 steps 1295 secs 376
+RESULT transformer bits 7.9786 perplexity 252.2 steps 873 secs 377
+=== train_clean_42068.txt
+TRAIN train_clean_42068.txt: 42068 sentences, 929589 words
+RESULT trigram bits 7.5472 perplexity 187.0
+RESULT grouped bits 8.5311 perplexity 369.9 groups 15275 alpha 0.5 beta 100
+RESULT grouped_hartley bits 8.4673 perplexity 353.9 groups 15656 alpha 0.5 beta 100
+RESULT grouped+trigram bits 7.5697 perplexity 190.0 groups 15275 alpha 0.5 beta 1000
+RESULT lstm bits 7.3305 perplexity 161.0 steps 4384 secs 915
+RESULT transformer bits 7.2116 perplexity 148.2 steps 2624 secs 918
+(sweep stopped at its 2-hour limit here: the last grouped variant at 42,068 clean and the 42,068 noisy run did not finish)

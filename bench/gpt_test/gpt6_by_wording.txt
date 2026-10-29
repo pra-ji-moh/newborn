@@ -1,0 +1,15 @@
+2 steps, a reversed fact                       27/29   93.1%
+2 steps, after a move                          14/15   93.3%
+2 steps, after a move and a reversed fact       1/4    25.0%
+2 steps, plain                                 11/11  100.0%
+3 steps, a reversed fact                       24/30   80.0%
+3 steps, after a move                           6/11   54.5%
+3 steps, after a move and a reversed fact       9/14   64.3%
+3 steps, plain                                  4/6    66.7%
+any question with a reversed fact              77/93   82.8%
+any question, no reversed fact                 81/89   91.0%
+one step, a reversed fact                      16/16  100.0%
+one step, after a move                         25/25  100.0%
+one step, plain                                21/21  100.0%
+who-likes, active                              40/44   90.9%
+who-likes, passive ('is liked by')              6/14   42.9%

@@ -1,0 +1,15 @@
+50_1 city52 city14 city35 person130 continent3 city14 city52 continent0 person96 continent3 country5 country5 person110 continent3 person390 continent3
+50_2 city9 person585 city48 person72 country9 continent1 city8 country8 continent3 city8 person533 city9 continent1 continent1 person522 person462
+50_3 continent1 continent2 city28 country3 country9 person81 city29 person399 person533 continent1 continent1 continent0 person255 country6 country9 person295
+500_1 city36 country2 city11 person461 person419 continent1 city36 country8 country2 person561 city45 country1 continent0 country1 continent1 continent2
+500_2 country5 continent2 continent0 continent2 city4 city46 person185 person89 country8 person545 country5 continent0 continent2 city29 city5 city29
+500_3 city52 country3 continent2 person380 continent3 continent1 country3 person502 city9 country2 country7 city16 continent2 person188 person117 country3
+2000_1 continent3 continent3 person58 country7 continent3 city38 country5 city57 continent1 country10 person359 country3 country3 city34 person334 country7
+2000_2 city15 continent3 country1 city11 city41 person92 continent1 continent1 continent3 person33 city22 city43 country1 continent1 continent3 person197
+2000_3 person505 country1 continent3 country4 country1 city56 city49 city34 continent3 person115 continent3 city10 city10 city36 person561 city56
+8000_1 city25 country9 city52 continent1 city25 city42 person304 country9 person558 continent1 country5 country2 person87 city53 country9 continent2
+8000_2 country9 country3 continent1 continent1 person316 city43 city38 person59 continent0 city11 city11 continent1 city54 person286 country9 continent0
+8000_3 city3 continent0 country11 country3 city38 country9 continent0 city52 country3 person369 continent0 continent1 country3 person33 country9 person54
+new_2000_1 person146 continent3 country1 person500 country7 country0 continent1 person25 country7 city43 person280 city58 city42 person125 continent3 person269
+new_2000_2 city1 person178 continent3 continent3 country11 country11 person10 person268 person234 person132 country1 country0 city15 city0 person70 country11
+new_2000_3 country11 continent2 continent0 country3 person66 city9 city33 country11 continent0 city16 person302 continent0 city33 country8 person361 person550
