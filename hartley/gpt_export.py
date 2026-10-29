@@ -12,7 +12,8 @@ Score a chat model with score_gpt.py.
 
 Run: python3 gpt_export.py PTB_DIR LONG2_DIR OUT_DIR [set ...]
      (a folder with vocab.txt, such as gen_long3.py's, uses that vocabulary;
-     sets default to 50 500 2000 8000 new_2000)
+     sets default to 50 500 2000 8000 new_2000; START=3 in the environment
+     takes documents 4-6 instead of 1-3)
 """
 import collections
 import os
@@ -55,10 +56,11 @@ def question(q):
 
 
 sets = sys.argv[4:] or ["50", "500", "2000", "8000", "new_2000"]
+start = int(os.environ.get("START", "0"))
 key = open(f"{out}/key.txt", "w")
 for name in sets:
-    docs = [l.split() for l in open(f"{data}/test_{name}.txt")][:3]
-    masks = [l.split() for l in open(f"{data}/test_{name}_mask.txt")][:3]
+    docs = [l.split() for l in open(f"{data}/test_{name}.txt")][start:start + 3]
+    masks = [l.split() for l in open(f"{data}/test_{name}_mask.txt")][start:start + 3]
     with open(f"{out}/model/test_{name}.txt", "w") as f:
         f.write("".join(" ".join(d) + "\n" for d in docs))
     with open(f"{out}/model/test_{name}_mask.txt", "w") as f:

@@ -1,0 +1,26 @@
+Read the document below. It is newspaper text mixed with facts about people, cities, countries and continents. Some facts change later in the document (for example, someone moves to another city); always use the latest. In the newspaper text, "<unk>" stands for a rare word and "N" for a number; ignore them.
+
+Answer every question at the end using only the document. Reply with only the answers, numbered, one word per line, like:
+1. city7
+2. person12
+
+DOCUMENT:
+his point it will be increasingly difficult for the u.s. to <unk> to <unk> measures if even the east <unk> steps to a different <unk> . it added another N N monday before stocks <unk> . country9 is part of continent0 . person457 has a home in city49 . person323 likes person163 . person265 lives in city41 . person5 lives in city49 . continent1 contains country4 . country10 includes city22 . in city41 lives person163 . city24 belongs to country9 . person445 has a home in city49 . person5 is a fan of person265 . continent3 contains country1 . person163 is a fan of person445 . person5 is liked by person161 . person161 lives in city22 . person161 is liked by person575 . country3 is in continent3 . person457 is liked by person445 . city5 belongs to country0 . city2 belongs to country1 . city18 is where person323 lives . city41 is in country4 . city18 belongs to country0 . country10 is part of continent0 . city49 belongs to country10 . person323 is liked by person265 . person457 likes person575 . country0 is part of continent0 . person575 lives in city22 . country10 includes city17 . so far though no one not even former u.s. attorney <unk> has been able to <unk> just what law mr. dinkins has <unk> or just what tax he has <unk> . we could still have a recession at some point . how quickly things change . it may also <unk> the sec 's modest pending changes in junk-bond <unk> rules and <unk> the treasury 's look at plans for giving new tax <unk> on dividends and raising taxes on short-term trades by pension funds . and mr. <unk> to <unk> and <unk> <unk> back into the <unk> room . <unk> companies should get <unk> in the third quarter . california led the nation with $ N billion in net cash income last year followed by texas $ N billion <unk> $ N billion florida $ N billion and <unk> $ N billion . sales fell to $ N million from $ N billion . the $ N billion <unk> N plant near <unk> <unk> was completed in N . but after restructuring under new management the profits began <unk> in . the <unk> in the <unk> was <unk> . administration officials <unk> with president bush in <unk> <unk> <unk> mr. <unk> 's <unk> as a sign that he is n't <unk> to the military <unk> so much as he is <unk> for ways to <unk> his hand prior to the elections . that 's the <unk> of <unk> leading to growth stocks . the issue has also cost federal management a lot of good will among its old pilots . person163 moved to city2 . person265 moved to city22 . person457 moved to city5 . in <unk> from our research you <unk> the high <unk> of <unk> <unk> and <unk> . all of this is bad news for the big brokerage firms such as shearson and merrill lynch & co. that have big retail or <unk> businesses . it also said that it would start trading the contract as soon as the <unk> approved it . mr. <unk> estimates the industry 's total <unk> approach $ N million . the company said it was doing a <unk> business in computer <unk> <unk> <unk> and <unk> power sources . in asset terms mitsubishi estate is the largest real estate firm in japan . because the stock prices of some paper companies already reflect an expected profit <unk> painewebber 's mr. <unk> says he <unk> that next year the share prices of some companies may fall at most only N N to N N . canadian steel <unk> production totaled N <unk> tons in the week ended oct. N down N N from the <unk> week 's total of N tons statistics canada a federal agency said . in march mr. <unk> was <unk> on N <unk> of <unk> mail and securities fraud and <unk> an investigation by the securities and exchange commission . the <unk> of <unk> a <unk> to your brand is about three in N says <unk> <unk> the company 's vice president for marketing research . in an interview james smith said the banks ' markets are <unk> and their business <unk> are similar and conservative .
+
+QUESTIONS:
+1. Which country is person323's city in?
+2. Which country is person265's city in?
+3. Who likes person575?
+4. Which city does person457 live in now?
+5. Which continent is person265's country in?
+6. Which continent is person163's country in?
+7. Who likes person265?
+8. Which city does person445 live in now?
+9. Which continent is person161's country in?
+10. Who likes person445?
+11. Which country is person161's city in?
+12. Which continent is person323's country in?
+13. Which country is person575's city in?
+14. Which country is person457's city in?
+15. Which country is person5's city in?
+16. Which city does person323 live in now?

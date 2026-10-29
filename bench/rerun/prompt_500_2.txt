@@ -1,0 +1,26 @@
+Read the document below. It is newspaper text mixed with facts about people, cities, countries and continents. Some facts change later in the document (for example, someone moves to another city); always use the latest. In the newspaper text, "<unk>" stands for a rare word and "N" for a number; ignore them.
+
+Answer every question at the end using only the document. Reply with only the answers, numbered, one word per line, like:
+1. city7
+2. person12
+
+DOCUMENT:
+leveraged <unk> may be <unk> by two rules in pending congressional legislation . <unk> of the tv system which includes <unk> free <unk> tv <unk> in <unk> <unk> in january . person126 has a home in city39 . continent0 contains country7 . city34 belongs to country10 . country10 is in continent0 . country10 includes city53 . city18 is in country7 . person441 has a home in city34 . person23 is a fan of person90 . city54 is where person210 lives . person23 is liked by person465 . person427 has a home in city53 . country11 is part of continent1 . country0 includes city47 . country3 is in continent2 . in city39 lives person465 . person427 is liked by person126 . city5 is in country11 . city39 belongs to country0 . person427 is a fan of person441 . person90 likes person126 . person166 likes person210 . country8 is in continent0 . city54 belongs to country10 . person210 likes person465 . continent1 contains country0 . person166 lives in city18 . person441 likes person166 . person23 lives in city47 . city26 is in country8 . in city47 lives person90 . the <unk> judge agreed to allow <unk> to <unk> the personal <unk> of <unk> reagan ruling that there was <unk> evidence that the data would be important to the defense . and today many of their children <unk> and <unk> remain on <unk> . the <unk> n.j. unit said the new operating structure <unk> a more <unk> and <unk> organization <unk> to <unk> managing the size and <unk> of the unit 's current business . the $ N billion <unk> <unk> 's <unk> <unk> is to take six years . but with the index <unk> <unk> better than expected and the widely <unk> report on october employment scheduled to <unk> tomorrow stock prices <unk> only <unk> in response to the report and then <unk> . <unk> mr. <unk> has said southern co. and its units do n't <unk> <unk> political <unk> . the compromise proposal ending a long <unk> between democrats and the president would boost the minimum wage to $ N an hour by april N from $ N now . early on in the state department we took to <unk> him the <unk> in <unk> to his ability to <unk> <unk> the <unk> intelligence services of <unk> and the united states <unk> <unk> j. <unk> who as deputy assistant secretary of state for <unk> affairs first <unk> across reports about mr. noriega in N . the yield on the benchmark 30-year treasury bond ended yesterday at about N N . <unk> is <unk> N million <unk> feet of space and salomon brothers inc. whose headquarters is in the building also plans to move <unk> . person23 moved to city39 . person126 moved to city47 . person465 moved to city34 . if the senate plan <unk> the premium will be $ N with the additional $ N going to pay for <unk> hospital <unk> under part a of <unk> . amid the market <unk> even drexel which has the <unk> and most <unk> following of junk bond investors is <unk> in its <unk> . <unk> <unk> how <unk> the <unk> is going to be said <unk> young vice president of <unk> information systems inc. a <unk> mass. <unk> firm . the whole of europe and the <unk> world is <unk> from a <unk> in <unk> investment he says . london 's financial <unk> exchange <unk> index finished N points higher at N . <unk> has been <unk> in litigation with warner communications inc. in an attempt to get out of an <unk> production contract with warner . corporate executives <unk> that their company 's stock has been <unk> into a <unk> <unk> of a stock-index <unk> . <unk> . the central council of church bell <unk> a sort of <unk> of <unk> groups <unk> to improve relations with <unk> says john c. <unk> president . we went to six companies over two days <unk> the <unk> says <unk> <unk> a santa <unk> <unk> manager . i think it 's to <unk> 's advantage to be associated with the <unk> venture said michael <unk> station manager of <unk> the <unk> station that is a <unk> <unk> . <unk> 's bay said it will <unk> N million series <unk> preferred shares on oct. N at a price of c$ N each .
+
+QUESTIONS:
+1. Which continent is person465's country in?
+2. Who likes person23?
+3. Which city does person210 live in now?
+4. Which country is person441's city in?
+5. Which city does person465 live in now?
+6. Which continent is person427's country in?
+7. Which country is person166's city in?
+8. Which city does person427 live in now?
+9. Which continent is person126's country in?
+10. Which city does person126 live in now?
+11. Who likes person210?
+12. Which country is person23's city in?
+13. Which city does person441 live in now?
+14. Which continent is person90's country in?
+15. Which continent is person23's country in?
+16. Who likes person166?

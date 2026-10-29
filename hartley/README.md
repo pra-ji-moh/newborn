@@ -470,8 +470,7 @@ documents 31-100, 91% on 101-300, 99.7% on 301-1,000.
 ### Against Claude (bench/gpt_test, bench/gpt_test_pas)
 
 The same 15 documents GPT-6 answered, plus 3 from the passive set, each
-given to a fresh Claude agent (Oct 29, 2026; the model this session runs on,
-Claude Opus 5.5), which read only its prompt file - the answer keys were in
+given to a fresh Claude agent (Oct 29, 2026), which read only its prompt file - the answer keys were in
 another folder. Replies in `claude_*.txt`, scored with
 `score_gpt.py <dir> claude_`.
 
@@ -484,3 +483,33 @@ another folder. Replies in `claude_*.txt`, scored with
 
 Claude answered every question right, passives and moves included. On
 these tests the models here beat GPT-6 but not Claude.
+
+### Checking the test, and a rerun (bench/rerun)
+
+Claude's full marks made us check the test itself:
+
+- **The agents saw only their prompt.** Each agent's record shows a single
+  read of its own prompt file and nothing else. The keys were in another folder.
+- **The keys are right.** `verify_key.py` reads every fact back out of each
+  prompt's text, in every wording. It applies the latest move, answers the
+  questions on its own and compares with `key.txt`. It found 0 disagreements
+  on `gpt_test` (240 answers), `gpt_test_pas` (48) and `rerun` (288).
+- **Rerun on new documents.** We took documents 4-6 of every set (none used
+  before, `START=3 python3 gpt_export.py ...`) and gave them to 18 fresh
+  agents and to the newborn model:
+
+| set | newborn model | Claude |
+|---|---|---|
+| 50 | 48/48 | 48/48 |
+| 500 | 48/48 | 48/48 |
+| 2,000 | 47/48 | 48/48 |
+| 8,000 | 48/48 | 48/48 |
+| new wordings, 2,000 | 37/48 | 48/48 |
+| passives, 2,000 | 48/48 | 48/48 |
+| **all** | **276/288 (95.8%)** | **288/288** |
+
+Nothing was wrong with the test. Claude simply answers these documents
+perfectly. The newborn model matches it on wordings it has met, and on
+passives, which it learns from 0 in one pass. It still loses on new
+wordings, its one clear gap. GPT-6 was not rerun; its scores are from the
+first 15 documents only.

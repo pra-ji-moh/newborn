@@ -416,9 +416,11 @@ int main(int argc, char **argv) {
     Docs tr, va;
     snprintf(p1, sizeof p1, "%s/train.txt", argv[1]); snprintf(p2, sizeof p2, "%s/train_mask.txt", argv[1]); load(&tr, p1, p2);
     snprintf(p1, sizeof p1, "%s/valid.txt", argv[1]); load(&va, p1, NULL);
-    const char *sets[] = {"50", "2000", "8000", "new_2000", "pas_2000"};
-    Docs te[5];
-    for (int g = 0; g < 5; g++) { snprintf(p1, sizeof p1, "%s/test_%s.txt", argv[1], sets[g]); snprintf(p2, sizeof p2, "%s/test_%s_mask.txt", argv[1], sets[g]); load(&te[g], p1, p2); }
+    const char *all_sets[] = {"50", "500", "2000", "8000", "new_2000", "pas_2000"};
+    const char *sets[6]; Docs te[6]; int nsets = 0;
+    for (int g = 0; g < 6; g++) { snprintf(p1, sizeof p1, "%s/test_%s.txt", argv[1], all_sets[g]); snprintf(p2, sizeof p2, "%s/test_%s_mask.txt", argv[1], all_sets[g]);
+        FILE *ex = fopen(p1, "r"); if (!ex) continue; fclose(ex);
+        sets[nsets] = all_sets[g]; load(&te[nsets++], p1, p2); }
     hmask = (1u << 25) - 1; H = calloc(hmask + 1, sizeof(Ent));
     uni = calloc(V, sizeof(double)); lam = malloc(sizeof(double) * (V + 2)); for (int i = 0; i < V + 2; i++) lam[i] = 0.3;
     ends = calloc(NSLOT, sizeof *ends);
@@ -431,7 +433,7 @@ int main(int argc, char **argv) {
             rebuild_frames(); if (i) fit_lam(&va);
             printf("CHECK after %d documents\n", i);
             if (i) { char what[64]; snprintf(what, sizeof what, "  first tries, documents %d-%d:", i > 0 ? checks[ci - 1] + 1 : 0, i); report(what, &run); memset(&run, 0, sizeof run); }
-            for (int g = 0; g < 5; g++) { Tally t = {{0}, {0}, NULL, 0};
+            for (int g = 0; g < nsets; g++) { Tally t = {{0}, {0}, NULL, 0};
                 for (int d = 0; d < te[g].n; d++) read_doc(te[g].w[d], te[g].mask[d], te[g].len[d], 0, &t);
                 char what[64]; snprintf(what, sizeof what, "  test %-9s", sets[g]); report(what, &t); }
             ci++; }

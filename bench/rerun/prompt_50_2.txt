@@ -1,0 +1,26 @@
+Read the document below. It is newspaper text mixed with facts about people, cities, countries and continents. Some facts change later in the document (for example, someone moves to another city); always use the latest. In the newspaper text, "<unk>" stands for a rare word and "N" for a number; ignore them.
+
+Answer every question at the end using only the document. Reply with only the answers, numbered, one word per line, like:
+1. city7
+2. person12
+
+DOCUMENT:
+mr. <unk> said the former australian owners of <unk> were <unk> by the <unk> majority . <unk> which includes computer <unk> and <unk> <unk> <unk> represents nearly <unk> of the company 's business . in city13 lives person446 . in city6 lives person165 . city13 is where person355 lives . country10 includes city1 . person412 likes person104 . city13 belongs to country5 . person479 is a fan of person355 . person355 likes person446 . country8 is in continent0 . person465 is a fan of person599 . person465 lives in city15 . person446 is a fan of person412 . city15 is in country2 . person599 has a home in city48 . city38 belongs to country5 . in city15 lives person479 . country0 is in continent1 . person104 is a fan of person165 . city52 is in country8 . person165 is a fan of person465 . country2 is part of continent1 . country9 is in continent2 . person412 lives in city6 . person104 lives in city6 . country5 is in continent1 . continent1 contains country10 . city48 belongs to country0 . country0 includes city6 . person479 is liked by person599 . country0 includes city0 . two <unk> restructuring candidates in the oil industry moved higher <unk> which rose N N to N N on N million shares and usx which gained N N to N N . person165 moved to city13 . person479 moved to city1 . person446 moved to city52 . for one thing according to mr. <unk> the producers <unk> a release in advance . <unk> 's <unk> inc. $ N million of N N N subordinated notes due nov. N N priced at N to yield N N .
+
+QUESTIONS:
+1. Which city does person165 live in now?
+2. Which city does person446 live in now?
+3. Which continent is person412's country in?
+4. Which continent is person104's country in?
+5. Which country is person479's city in?
+6. Which continent is person165's country in?
+7. Who likes person446?
+8. Which city does person104 live in now?
+9. Who likes person104?
+10. Which city does person412 live in now?
+11. Which country is person355's city in?
+12. Which country is person446's city in?
+13. Which country is person465's city in?
+14. Which continent is person446's country in?
+15. Which continent is person465's country in?
+16. Which continent is person599's country in?

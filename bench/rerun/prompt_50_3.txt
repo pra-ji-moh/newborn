@@ -1,0 +1,26 @@
+Read the document below. It is newspaper text mixed with facts about people, cities, countries and continents. Some facts change later in the document (for example, someone moves to another city); always use the latest. In the newspaper text, "<unk>" stands for a rare word and "N" for a number; ignore them.
+
+Answer every question at the end using only the document. Reply with only the answers, numbered, one word per line, like:
+1. city7
+2. person12
+
+DOCUMENT:
+mr. <unk> made the earnings <unk> for fiscal N ending next march N in an interview with u.s. automotive <unk> <unk> the tokyo motor show . country6 is part of continent0 . city23 is in country4 . person416 is liked by person599 . continent3 contains country5 . country8 is part of continent3 . person256 has a home in city38 . person256 likes person556 . city14 is where person434 lives . country8 includes city14 . country4 includes city19 . person547 is liked by person416 . person556 has a home in city14 . country2 is in continent2 . person492 lives in city23 . country0 includes city6 . continent1 contains country4 . person599 lives in city21 . person434 likes person492 . city33 is in country8 . person513 likes person434 . person547 is a fan of person256 . person416 lives in city6 . person492 is a fan of person599 . city38 belongs to country4 . city21 is in country2 . person556 likes person513 . country0 is in continent1 . in city33 lives person513 . country2 includes city13 . in city21 lives person547 . the dollar finished <unk> yesterday <unk> lower by continued concern about the stock market . the transaction is subject to approval of <unk> <unk> of record on oct. N among other conditions . person556 moved to city19 . person547 moved to city13 . person256 moved to city23 . the <unk> opened for business on april N N in what had been a board of trade <unk> . <unk> officials at lead <unk> salomon brothers inc. said the debentures were <unk> by up pension funds banks insurance companies and other institutional investors .
+
+QUESTIONS:
+1. Who likes person547?
+2. Which continent is person556's country in?
+3. Who likes person434?
+4. Which country is person513's city in?
+5. Which country is person556's city in?
+6. Which country is person256's city in?
+7. Which country is person599's city in?
+8. Who likes person256?
+9. Which city does person556 live in now?
+10. Who likes person513?
+11. Which continent is person416's country in?
+12. Who likes person492?
+13. Which city does person416 live in now?
+14. Which country is person416's city in?
+15. Which country is person434's city in?
+16. Which city does person492 live in now?
