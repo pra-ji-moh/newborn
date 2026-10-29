@@ -466,3 +466,21 @@ documents 31-100, 91% on 101-300, 99.7% on 301-1,000.
 - Weakest: continents in other new wordings (45%): "X holds K" and "K lies
   in X" have no frame word that tells their direction, and the kinds at
   both ends are places.
+
+### Against Claude (bench/gpt_test, bench/gpt_test_pas)
+
+The same 15 documents GPT-6 answered, plus 3 from the passive set, each
+given to a fresh Claude agent (Oct 29, 2026; the model this session runs on,
+Claude Opus 5.5), which read only its prompt file - the answer keys were in
+another folder. Replies in `claude_*.txt`, scored with
+`score_gpt.py <dir> claude_`.
+
+| | Relations / newborn model | GPT-6 | Claude |
+|---|---|---|---|
+| Seen wordings (12 docs, 192 questions) | 185 (96.4%) | 158 (82.3%) | **192 (100%)** |
+| Never-seen wordings (3 docs, 48) | 34 (70.8%) | 46 (95.8%) | **48 (100%)** |
+| Passives and wordings never seen (3 docs, 48) | 47 (97.9%, newborn_lang.c) | not run | **48 (100%)** |
+| **All** | | 204/240 | **288/288** |
+
+Claude answered every question right, passives and moves included. On
+these tests the models here beat GPT-6 but not Claude.
