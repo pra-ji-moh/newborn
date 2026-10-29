@@ -7,3 +7,4 @@ hartley/real_dbg
 bench/results/*.nets.*
 hartley/memory
 hartley/longtext
+hartley/newborn_lang

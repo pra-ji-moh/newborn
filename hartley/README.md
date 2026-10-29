@@ -411,3 +411,58 @@ Where GPT-6 went wrong (`gpt_errors.py`, `bench/gpt_test/gpt6_by_wording.txt`):
 - Fair reading: the relational model learned from 1,500 documents of this
   kind and reads questions in its own short form; GPT-6 saw none and read
   natural questions. One run of GPT-6 per document; its answers may vary.
+
+## Learning the newborn's way: from 0, new words, passives (Oct 29, 2026)
+
+`newborn_lang.c`: the relational model, learning as the newborn does
+(`brain/ob_novel.c`, `research/RESEARCH.md`).
+
+- **From 0, serve and return.** Nothing known at the start. Documents come
+  one at a time in a single pass; every question is answered before its
+  answer is seen, then the answer comes and the counts take it in. Questions
+  are marked, as a caregiver's are: a sentence holding "?" is a question and
+  the next word its answer. Kept words: surprising ones (a word never met is
+  surprising) and the ones questions ask for. A word's kind is which
+  questions it has answered; each relation remembers the kinds at its ends.
+- **New words: ideas nobody writes.** A relation in wording met fewer than 3
+  times, between words that questions ask for: the DMN/MFG propose "it is
+  like <a useful relation>, this way round or reversed"; the ACC rules out an
+  idea whose ends don't fit the kinds that relation joins (Hartley); the
+  DLPFC holds the strongest survivors, weighted by Shannon.
+- **Passives: Wernicke.** Which way a wording runs is learned from its last
+  word, by comparing each wording's direction with the main one for the
+  same question. It learned that a wording ending in "by" runs reversed.
+  When the kinds at the ends settle the direction (a city and a person),
+  they decide; the frame word decides when they cannot (two people).
+
+New test (`gen_long3.py`): every fact in wording never seen in training,
+half of the "likes" facts passives of verbs never seen ("Q is adored by P",
+"Q is respected by P"). Raw: `bench/results/newborn_lang.txt`
+(`run_newborn.sh`).
+
+| Answers right, held-out tests | after 30 docs | 100 | 300 | 1,000 | 1,500 |
+|---|---|---|---|---|---|
+| Seen wordings, 50 words away | 57% | 75% | **99.5%** | 99.1% | 98.5% |
+| Seen wordings, 8,000 words away | 46% | 72% | **99.9%** | 99.6% | 99.0% |
+| Passives and wordings never seen | 9% | 6% | 32% | 83% | **97.0%** |
+| Other wordings never seen | 8% | 11% | 35% | 62% | **73.3%** |
+
+First tries during the stream (answering before the answer comes): 74% on
+documents 31-100, 91% on 101-300, 99.7% on 301-1,000.
+
+| At 1,500 documents | Passives never seen | "Who likes" there | Other new wordings |
+|---|---|---|---|
+| Full design | **97.0%** | **93.7%** | **73.3%** |
+| No ideas for new wordings | 22.3% | 5.5% | 24.5% |
+| Ideas, but no Wernicke frame word | 88.0% | 60.2% | 69.8% |
+
+- From nothing, one pass: 300 documents bring seen wordings to 99-100% at
+  every distance (better than longtext.c's 98% with several passes).
+- Passives of verbs never seen: 97%. For comparison, GPT-6 answered "who
+  likes" right 6 times in 14 when the fact was a passive it *had* seen
+  wording for (bench/gpt_test); this set has not been run on GPT-6.
+- Wernicke's frame word is what gets the direction of new passives: without
+  it "who likes" on them is a coin flip (60%); with it, 94%.
+- Weakest: continents in other new wordings (45%): "X holds K" and "K lies
+  in X" have no frame word that tells their direction, and the kinds at
+  both ends are places.
