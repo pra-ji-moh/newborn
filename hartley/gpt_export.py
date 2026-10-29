@@ -10,7 +10,9 @@ Writes, under OUT_DIR:
     model/                 the same documents for longtext.c
 Score a chat model with score_gpt.py.
 
-Run: python3 gpt_export.py PTB_DIR LONG2_DIR OUT_DIR
+Run: python3 gpt_export.py PTB_DIR LONG2_DIR OUT_DIR [set ...]
+     (a folder with vocab.txt, such as gen_long3.py's, uses that vocabulary;
+     sets default to 50 500 2000 8000 new_2000)
 """
 import collections
 import os
@@ -29,6 +31,8 @@ extra = ["lives", "has", "home", "where", "belongs", "includes", "part", "contai
 words = sorted({w for s in ptb for w in s} | set(extra) | {"in", "a", "is", "to", "of", "by"})
 vocab = words + [f"person{i}" for i in range(600)] + [f"city{i}" for i in range(60)] + \
     [f"country{i}" for i in range(12)] + [f"continent{i}" for i in range(4)]
+if os.path.exists(f"{data}/vocab.txt"):
+    vocab = open(f"{data}/vocab.txt").read().split("\n")[:-1]
 assert len(vocab) == int(open(f"{data}/meta.txt").read().split()[1]), "vocabulary does not match gen_long2.py"
 
 INSTRUCTIONS = """Read the document below. It is newspaper text mixed with facts about people, cities, countries and continents. Some facts change later in the document (for example, someone moves to another city); always use the latest. In the newspaper text, "<unk>" stands for a rare word and "N" for a number; ignore them.
@@ -50,7 +54,7 @@ def question(q):
             "continent": f"Which continent is {q[0]}'s country in?"}[kind]
 
 
-sets = ["50", "500", "2000", "8000", "new_2000"]
+sets = sys.argv[4:] or ["50", "500", "2000", "8000", "new_2000"]
 key = open(f"{out}/key.txt", "w")
 for name in sets:
     docs = [l.split() for l in open(f"{data}/test_{name}.txt")][:3]
@@ -79,6 +83,7 @@ for name in sets:
             f.write(INSTRUCTIONS + text + "\n\nQUESTIONS:\n" + "".join(f"{i}. {q}\n" for i, q in enumerate(qs, 1)))
         key.write(f"{name}_{n} " + " ".join(answers) + "\n")
 key.close()
-for f in ("train.txt", "valid.txt", "classes.txt", "meta.txt", "dot_q.txt"):
-    shutil.copy(f"{data}/{f}", f"{out}/model/{f}")
+for f in ("train.txt", "train_mask.txt", "valid.txt", "classes.txt", "meta.txt", "dot_q.txt", "vocab.txt"):
+    if os.path.exists(f"{data}/{f}"):
+        shutil.copy(f"{data}/{f}", f"{out}/model/{f}")
 print("prompts:", len(sets) * 3)

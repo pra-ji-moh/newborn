@@ -1,0 +1,3 @@
+pas_2000_1 person236 city54 continent2 continent1 city49 city24 city36 country1 country10 person394 continent0 city17 person290 person390 country0 continent1
+pas_2000_2 country6 city31 city1 continent0 person581 city48 person65 continent3 person41 country11 person550 country1 continent1 person184 city51 person194
+pas_2000_3 person515 person476 city27 continent2 country9 city35 country3 country9 country3 continent2 city8 city6 city39 person70 city8 person472

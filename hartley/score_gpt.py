@@ -2,18 +2,20 @@
 
 Save each reply as reply_<set>_<n>.txt next to the prompts (the numbered
 list, as the model wrote it), then:
-    python3 score_gpt.py OUT_DIR
-Prints the share right per test set and per kind of question.
+    python3 score_gpt.py OUT_DIR [reply_prefix]
+(reply_prefix, default "reply_", picks another model's replies, such as
+"claude_"). Prints the share right per test set and per kind of question.
 """
 import os
 import re
 import sys
 
 out = sys.argv[1]
+prefix = sys.argv[2] if len(sys.argv) > 2 else "reply_"
 kinds = {}
 for line in open(f"{out}/key.txt"):
     name, *answers = line.split()
-    path = f"{out}/reply_{name}.txt"
+    path = f"{out}/{prefix}{name}.txt"
     prompt = open(f"{out}/prompt_{name}.txt").read().split("QUESTIONS:\n")[1].strip().splitlines()
     if not os.path.exists(path):
         print(f"{name}: no reply yet")
