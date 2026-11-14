@@ -35,5 +35,11 @@ Everything was moved here from the Ciall repo (`pra-ji-moh/ciall`, commit
   elimination over hidden S5 acts). `cc -std=c99 -O2 hnam.c -o hnam -lm`,
   then `./hnam 50 0` or `./hnam 50 1`. Hartley means the 1928 measure
   (research Part 4).
+- `hartley/one.py`: the one rule learned from experience (Nov 14, 2026), in
+  Python; it replaces the hand-built memory, stack and relations.
+  `python3 one.py DATA_DIR TRAIN_FILE [task]`; `one_long.py` for the long
+  documents; `run_one.sh` runs every test. Results and limits are at the end
+  of `hartley/README.md`. The C files in `hartley/` are the earlier steps,
+  kept as they were; porting them to Python is still to do.
 - `research/ciall/`: design notes from the earlier chats (`ONE_BRAIN.md`,
   `BEING.md`, `ARCHITECTURE.md`).

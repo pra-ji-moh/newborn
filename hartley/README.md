@@ -513,3 +513,142 @@ perfectly. The newborn model matches it on wordings it has met, and on
 passives, which it learns from 0 in one pass. It still loses on new
 wordings, its one clear gap. GPT-6 was not rerun; its scores are from the
 first 15 documents only.
+
+# One rule, learned from experience (Nov 14, 2026)
+
+The author's idea: don't hand the model information; let it learn from its
+own experience. `one.py` is that idea as one rule, in place of the
+hand-built pieces above (the memory, the stack, the relations, the chains).
+Written in Python; `one_long.py` reads the long documents with it.
+
+**The rule.** Before every word, everything that has something to say makes
+its guess. Then the word comes, and the credit for it is shared out by how
+right each guess was. A guess that keeps earning credit counts for more next
+time; one that keeps being wrong counts for less, down to nothing. One pass,
+every word guessed before it is seen, no gradients, nothing tuned on
+held-out text.
+
+**What may speak** is not written per task. Two memories offer their ways of
+looking back: counts of what usually follows (the last two words; the last
+three, whole and with gaps; a word held from earlier, alone and with the
+last word; the newest held word with a promise still open) and episodes of
+what happened (a word in the last three was met before, and the word that
+stood beside it then is guessed now; up to three such steps chain; the most
+recent such episode; and, whatever the wording, a word of the kind the
+context asks for). Which words are held, which promise, which bind and how
+much each way of looking counts all come from the same record. Nothing in
+the code says bracket, question, relation or stack.
+
+- **Shannon** shares the credit and sets the weights.
+- **Hartley** rules out: a promise (a word that has always come after
+  another, far more than usual) stands only while it is never broken, one
+  answer for each time held and none unasked; a binding that is nearly never
+  right is dropped.
+
+Run everything: `PTB_DIR=... ./run_one.sh`. Raw: `bench/results/one.txt`.
+
+## What came out of the one rule
+
+Structure tests (`gen_struct.py`; share of key words right, held-out):
+
+| Test | One rule (300 / 1,000 / 10,000 sentences) | Hand-built pieces | LSTM | Transformer |
+|---|---|---|---|---|
+| Memory, 5-20 words back | **100% / 100% / 100%** | 100% | 100% (1k+) | 100% |
+| Memory, 50-100 back | **100% / 100% / 100%** | 100% | 61-91% | 100% |
+| Nesting up to 4 deep | 98.6% / 99.8% / **100%** | 100% | 97-98% | 74-78% |
+| Nesting 5-8 deep, never seen | 97.4% / 99.6% / **100%** | 100% | 91-93% | 66-69% |
+| Facts about people never asked about | **100%** | 66% | 85% | 86% |
+
+It found the eight key-answer pairs and the three bracket pairs by itself
+("promises 8", "promises 3" in the raw output). Facts went from 66% to
+100%: binding through episodes does what the old memory could not.
+
+Real English (Penn Treebank; perplexity, lower is better):
+
+| Training sentences | 2,000 | 2,000 noisy | 10,000 | 10,000 noisy | 42,068 | 42,068 noisy |
+|---|---|---|---|---|---|---|
+| **One rule** | 381.9 | 396.3 | **237.0** | 248.2 | 157.7 | **165.5** |
+| Hand-built memory model | **368** | **381** | 237 | **246** | 165 | 171 |
+| Transformer (3, 6, 15 min CPU) | 431 | 451 | 240 | 252 | **148** | - |
+| LSTM | 458 | 485 | 272 | 280 | 161 | - |
+| Trigram counting | 444 | 465 | 280 | 292 | 187 | - |
+| One rule, learning on through the test | | | 197.3 | | **144.6** | |
+
+- The one rule ties or beats the hand-built model from 10,000 sentences up,
+  and is behind it at 2,000 (381.9 against 368; the hand-built model set its
+  weights on the validation text, which at that size is more text than the
+  training set; the one rule uses none).
+- At full size it is 157.7: ahead of the LSTM here (161) and the hand-built
+  model (165), still behind the transformer here (148), and far behind
+  properly trained nets in published work (about 80-115, and under 60 for the
+  best).
+- **Learning on through the test** (each word still guessed before it is
+  seen): 144.6. This is not the usual protocol, since the nets here were
+  frozen, so it is not a like-for-like win. It is what this model can do at
+  no cost and a net cannot.
+
+Long text (`gen_long3.py`'s documents; answers right, held-out documents,
+after one pass over the training documents):
+
+| | 50 words | 500 | 2,000 | 8,000 | Wordings never seen | Passives and wordings never seen |
+|---|---|---|---|---|---|---|
+| **One rule, 1,500 documents** | **99.4%** | **99.7%** | **99.5%** | **99.6%** | **79.0%** | 82.3% |
+| One rule, 300 documents | 98.0% | 98.6% | 99.1% | 99.1% | 70.6% | 71.9% |
+| Hand-built, from 0 (`newborn_lang.c`), 1,500 | 98.5% | | | 99.0% | 73.3% | **97.0%** |
+| Hand-built, several passes (`longtext.c`) | 98.0% | 97.9% | 98.1% | 98.5% | 71-74% | |
+
+- Seen wordings: 99.4-99.7% at every distance, above both hand-built
+  versions. City, country and who-likes questions are 100%; three-step
+  (continent) questions 98%.
+- The model is told one thing here: where a document begins (it then puts
+  the last document's episodes away). The hand-built model was told the same.
+- New wordings come from one more way of looking that the rule weighs like
+  the rest: go by the kind of word the context asks for (a word's kind is the
+  context it most often answers), and among several, by which side it stood
+  on and the last word between. That last part is Wernicke's "by" rule,
+  found from experience instead of written in.
+
+## Controls
+
+| | Memory 5-20 / 50-100 | Nesting / deep | Facts | English, 10,000 | Long text: seen / new / passives |
+|---|---|---|---|---|---|
+| Full | 100% / 100% | 99.8% / 99.6% | 100% | 237.0 | 99.4-99.7% / 79.0% / 82.3% |
+| Every guess counts the same (no credit) | 99.8% / 99.6% | 100% / 100% | 100% | 238.5 | 98.5-99.6% / **88.9% / 89.7%** |
+| No held words | 100% / 100% | 100% / 100% | 100% | 259.6 | |
+| No newest open promise | 100% / 100% | 85.2% / 75.4% | 100% | | |
+| No episodes | 100% / 100% | 99.8% / 99.5% | 16.7% | 239.2 | |
+| No longer local views | | | | 242.3 | |
+| No "by kind" | | | | | 99.5-99.8% / 22.0% / 20.2% |
+
+(Structure controls at 1,000 sentences.)
+
+## What this does and doesn't show
+
+- **Shows:** the hand-built pieces were not needed as separate designs. One
+  rule, reading once, gets memory, nesting, facts, relations and long text,
+  and on real English it is as good as or better than the hand-built model
+  from 10,000 sentences up.
+- **Experience mattered less than the ways of looking.** With every guess
+  counted the same, the structure tests barely move and English loses about
+  1.5 points. What carries the results is which ways of looking back exist;
+  the credit rule sorts them and sharpens them. The ways of looking are
+  still written by hand (nine of them). They are general, not per task, but
+  the model does not invent new ones. That is the open part of "one learner".
+- **Credit can mislead on new wordings.** On wordings never seen, the model with every
+  guess counted the same does better (88.9% and 89.7%) than the full model
+  (79.0% and 82.3%). The weights were earned on wordings it had seen, where
+  the chains took most of the credit and "by kind" little; on a new wording
+  the chains are wrong and still outweigh it. Passives are also below the
+  hand-built model's 97%. Fixing how credit is shared between guesses that
+  agree is the next step for this gap. (Pooling all episode guesses into one
+  kind was tried and made it worse: 58% at 300 documents.)
+- **Kinds are only known for words that have been answers before.** A name
+  never met has no kind yet, so "by kind" cannot pick it.
+- **Still not shown:** writing, open questions, maths, images; scale beyond a
+  10,000-word vocabulary; a public benchmark run by someone else. The
+  transformer here is small and briefly trained. This model is still far from
+  well-trained nets on real English.
+- **Speed:** Python, one CPU core: about 3,500 words a second on English at
+  full size (4 to 8 minutes for the 42,068 sentences), 12 minutes for the
+  1,500 long documents. The C programs above are faster per word; they are
+  kept as they were, for the record of each step.

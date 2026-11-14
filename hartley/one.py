@@ -26,7 +26,15 @@ memories, and each offers its ways of looking back:
   what happened (episodes)
       bind       a word in the last three has been met before; the word
                  that stood in a certain place beside it then (named by the
-                 words between) is guessed now. Two such steps can chain.
+                 words between) is guessed now. Up to three such steps
+                 can chain.
+      latest     of the bindings that are usually right, the one whose
+                 episode is the most recent
+      by kind    whatever the wording between: a word of the kind this
+                 context asks for (the kind of a word is the context it
+                 most often answers), reached through words of the usual
+                 kinds; among several, the one whose side and last word
+                 between have most often been right
 
 Which words are held, which promise, which may bind, which ways of looking
 count: all of it comes from the same record of experience.
@@ -55,7 +63,7 @@ recall is a pointer or copy step.
 
 Run: python3 one.py DATA_DIR TRAIN_FILE [task] [key=value ...]
      (folders from gen_struct.py or real_prep.py)
-     controls: far=0 newest=0 bind=0 longer=0; trust=0 (every guess counts
+     controls: far=0 newest=0 bind=0 longer=0 kinds=0; trust=0 (every guess counts
      the same, whatever its record); life=1 (it goes on learning while it
      reads the test, each word still guessed before it is seen)
 """
@@ -70,13 +78,13 @@ WORTH = 0.01                  # bits a held word must save, each time held, to s
 CAP = 16                      # words held at once
 SPAN = 6                      # how far apart two words of an episode may stand
 KEEP = 32                     # newest partners remembered for a word
-MAXCHAIN = 48                 # ways of binding kept for one context
+MAXCHAIN = 128                # ways of binding kept for one context
 
 
 class One:
-    def __init__(self, V, far=1, newest=1, bind=1, trust=1, longer=1, life=0):
+    def __init__(self, V, far=1, newest=1, bind=1, trust=1, longer=1, life=0, kinds=1):
         self.V, self.END = V, V
-        self.o = dict(far=far, newest=newest, bind=bind, trust=trust, longer=longer, life=life)
+        self.o = dict(far=far, newest=newest, bind=bind, trust=trust, longer=longer, life=life, kinds=kinds)
         # what usually follows
         self.uni = [0] * (V + 1)
         self.total = 0
@@ -93,7 +101,14 @@ class One:
         self.ruled = set()                     # (word, later word) promises ruled out for good
         # what happened
         self.rel = {}                          # word -> newest partners {path: word}
-        self.bx = {}                           # context -> {chain: [times, hits, trust]}
+        self.bx = {}                           # context -> {chain: [times, hits, standing, times it was the most recent, hits then]}
+        self.when, self.clock = {}, 0          # when each partner was last met (in sentences read)
+        self.fr = {}                           # context -> record of 'the most recent binding'
+        self.ans, self.kind = {}, {}           # word -> contexts it has answered; its kind (the one it answers most)
+        self.shapes, self.shape = {}, {}       # context -> kinds its right chains pass through; the usual one
+        self.wf, self.wr = {}, {}              # (context, side, last word between) -> [times, right]; context -> record
+        self.onchain = set()                   # words a right chain has passed through
+        self.proven = {}                       # step -> times a chain through it was right
         self.bcue = {}                         # word -> [times tried as a cue, bits its bindings saved per time (lately), next retrial]
 
     # ---------- the local guess (counted, Witten-Bell) ----------
@@ -180,13 +195,52 @@ class One:
                 ex = self.bx.get((p,) + ctx[:len(ctx) - p] + ctx[len(ctx) - p + 1:])
                 if not ex:
                     continue
+                T = (p,) + ctx[:len(ctx) - p] + ctx[len(ctx) - p + 1:]
+                fresh, fy, fsrc = (), None, None
                 for chain, rec in ex.items():
-                    y = rx.get(chain[0])
-                    if y is not None and len(chain) == 2:
+                    y, at = x, ()
+                    for path in chain:                  # follow the steps, in order
                         ry = self.rel.get(y)
-                        y = ry.get(chain[1]) if ry else None
+                        if not ry or path not in ry:
+                            y = None
+                            break
+                        at += (self.when[y][path],)         # a chain is as recent as its first step, then its next
+                        y = ry[path]
                     if y is not None:
-                        binds.append((x, rec, y))
+                        binds.append((x, rec, y, chain, 7, T))
+                        # the most recent, among bindings that are usually right, and right when they are the most recent
+                        if at > fresh and rec[0] >= 3 and rec[1] >= 0.5 * rec[0] and (rec[3] < 2 or rec[4] >= 0.75 * rec[3]):
+                            fresh, fy, fsrc = at, y, rec
+                if fy is not None:
+                    rec = self.fr.get(T)
+                    if rec is None:
+                        rec = self.fr[T] = [0, 0, 0.0]
+                    binds.append((x, rec, fy, fsrc, 11, T))
+                if o["kinds"] and T in self.shape:      # by kinds: whatever the wording, a word of the kind this
+                    front = [x]                         # context asks for, reached through words of the usual kinds
+                    for kd in self.shape[T]:
+                        front = list({y for z in front for y in self.rel.get(z, {}).values() if self.kind.get(y) == kd})[:8]
+                    best, cands = None, []
+                    for z in front:
+                        wz = self.when.get(z, {})
+                        for path, y in self.rel.get(z, {}).items():
+                            if self.kind.get(y) != T or y == x:
+                                continue
+                            # which side it stood on, and the last word between: how often has that been the right one?
+                            f = (T, path[0], path[1][-1] if path[1] else -1)
+                            g = (T, path[0])
+                            r = self.wf.get(f)
+                            if r is None or r[0] < 3:
+                                r = self.wf.get(g)
+                            score = ((r[1] + 0.5) / (r[0] + 1) if r else 0.5, wz[path])
+                            cands.append((f, g, y))
+                            if best is None or score > best[0]:
+                                best = (score, y)
+                    if best is not None:
+                        rec = self.wr.get(T)
+                        if rec is None:
+                            rec = self.wr[T] = [0, 0, 0.0]
+                        binds.append((x, rec, best[1], cands, 12, T))
         return keys, binds
 
     def p_key(self, k, w, pl):
@@ -212,13 +266,16 @@ class One:
                 sh = kn[k >> 60] = [0.0, 0.0]
             sh[0] += wt * self.p_key(k, w, pl)
             sh[1] += wt
-        if binds:
-            sh = kn[7] = [0.0, 0.0]
-            for _, rec, y in binds:
-                q = (rec[1] + 0.5) / (rec[0] + 1)
-                wt = 2.0 ** rec[2] if use else 1.0
-                sh[0] += wt * (q * (w == y) + (1 - q) * pl)
-                sh[1] += wt
+        for _, rec, y, src, kind, _ in binds:
+            sh = kn.get(kind)
+            if sh is None:
+                sh = kn[kind] = [0.0, 0.0]
+            q = (rec[1] + 0.5) / (rec[0] + 1)
+            if kind == 11:                      # no surer than its source has been when it was the most recent
+                q = min(q, (src[4] + 0.5) / (src[3] + 1.5))
+            wt = 2.0 ** rec[2] if use else 1.0
+            sh[0] += wt * (q * (w == y) + (1 - q) * pl)
+            sh[1] += wt
         num, den = pl, 1.0
         for kind, sh in kn.items():
             wt = self.weight(kind, b) if use else 0.25
@@ -257,28 +314,31 @@ class One:
                 sh[0] += wt * pk
                 sh[1] += wt
         pbs = []
-        if binds:
-            sh = kn[7] = [0.0, 0.0]
-            for x, rec, y in binds:
-                q = (rec[1] + 0.5) / (rec[0] + 1)
-                pb = q * (w == y) + (1 - q) * pl
-                wt = 2.0 ** rec[2]
-                pbs.append(pb)
-                sh[0] += wt * pb
-                sh[1] += wt
-                sh2 = part.get((x, 7))
-                if sh2 is None:
-                    sh2 = part[(x, 7)] = [0.0, 0.0]
-                sh2[0] += wt * pb
-                sh2[1] += wt
+        for x, rec, y, src, kind, _ in binds:
+            sh = kn.get(kind)
+            if sh is None:
+                sh = kn[kind] = [0.0, 0.0]
+            q = (rec[1] + 0.5) / (rec[0] + 1)
+            if kind == 11:
+                q = min(q, (src[4] + 0.5) / (src[3] + 1.5))
+            pb = q * (w == y) + (1 - q) * pl
+            wt = 2.0 ** rec[2]
+            pbs.append(pb)
+            sh[0] += wt * pb
+            sh[1] += wt
+            sh2 = part.get((x, kind))
+            if sh2 is None:
+                sh2 = part[(x, kind)] = [0.0, 0.0]
+            sh2[0] += wt * pb
+            sh2[1] += wt
         # what each held or binding word saved by itself: the local guess with its
         # guesses blended in, against the local guess alone
         solo = {}
         for (cw, kind), sh in part.items():
             wt = self.weight(kind, b)
-            so = solo.get((cw, kind == 7))
+            so = solo.get((cw, kind in (7, 11, 12)))
             if so is None:
-                so = solo[(cw, kind == 7)] = [pl, 1.0]
+                so = solo[(cw, kind in (7, 11, 12))] = [pl, 1.0]
             so[0] += wt * sh[0] / sh[1]
             so[1] += wt
         for (cw, isbind), so in solo.items():
@@ -293,10 +353,42 @@ class One:
             t = self.tr.get(k, 0.0) + LOG2(pk * sh[1] / sh[0])
             self.tr[k] = FLOOR if t < FLOOR else CEIL if t > CEIL else t
             self._count(k, w)
-        for (x, rec, y), pb in zip(binds, pbs):
-            sh = kn[7]
+        for (x, rec, y, chain, kind, T), pb in zip(binds, pbs):
+            sh = kn[kind]
             rec[0] += 1
             rec[1] += w == y
+            if kind == 11:                      # the binding that spoke as the most recent: was it right?
+                chain[3] += 1
+                chain[4] += w == y
+            elif kind == 12:                    # each word of the right kind: was its side and last word the right one?
+                for f, g, yc in chain:
+                    for key in (f, g):
+                        r = self.wf.get(key)
+                        if r is None:
+                            r = self.wf[key] = [0, 0]
+                        r[0] += 1
+                        r[1] += yc == w
+            elif w == y:
+                z, mid = x, []
+                for path in chain:              # each step of a chain that was right has proven itself once more,
+                    self.proven[path] = self.proven.get(path, 0) + 1
+                    self.onchain.add(z)         # and each word it passed through is worth remembering beside
+                    z = self.rel[z][path]
+                    mid.append(self.kind.get(z))
+                # the kind of a word is the context it most often answers; the shape of a context is the
+                # kinds of words its right chains pass through
+                a_ = self.ans.get(w)
+                if a_ is None:
+                    a_ = self.ans[w] = {}
+                a_[T] = a_.get(T, 0) + 1
+                self.kind[w] = max(a_, key=a_.get)
+                sg = tuple(mid[:-1])
+                if None not in sg:
+                    d = self.shapes.get(T)
+                    if d is None:
+                        d = self.shapes[T] = {}
+                    d[sg] = d.get(sg, 0) + 1
+                    self.shape[T] = max(d, key=d.get)
             rec[2] = max(FLOOR, min(CEIL, rec[2] + LOG2(pb * sh[1] / sh[0])))
         if kn:                                  # credit for the word that came, shared by how right each was
             ws = {kind: self.weight(kind, b) * sh[0] / sh[1] for kind, sh in kn.items()}
@@ -336,10 +428,20 @@ class One:
                         ry = self.rel.get(y)
                         if ry and y != x:
                             found += [(path, p2) for p2, z in ry.items() if z == w]
+                if not found:                   # three steps, the first two along steps that have proven themselves
+                    pv = self.proven
+                    for path, y in rx.items():
+                        ry = self.rel.get(y)
+                        if not ry or y == x or pv.get(path, 0) < 5:
+                            continue
+                        for p2, z in ry.items():
+                            rz = self.rel.get(z)
+                            if rz and z != x and z != y and pv.get(p2, 0) >= 5:
+                                found += [(path, p2, p3) for p3, u in rz.items() if u == w]
                 T = (p,) + ctx[:len(ctx) - p] + ctx[len(ctx) - p + 1:]
                 ex = self.bx.get(T)
                 if ex:                          # Hartley: ruled out for good
-                    for chain in [ch for ch, rec in ex.items() if rec[0] >= 20 and rec[1] < 0.1 * rec[0]]:
+                    for chain in [ch for ch, rec in ex.items() if (rec[0] >= 20 and rec[1] < 0.35 * rec[0]) or (rec[3] >= 4 and rec[4] < 0.5 * rec[3])]:
                         del ex[chain]
                 if found:
                     if ex is None:
@@ -347,8 +449,8 @@ class One:
                     for chain in found:
                         if chain not in ex:
                             if len(ex) >= MAXCHAIN:
-                                del ex[min(ex, key=lambda ch: ex[ch][2])]
-                            ex[chain] = [0, 0, 0.0]
+                                del ex[min(ex, key=lambda ch: ((ex[ch][4] + 1) / (ex[ch][3] + 2), ex[ch][2]))]
+                            ex[chain] = [0, 0, 0.0, 0, 0]
         self.uni[w] += 1
         self.total += 1
         self._count((1 << 60) | (b + 2), w)
@@ -434,30 +536,40 @@ class One:
                 if best is not None:
                     self.cand[k] = [best, 0, 0]
 
+    def begin(self):
+        """A new document begins: the last one's episodes are put away.
+        (What was learned from them stays: the counts, the bindings and
+        their records.)"""
+        self.rel.clear()
+        self.when.clear()
+
     def remember(self, sent):
         """The sentence as an episode: each word's neighbours, named by the
         words between, the newest replacing the old."""
         n = len(sent) - 1                               # END is left out
+        self.clock += 1
         for i in range(n):
             x = sent[i]
-            bx = self.may_bind(x)
+            bx = x in self.onchain or self.may_bind(x)
             for j in range(i + 1, min(n, i + SPAN + 1)):
                 y = sent[j]
                 between = tuple(sent[i + 1:j])
                 if bx:
                     self._pair(x, (1, between), y)
-                if self.may_bind(y):
+                if y in self.onchain or self.may_bind(y):
                     self._pair(y, (0, between), x)
 
     def _pair(self, x, path, y):
         d = self.rel.get(x)
         if d is None:
             d = self.rel[x] = OrderedDict()
+            self.when[x] = {}
         elif path in d:
             del d[path]
         d[path] = y
+        self.when[x][path] = self.clock
         if len(d) > KEEP:
-            d.popitem(last=False)
+            del self.when[x][d.popitem(last=False)[0]]
 
     # ---------- reading ----------
     def read(self, sent, learning, mask=None, classes=None, tally=None):

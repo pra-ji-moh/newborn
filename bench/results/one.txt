@@ -1,0 +1,83 @@
+=== structure: memory, nesting (300 / 1,000 / 10,000 sentences), facts; then controls at 1,000 (trust=0, far=0, newest=0, bind=0: memory, nesting, facts each)
+RESULT one train_300.txt: 300 sentences, 4906 words; test_right 1.0000 test_long_right 1.0000 bits 1.9405 perplexity 3.8 | promises 8 bindings 12267
+RESULT one train_1000.txt: 1000 sentences, 16568 words; test_right 1.0000 test_long_right 1.0000 bits 1.8864 perplexity 3.7 | promises 8 bindings 15132
+RESULT one train_10000.txt: 10000 sentences, 164850 words; test_right 1.0000 test_long_right 1.0000 bits 1.8568 perplexity 3.6 | promises 8 bindings 18173
+RESULT one train_300.txt: 300 sentences, 13884 words; test_right 0.9856 test_long_right 0.9741 bits 3.1600 perplexity 8.9 | promises 3 bindings 11422
+RESULT one train_1000.txt: 1000 sentences, 48682 words; test_right 0.9982 test_long_right 0.9956 bits 3.0872 perplexity 8.5 | promises 3 bindings 14010
+RESULT one train_10000.txt: 10000 sentences, 508812 words; test_right 1.0000 test_long_right 0.9998 bits 2.9949 perplexity 8.0 | promises 3 bindings 20979
+RESULT one train_all.txt: 1530 sentences, 7650 words; test_right 1.0000 bits 2.9105 perplexity 7.5 | promises 4 bindings 198
+RESULT one train_1000.txt: 1000 sentences, 16568 words; test_right 0.9980 test_long_right 0.9960 bits 2.2286 perplexity 4.7 | promises 8 bindings 15132 [trust=0]
+RESULT one train_1000.txt: 1000 sentences, 48682 words; test_right 0.9998 test_long_right 0.9996 bits 3.1444 perplexity 8.8 | promises 3 bindings 14010 [trust=0]
+RESULT one train_all.txt: 1530 sentences, 7650 words; test_right 1.0000 bits 3.5589 perplexity 11.8 | promises 4 bindings 198 [trust=0]
+RESULT one train_1000.txt: 1000 sentences, 16568 words; test_right 1.0000 test_long_right 1.0000 bits 1.8839 perplexity 3.7 | promises 8 bindings 15075 [far=0]
+RESULT one train_1000.txt: 1000 sentences, 48682 words; test_right 1.0000 test_long_right 1.0000 bits 3.0576 perplexity 8.3 | promises 3 bindings 13522 [far=0]
+RESULT one train_all.txt: 1530 sentences, 7650 words; test_right 1.0000 bits 2.9053 perplexity 7.5 | promises 4 bindings 198 [far=0]
+RESULT one train_1000.txt: 1000 sentences, 16568 words; test_right 1.0000 test_long_right 1.0000 bits 1.8885 perplexity 3.7 | promises 8 bindings 15132 [newest=0]
+RESULT one train_1000.txt: 1000 sentences, 48682 words; test_right 0.8519 test_long_right 0.7541 bits 3.1569 perplexity 8.9 | promises 3 bindings 14010 [newest=0]
+RESULT one train_all.txt: 1530 sentences, 7650 words; test_right 1.0000 bits 2.9176 perplexity 7.6 | promises 4 bindings 198 [newest=0]
+RESULT one train_1000.txt: 1000 sentences, 16568 words; test_right 1.0000 test_long_right 1.0000 bits 1.8838 perplexity 3.7 | promises 8 bindings 0 [bind=0]
+RESULT one train_1000.txt: 1000 sentences, 48682 words; test_right 0.9981 test_long_right 0.9947 bits 3.0872 perplexity 8.5 | promises 3 bindings 0 [bind=0]
+RESULT one train_all.txt: 1530 sentences, 7650 words; test_right 0.1667 bits 4.2552 perplexity 19.1 | promises 4 bindings 0 [bind=0]
+=== real English (Penn Treebank)
+RESULT one train_clean_2000.txt: 2000 sentences, 44772 words; bits 8.5770 perplexity 381.9 | promises 0 bindings 104644
+RESULT one train_clean_10000.txt: 10000 sentences, 221630 words; bits 7.8888 perplexity 237.0 | promises 2 bindings 406666
+RESULT one train_noisy_2000.txt: 2000 sentences, 44202 words; bits 8.6306 perplexity 396.3 | promises 0 bindings 101891
+RESULT one train_noisy_10000.txt: 10000 sentences, 218715 words; bits 7.9554 perplexity 248.2 | promises 6 bindings 407480
+RESULT one train_clean_42068.txt: 42068 sentences, 929589 words; bits 7.3008 perplexity 157.7 | promises 7 bindings 994330
+RESULT one train_noisy_42068.txt: 42068 sentences, 914071 words; bits 7.3707 perplexity 165.5 | promises 4 bindings 1013085
+=== real English, controls (10,000 sentences) and learning on through the test
+RESULT one train_clean_10000.txt: 10000 sentences, 221630 words; bits 7.8981 perplexity 238.5 | promises 2 bindings 406666 [trust=0]
+RESULT one train_clean_10000.txt: 10000 sentences, 221630 words; bits 8.0203 perplexity 259.6 | promises 2 bindings 406049 [far=0]
+RESULT one train_clean_10000.txt: 10000 sentences, 221630 words; bits 7.9207 perplexity 242.3 | promises 2 bindings 406724 [longer=0]
+RESULT one train_clean_10000.txt: 10000 sentences, 221630 words; bits 7.9022 perplexity 239.2 | promises 2 bindings 0 [bind=0]
+RESULT one train_clean_10000.txt: 10000 sentences, 221630 words; bits 7.6243 perplexity 197.3 | promises 1 bindings 510442 [life=1]
+RESULT one train_clean_42068.txt: 42068 sentences, 929589 words; bits 7.1758 perplexity 144.6 | promises 8 bindings 1036340 [life=1]
+=== long text, 300 documents
+first tries, up to document 30: right 0.850 (city 0.931, country 0.858, continent 0.632, who-likes 0.967) of 480
+first tries, up to document 100: right 0.957 (city 0.979, country 0.962, continent 0.890, who-likes 1.000) of 1120
+first tries, up to document 300: right 0.984 (city 1.000, country 0.993, continent 0.941, who-likes 1.000) of 3200
+after 300 documents
+  test 50        right 0.980 (city 1.000, country 1.000, continent 0.924, who-likes 1.000) of 960
+  test 500       right 0.986 (city 1.000, country 1.000, continent 0.946, who-likes 1.000) of 960
+  test 2000      right 0.991 (city 1.000, country 1.000, continent 0.960, who-likes 1.000) of 960
+  test 8000      right 0.991 (city 1.000, country 1.000, continent 0.963, who-likes 1.000) of 960
+  test new_2000  right 0.706 (city 0.968, country 0.776, continent 0.647, who-likes 0.482) of 960
+  test pas_2000  right 0.719 (city 0.974, country 0.797, continent 0.636, who-likes 0.492) of 960
+=== long text, 1,500 documents
+first tries, up to document 30: right 0.850 (city 0.931, country 0.858, continent 0.632, who-likes 0.967) of 480
+first tries, up to document 100: right 0.957 (city 0.979, country 0.962, continent 0.890, who-likes 1.000) of 1120
+first tries, up to document 300: right 0.984 (city 1.000, country 0.993, continent 0.941, who-likes 1.000) of 3200
+first tries, up to document 1000: right 0.991 (city 1.000, country 0.995, continent 0.969, who-likes 1.000) of 11200
+first tries, up to document 1500: right 0.995 (city 1.000, country 0.995, continent 0.985, who-likes 1.000) of 8000
+after 1500 documents
+  test 50        right 0.994 (city 1.000, country 1.000, continent 0.976, who-likes 1.000) of 960
+  test 500       right 0.997 (city 1.000, country 1.000, continent 0.988, who-likes 1.000) of 960
+  test 2000      right 0.995 (city 1.000, country 1.000, continent 0.978, who-likes 1.000) of 960
+  test 8000      right 0.996 (city 1.000, country 1.000, continent 0.984, who-likes 1.000) of 960
+  test new_2000  right 0.790 (city 0.968, country 0.763, continent 0.636, who-likes 0.822) of 960
+  test pas_2000  right 0.823 (city 0.970, country 0.767, continent 0.711, who-likes 0.846) of 960
+=== long text, controls
+first tries, up to document 30: right 0.848 (city 0.931, country 0.858, continent 0.624, who-likes 0.967) of 480
+first tries, up to document 100: right 0.952 (city 0.975, country 0.958, continent 0.876, who-likes 1.000) of 1120
+first tries, up to document 300: right 0.982 (city 1.000, country 0.993, continent 0.932, who-likes 1.000) of 3200
+first tries, up to document 1000: right 0.989 (city 1.000, country 0.994, continent 0.961, who-likes 1.000) of 11200
+first tries, up to document 1500: right 0.995 (city 1.000, country 0.995, continent 0.985, who-likes 1.000) of 8000
+after 1500 documents [kinds=0]
+  test 50        right 0.995 (city 1.000, country 1.000, continent 0.980, who-likes 1.000) of 960
+  test 500       right 0.998 (city 1.000, country 1.000, continent 0.992, who-likes 1.000) of 960
+  test 2000      right 0.996 (city 1.000, country 1.000, continent 0.982, who-likes 1.000) of 960
+  test 8000      right 0.996 (city 1.000, country 1.000, continent 0.984, who-likes 1.000) of 960
+  test new_2000  right 0.220 (city 0.361, country 0.132, continent 0.357, who-likes 0.028) of 960
+  test pas_2000  right 0.202 (city 0.349, country 0.116, continent 0.343, who-likes 0.012) of 960
+first tries, up to document 30: right 0.696 (city 0.846, country 0.584, continent 0.453, who-likes 0.875) of 480
+first tries, up to document 100: right 0.878 (city 0.993, country 0.944, continent 0.826, who-likes 0.739) of 1120
+first tries, up to document 300: right 0.876 (city 0.999, country 0.991, continent 0.920, who-likes 0.582) of 3200
+first tries, up to document 1000: right 0.962 (city 1.000, country 0.989, continent 0.950, who-likes 0.908) of 11200
+first tries, up to document 1500: right 0.988 (city 1.000, country 0.995, continent 0.964, who-likes 0.995) of 8000
+after 1500 documents [trust=0]
+  test 50        right 0.992 (city 1.000, country 1.000, continent 0.968, who-likes 1.000) of 960
+  test 500       right 0.985 (city 1.000, country 0.992, continent 0.950, who-likes 1.000) of 960
+  test 2000      right 0.996 (city 1.000, country 0.996, continent 0.987, who-likes 1.000) of 960
+  test 8000      right 0.989 (city 1.000, country 0.996, continent 0.959, who-likes 1.000) of 960
+  test new_2000  right 0.889 (city 1.000, country 0.831, continent 0.870, who-likes 0.862) of 960
+  test pas_2000  right 0.897 (city 1.000, country 0.853, continent 0.880, who-likes 0.858) of 960
