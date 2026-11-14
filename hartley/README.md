@@ -652,3 +652,130 @@ after one pass over the training documents):
   full size (4 to 8 minutes for the 42,068 sentences), 12 minutes for the
   1,500 long documents. The C programs above are faster per word; they are
   kept as they were, for the record of each step.
+
+# Ways of looking nobody writes (Nov 14, 2026, later the same day)
+
+The open part of the one rule was that its nine ways of looking back were
+written by hand. `grow.py` removes that. The model is handed only what it can
+point at (the word one to four places back; a word earlier in the sentence)
+and builds the rest itself. `local.py` adds a layer of neurons that learns
+with no backprop.
+
+- **Kinds.** It invents its own kinds of words: two words are of a kind when
+  the same things come after them (the author's "group by their future",
+  Oct 27, now applied to words instead of whole histories), split finer and
+  finer. A kind is a new symbol it can look at like a word. Some of what it
+  made, from the full text: *said say reported called know believe*; *$ oct.
+  nov. sept. dec.*; *sales chairman part sale loss day director officer*.
+- **Ways.** It starts with no way of looking. It proposes one by adding one
+  thing to a way it keeps, or by reading one place finer (kind, finer kind,
+  the word); tries it on the latest tenth of what it has read, using only
+  what came before; keeps it if it saves bits there (Shannon); and rules out
+  for good what saves nothing (Hartley).
+- **Surprise.** A way leans on the way it grew from, and the coarser way
+  learns only from the finer one's surprises.
+- **Recall.** A graded version of kinds: likeness numbers for each word
+  (counted, then one step of linear algebra), and a guess from the moments of
+  its life most like now.
+- **Neurons, no backprop.** One hidden layer over the likeness numbers of the
+  last four words. Each output neuron learns by the delta rule from its own
+  error; the same errors are broadcast to the hidden neurons and the word
+  numbers through fixed random wiring, never backwards through the layers.
+  Tried and kept like any other way.
+
+Run: `python3 grow.py DATA_DIR TRAIN_FILE [neurons=5]`. Raw:
+`bench/results/grow.txt`.
+
+## Results on real English
+
+Penn Treebank, perplexity (lower is better), the usual test: everything
+frozen before the test text is seen. Choices and weights come from the
+training text alone (the validation text is not used).
+
+| Training sentences | 2,000 | 2,000 noisy | 10,000 | 10,000 noisy | 42,068 | 42,068 noisy |
+|---|---|---|---|---|---|---|
+| **Grown ways and kinds (`grow.py`)** | **340.8** | **354.3** | 207.2 | **214.8** | 134.2 | **141.2** |
+| **... with the neurons, no backprop** | **328.9** | | **199.1** | | **129.8** | |
+| ... with the same neurons trained by backprop (yardstick) | | | 185.9 | | | |
+| One rule, nine ways written by hand (`one.py`) | 381.9 | 396.3 | 237.0 | 248.2 | 157.7 | 165.5 |
+| Hand-built memory model | 368 | 381 | 237 | 246 | 165 | 171 |
+| Transformer (3, 6, 15 min CPU) | 431 | 451 | 240 | 252 | 148 | - |
+| LSTM | 458 | 485 | 272 | 280 | 161 | - |
+| Trigram counting | 444 | 465 | 280 | 292 | 187 | - |
+
+What it grew from nothing, on the full text, in the order it kept them:
+the last word; the last two; a word earlier in the sentence with the last
+word; the word two back; the last three; the kind of the last word; a word
+earlier in the sentence; the last word's kind with the word three back; the
+kind of an earlier word with the last four words; an earlier word with the
+words one, three and four back. 165 ways tried, 155 ruled out, 10 kept.
+Several of these are ways I did not write in `one.py`.
+
+Time: 7 seconds, 37 seconds and 5 minutes for the three sizes (the growing
+included), on one machine with no GPU.
+
+## What each part is worth (full text)
+
+| | Perplexity |
+|---|---|
+| Grown ways and kinds | 134.2 |
+| No kinds (words only) | 137.5 |
+| No words earlier in the sentence | 136.2 |
+| Neurons added, no backprop | 129.8 |
+
+Recall saved nothing at this size and was ruled out by the model itself; at
+10,000 sentences it saved a little (208.4 to 207.2).
+
+## What this does and doesn't show
+
+- **The ways of looking are no longer written by hand.** Handed only
+  pointers, the model built the bigram and trigram, skips, long-range ways
+  and ways over its own kinds, and it is ahead of the hand-written nine at
+  every size (134.2 against 157.7 at full size).
+- **It is ahead of the transformer and LSTM trained here, at every size,
+  under the usual test.** Those nets are small and briefly trained on a CPU.
+  **It is not ahead of properly trained nets:** published LSTMs reach about
+  80 on this text and the best models under 60. The best published counting
+  models are around 125 to 140, which is where this is.
+- **Most of the gain is not new.** The largest step (157.7 to about 143 with
+  words only) comes from the coarser way learning from the finer way's
+  surprises, which is Kneser-Ney smoothing (1995) arrived at from the
+  author's rule. Growing ways and kinds by search are also known ideas (see
+  `grow.py`'s header). What is the author's is the frame: nothing handed
+  over but pointers, symbols and ways invented and kept by experience.
+- **Hard kinds and likeness-by-counting add little.** Kinds are worth
+  about 3 points at full size and recall nothing. A kind says two
+  words are the same or not; real words are alike in many graded ways.
+- **The neurons add what counting could not, with no backprop.** On 10,000
+  sentences the blend went from 207.2 to 199.1 with the neurons trained by
+  broadcast error, and to 185.9 with the same neurons trained by backprop:
+  the no-backprop rule gets about 40% of what backprop gives there. On the
+  full text it took the blend from 134.2 to 129.8. Alone the neurons are
+  weak (about 220 on the full text); they add what the counts lack. This is
+  more than every counting idea added together, and the first sign of where
+  the rest of the gap is.
+- **Not done yet:** `grow.py` covers real English only. The structure tests
+  and long text still run on `one.py`; held words with promises and binding
+  through episodes have to be offered to the grower as things to point at,
+  so one model does both. The neurons learned from nine tenths of the text
+  and are not yet grown or sized by the model itself.
+
+## What stands between this and a new foundation
+
+Measured here, not guessed:
+
+1. **Counting has a ceiling.** Structure, memory, surprise-learning and
+   invented kinds together reach the best that counting models reach
+   (about 134). Every further counting idea tried today added 1% or less.
+2. **What nets have is graded likeness learned for the task,** in many
+   dimensions at once, and layers of it. That is what backprop trains.
+3. **So the question that decides it is whether graded likeness can be
+   learned as well without backprop.** The first test here says "partly":
+   the neurons trained by a broadcast error (no backprop) improved the blend
+   more than every counting idea, and the backprop yardstick shows how much
+   is still lost. Closing that gap at depth is an open research problem; no
+   one has a backprop-free rule that matches backprop on large models.
+4. **The author's brain work already has the pieces for this path:** local
+   synapse rules and chemical broadcasts. The next experiments are a
+   broadcast per chemical (surprise, success), more than one layer, and
+   letting the grower decide what the neurons look at.

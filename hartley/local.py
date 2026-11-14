@@ -25,7 +25,7 @@ import numpy as np
 F = np.float32
 
 
-def train(ctx, w, NV, init, hidden=256, epochs=4, batch=64, rate=0.1, mode="dfa", seed=0, say=None, also=()):
+def train(ctx, w, NV, init, hidden=256, epochs=4, batch=256, rate=0.3, mode="dfa", seed=0, say=None, also=()):
     """ctx: (n, places) word ids; w: (n,) the word that came; init: for each
     place, (NV, dims) starting numbers. Returns a function giving the chance
     of each word that came on another text."""

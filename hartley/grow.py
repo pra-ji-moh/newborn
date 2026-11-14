@@ -21,9 +21,19 @@ back; a word earlier in the sentence) and it builds the rest:
             way met a word it had never seen there.
   credit    The kept ways are blended by the share of credit each earns
             after a given last word, as in one.py.
+  recall    Kinds are all-or-nothing. Likeness is graded: each word gets a
+            few numbers such that words followed by the same things get
+            nearly the same numbers (counted, then one step of linear
+            algebra). To guess, the model recalls the moments of its life
+            with the same last word, weighs each by how like now it was, and
+            sees what came next. It is tried and kept like any other way.
+  neurons   (neurons=N) a layer of neurons that starts from the likeness
+            numbers and learns with no backprop (local.py), tried and kept
+            like any other way.
 
-No gradients. The test text is never looked at until the end; the choice of
-ways and their weights comes from the training text alone.
+No gradients in the counting, the kinds, the growing or the recall. The test
+text is never looked at until the end; the choice of ways and their weights
+comes from the training text alone.
 
 Prior art, plainly: kinds by future are distributional clustering (Brown et
 al. 1992; Pereira, Tishby and Lee 1993); growing ways by adding one question
@@ -35,7 +45,8 @@ nothing but pointers, invents its symbols and its ways of looking, and keeps
 them by experience.
 
 Run: python3 grow.py DATA_DIR TRAIN_FILE [key=value ...]
-     (folder from real_prep.py; options: kinds=0 far=0 ways=N quiet=1)
+     (folder from real_prep.py; options: kinds=0 far=0 recall=0 ways=N
+     quiet=1; neurons=N times through, backprop=1 for the yardstick)
 """
 import sys
 import time
@@ -205,9 +216,9 @@ def lookup(tab, key, w, back, NV):
 
 
 class Mind:
-    def __init__(self, V, kinds=1, far=1, ways=MAXWAYS, quiet=0, recall=1):
+    def __init__(self, V, kinds=1, far=1, ways=MAXWAYS, quiet=0, recall=1, neurons=0, backprop=0):
         self.V, self.NV = V, V + 2
-        self.o = dict(kinds=kinds, far=far, ways=ways, quiet=quiet, recall=recall)
+        self.o = dict(kinds=kinds, far=far, ways=ways, quiet=quiet, recall=recall, neurons=neurons, backprop=backprop)
         self.cache = {}
 
     def say(self, *a):
@@ -438,6 +449,23 @@ class Mind:
                 P = np.vstack([P, ps[i]])
                 self.lam, pm = self.share(P, b)
                 self.say(f"  kept recall; blend on the latest tenth: {2 ** -np.log2(pm).mean():.1f}")
+        self.net = None
+        if self.o["neurons"]:
+            # a layer of neurons that learns with no backprop (local.py), tried like any other way
+            import local
+            ctx = lambda t: np.stack(t.prev[1:], 1)
+            like = [likeness(A.prev[j], A.w, self.NV) for j in range(1, BACK + 1)]
+            self.net = local.train(ctx(A), A.w, self.NV, like, epochs=self.o["neurons"], mode="bp" if self.o["backprop"] else "dfa",
+                                   say=self.say, also=[("latest tenth", ctx(B), B.w)])
+            pn = self.net(ctx(B), B.w)
+            g = self.gain(pn, pm)[0]
+            self.say(f"  neurons: alone {2 ** -np.log2(pn).mean():.1f} on the latest tenth; blended in they save {g:.4f} bits a word  ({time.time() - t0:.0f}s)")
+            if g >= KEEP:
+                P = np.vstack([P, pn])
+                self.lam, pm = self.share(P, b)
+                self.say(f"  kept neurons; blend on the latest tenth: {2 ** -np.log2(pm).mean():.1f}")
+            else:
+                self.net = None
         return kept
 
     @staticmethod
@@ -454,6 +482,8 @@ class Mind:
         if self.rec:
             back = self.chance(((("w", 1),),), text, held, kind, "T")
             P = np.vstack([P, self.recall(text, held, self.likes(text), back, [self.rec])[0]])
+        if self.net:                                             # the neurons learned from the first nine tenths only
+            P = np.vstack([P, self.net(np.stack(held.prev[1:], 1), held.w)])
         p = (self.lam[held.prev[1]].T * P).sum(0)
         return -np.log2(p).mean()
 

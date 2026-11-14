@@ -1,0 +1,164 @@
+=== g_clean_2000
+kinds made (1s)
+  kept 1back                                                      saved 0.8036 bits a word; blend on the latest tenth: 449.5  (2s)
+  kept 1back + 2back  <- 1back                                    saved 0.0381 bits a word; blend on the latest tenth: 424.4  (2s)
+  kept 2back + 3back/kind10  <- 2back                             saved 0.0090 bits a word; blend on the latest tenth: 415.1  (3s)
+3 ways kept, 70 ruled out, 73 tried
+  recall gains: 8/0.3:-0.0010 8/1:-0.0015 8/3:-0.0027 16/0.3:-0.0006 16/1:-0.0021 16/3:-0.0039 32/0.3:-0.0023 32/1:-0.0034 32/3:-0.0050
+  recall: best at sharpness 16, lean 0.3: saves -0.0006 bits a word  (5s)
+RESULT grow train_clean_2000.txt: 44772 words; ways 3; bits 8.4126 perplexity 340.8; 7s
+=== g_clean_10000
+kinds made (3s)
+  kept 1back                                                      saved 1.4395 bits a word; blend on the latest tenth: 253.9  (4s)
+  kept 1back + 2back  <- 1back                                    saved 0.1365 bits a word; blend on the latest tenth: 221.7  (6s)
+  kept 2back                                                      saved 0.0194 bits a word; blend on the latest tenth: 215.4  (8s)
+  kept earlier                                                    saved 0.0086 bits a word; blend on the latest tenth: 211.9  (10s)
+  kept 1back + 2back + 3back  <- 1back + 2back                    saved 0.0076 bits a word; blend on the latest tenth: 206.5  (16s)
+  kept earlier + 1back/kind4  <- earlier                          saved 0.0054 bits a word; blend on the latest tenth: 203.3  (18s)
+6 ways kept, 95 ruled out, 101 tried
+  recall gains: 8/0.3:-0.0042 8/1:-0.0044 8/3:-0.0049 16/0.3:0.0012 16/1:0.0001 16/3:-0.0020 32/0.3:0.0047 32/1:0.0027 32/3:-0.0005
+  recall: best at sharpness 32, lean 0.3: saves 0.0047 bits a word  (28s)
+  kept recall; blend on the latest tenth: 201.1
+RESULT grow train_clean_10000.txt: 221630 words; ways 6; bits 7.6951 perplexity 207.2; 37s
+=== g_clean_42068
+kinds made (8s)
+  kept 1back                                                      saved 1.8505 bits a word; blend on the latest tenth: 191.3  (17s)
+  kept 1back + 2back  <- 1back                                    saved 0.2651 bits a word; blend on the latest tenth: 152.3  (27s)
+  kept earlier + 1back  <- 1back                                  saved 0.0270 bits a word; blend on the latest tenth: 147.5  (38s)
+  kept 2back                                                      saved 0.0221 bits a word; blend on the latest tenth: 143.0  (65s)
+  kept 1back + 2back + 3back  <- 1back + 2back                    saved 0.0206 bits a word; blend on the latest tenth: 137.6  (75s)
+  kept 1back/kind4                                                saved 0.0166 bits a word; blend on the latest tenth: 133.3  (87s)
+  kept earlier                                                    saved 0.0073 bits a word; blend on the latest tenth: 131.3  (96s)
+  kept 1back/kind4 + 3back  <- 1back/kind4                        saved 0.0034 bits a word; blend on the latest tenth: 129.9  (125s)
+  kept earlier/kind4 + 1back + 2back + 3back + 4back  <- earlier/kind4 + 1back + 2back + 3back saved 0.0078 bits a word; blend on the latest tenth: 127.4  (219s)
+  kept earlier + 1back + 3back + 4back  <- earlier + 1back + 3back saved 0.0014 bits a word; blend on the latest tenth: 126.2  (222s)
+10 ways kept, 155 ruled out, 165 tried
+  recall gains: 8/0.3:-0.0071 8/1:-0.0074 8/3:-0.0078 16/0.3:-0.0043 16/1:-0.0050 16/3:-0.0060 32/0.3:-0.0040 32/1:-0.0055 32/3:-0.0072
+  recall: best at sharpness 32, lean 0.3: saves -0.0040 bits a word  (278s)
+RESULT grow train_clean_42068.txt: 929589 words; ways 10; bits 7.0682 perplexity 134.2; 300s
+=== g_noisy_2000
+kinds made (1s)
+  kept 1back                                                      saved 0.8197 bits a word; blend on the latest tenth: 459.6  (2s)
+  kept 1back + 2back  <- 1back                                    saved 0.0303 bits a word; blend on the latest tenth: 438.3  (2s)
+  kept 1back/kind7 + 2back  <- 2back                              saved 0.0101 bits a word; blend on the latest tenth: 429.5  (2s)
+3 ways kept, 70 ruled out, 73 tried
+  recall gains: 8/0.3:-0.0006 8/1:-0.0009 8/3:-0.0020 16/0.3:-0.0001 16/1:-0.0011 16/3:-0.0028 32/0.3:-0.0007 32/1:-0.0018 32/3:-0.0037
+  recall: best at sharpness 16, lean 0.3: saves -0.0001 bits a word  (5s)
+RESULT grow train_noisy_2000.txt: 44202 words; ways 3; bits 8.4687 perplexity 354.3; 6s
+=== g_noisy_10000
+kinds made (3s)
+  kept 1back                                                      saved 1.4382 bits a word; blend on the latest tenth: 267.4  (4s)
+  kept 1back + 2back  <- 1back                                    saved 0.1195 bits a word; blend on the latest tenth: 236.7  (6s)
+  kept 2back                                                      saved 0.0228 bits a word; blend on the latest tenth: 229.2  (8s)
+  kept earlier                                                    saved 0.0078 bits a word; blend on the latest tenth: 225.4  (10s)
+  kept earlier + 1back/kind10  <- earlier                         saved 0.0074 bits a word; blend on the latest tenth: 222.2  (15s)
+  kept earlier + 1back/kind10 + 3back  <- earlier + 1back/kind10  saved 0.0050 bits a word; blend on the latest tenth: 219.0  (19s)
+  kept 1back + 2back + 3back + 4back  <- 1back + 2back + 3back    saved 0.0055 bits a word; blend on the latest tenth: 215.3  (24s)
+7 ways kept, 108 ruled out, 115 tried
+  recall gains: 8/0.3:-0.0052 8/1:-0.0055 8/3:-0.0060 16/0.3:-0.0025 16/1:-0.0034 16/3:-0.0048 32/0.3:-0.0020 32/1:-0.0032 32/3:-0.0049
+  recall: best at sharpness 32, lean 0.3: saves -0.0020 bits a word  (30s)
+RESULT grow train_noisy_10000.txt: 218715 words; ways 7; bits 7.7469 perplexity 214.8; 34s
+=== g_noisy_42068
+kinds made (6s)
+  kept 1back                                                      saved 1.7692 bits a word; blend on the latest tenth: 209.2  (14s)
+  kept 1back + 2back  <- 1back                                    saved 0.2248 bits a word; blend on the latest tenth: 171.5  (24s)
+  kept 2back                                                      saved 0.0297 bits a word; blend on the latest tenth: 165.3  (34s)
+  kept earlier + 1back  <- 1back                                  saved 0.0216 bits a word; blend on the latest tenth: 160.6  (43s)
+  kept 1back + 2back + 3back  <- 1back + 2back                    saved 0.0154 bits a word; blend on the latest tenth: 155.5  (68s)
+  kept earlier                                                    saved 0.0139 bits a word; blend on the latest tenth: 152.1  (79s)
+  kept earlier + 1back/kind4  <- earlier                          saved 0.0056 bits a word; blend on the latest tenth: 149.9  (106s)
+  kept 2back + 3back  <- 2back                                    saved 0.0025 bits a word; blend on the latest tenth: 148.2  (135s)
+  kept earlier + 1back + 3back  <- earlier + 1back                saved 0.0013 bits a word; blend on the latest tenth: 146.9  (147s)
+9 ways kept, 124 ruled out, 133 tried
+  recall gains: 8/0.3:-0.0074 8/1:-0.0077 8/3:-0.0080 16/0.3:-0.0035 16/1:-0.0042 16/3:-0.0054 32/0.3:0.0015 32/1:-0.0004 32/3:-0.0033
+  recall: best at sharpness 32, lean 0.3: saves 0.0015 bits a word  (223s)
+  kept recall; blend on the latest tenth: 145.9
+RESULT grow train_noisy_42068.txt: 914071 words; ways 9; bits 7.1411 perplexity 141.2; 252s
+=== controls, full text
+RESULT grow train_clean_42068.txt: 929589 words; ways 7; bits 7.0892 perplexity 136.2; 94s [far=0 quiet=1]
+RESULT grow train_clean_42068.txt: 929589 words; ways 8; bits 7.1032 perplexity 137.5; 110s [kinds=0 quiet=1]
+RESULT grow train_clean_42068.txt: 929589 words; ways 10; bits 7.0682 perplexity 134.2; 281s [recall=0 quiet=1]
+=== with the neurons (no backprop): 2,000 / 10,000 / 42,068
+kinds made (1s)
+  kept 1back                                                      saved 0.8036 bits a word; blend on the latest tenth: 449.5  (2s)
+  kept 1back + 2back  <- 1back                                    saved 0.0381 bits a word; blend on the latest tenth: 424.4  (2s)
+  kept 2back + 3back/kind10  <- 2back                             saved 0.0090 bits a word; blend on the latest tenth: 415.1  (3s)
+3 ways kept, 70 ruled out, 73 tried
+  recall gains: 8/0.3:-0.0010 8/1:-0.0015 8/3:-0.0027 16/0.3:-0.0006 16/1:-0.0021 16/3:-0.0039 32/0.3:-0.0023 32/1:-0.0034 32/3:-0.0050
+  recall: best at sharpness 16, lean 0.3: saves -0.0006 bits a word  (6s)
+    neurons (dfa), time through 1: 267.6 on what it has read; latest tenth 867.8
+    neurons (dfa), time through 2: 144.9 on what it has read; latest tenth 649.6
+    neurons (dfa), time through 3: 108.1 on what it has read; latest tenth 650.1
+    neurons (dfa), time through 4: 90.9 on what it has read; latest tenth 655.5
+    neurons (dfa), time through 5: 80.3 on what it has read; latest tenth 669.5
+  neurons: alone 669.5 on the latest tenth; blended in they save 0.0395 bits a word  (32s)
+  kept neurons; blend on the latest tenth: 395.3
+RESULT grow train_clean_2000.txt: 44772 words; ways 3; bits 8.3616 perplexity 328.9; 38s [neurons=5]
+  recall gains: 8/0.3:-0.0042 8/1:-0.0044 8/3:-0.0049 16/0.3:0.0012 16/1:0.0001 16/3:-0.0020 32/0.3:0.0047 32/1:0.0027 32/3:-0.0005
+  recall: best at sharpness 32, lean 0.3: saves 0.0047 bits a word  (28s)
+  kept recall; blend on the latest tenth: 201.1
+    neurons (dfa), time through 1: 340.2 on what it has read; latest tenth 1134.8
+    neurons (dfa), time through 2: 192.6 on what it has read; latest tenth 411.0
+    neurons (dfa), time through 3: 146.2 on what it has read; latest tenth 362.4
+    neurons (dfa), time through 4: 126.0 on what it has read; latest tenth 356.9
+    neurons (dfa), time through 5: 114.2 on what it has read; latest tenth 354.8
+  neurons: alone 354.8 on the latest tenth; blended in they save 0.0442 bits a word  (152s)
+  kept neurons; blend on the latest tenth: 191.9
+RESULT grow train_clean_10000.txt: 221630 words; ways 6; bits 7.6375 perplexity 199.1; 165s [neurons=5]
+
+kinds made (7s)
+  kept 1back                                                      saved 1.8505 bits a word; blend on the latest tenth: 191.3  (15s)
+  kept 1back + 2back  <- 1back                                    saved 0.2651 bits a word; blend on the latest tenth: 152.3  (27s)
+  kept earlier + 1back  <- 1back                                  saved 0.0270 bits a word; blend on the latest tenth: 147.5  (39s)
+  kept 2back                                                      saved 0.0221 bits a word; blend on the latest tenth: 143.0  (66s)
+  kept 1back + 2back + 3back  <- 1back + 2back                    saved 0.0206 bits a word; blend on the latest tenth: 137.6  (77s)
+  kept 1back/kind4                                                saved 0.0166 bits a word; blend on the latest tenth: 133.3  (91s)
+  kept earlier                                                    saved 0.0073 bits a word; blend on the latest tenth: 131.3  (100s)
+  kept 1back/kind4 + 3back  <- 1back/kind4                        saved 0.0034 bits a word; blend on the latest tenth: 129.9  (133s)
+  kept earlier/kind4 + 1back + 2back + 3back + 4back  <- earlier/kind4 + 1back + 2back + 3back saved 0.0078 bits a word; blend on the latest tenth: 127.4  (244s)
+  kept earlier + 1back + 3back + 4back  <- earlier + 1back + 3back saved 0.0014 bits a word; blend on the latest tenth: 126.2  (247s)
+10 ways kept, 155 ruled out, 165 tried
+  recall gains: 8/0.3:-0.0071 8/1:-0.0074 8/3:-0.0078 16/0.3:-0.0043 16/1:-0.0050 16/3:-0.0060 32/0.3:-0.0040 32/1:-0.0055 32/3:-0.0072
+  recall: best at sharpness 32, lean 0.3: saves -0.0040 bits a word  (318s)
+    neurons (dfa), time through 1: 342.5 on what it has read; latest tenth 10346.9
+    neurons (dfa), time through 2: 203.5 on what it has read; latest tenth 517.5
+    neurons (dfa), time through 3: 156.6 on what it has read; latest tenth 234.0
+    neurons (dfa), time through 4: 138.5 on what it has read; latest tenth 224.3
+    neurons (dfa), time through 5: 129.5 on what it has read; latest tenth 221.2
+  neurons: alone 221.2 on the latest tenth; blended in they save 0.0332 bits a word  (804s)
+  kept neurons; blend on the latest tenth: 121.9
+RESULT grow train_clean_42068.txt: 929589 words; ways 10; bits 7.0198 perplexity 129.8; 834s [neurons=5]
+=== the same neurons trained by backprop (yardstick), 10,000
+kinds made (3s)
+  kept 1back                                                      saved 1.4395 bits a word; blend on the latest tenth: 253.9  (4s)
+  kept 1back + 2back  <- 1back                                    saved 0.1365 bits a word; blend on the latest tenth: 221.7  (6s)
+  kept 2back                                                      saved 0.0194 bits a word; blend on the latest tenth: 215.4  (9s)
+  kept earlier                                                    saved 0.0086 bits a word; blend on the latest tenth: 211.9  (11s)
+  kept 1back + 2back + 3back  <- 1back + 2back                    saved 0.0076 bits a word; blend on the latest tenth: 206.5  (16s)
+  kept earlier + 1back/kind4  <- earlier                          saved 0.0054 bits a word; blend on the latest tenth: 203.3  (19s)
+6 ways kept, 95 ruled out, 101 tried
+  recall gains: 8/0.3:-0.0042 8/1:-0.0044 8/3:-0.0049 16/0.3:0.0012 16/1:0.0001 16/3:-0.0020 32/0.3:0.0047 32/1:0.0027 32/3:-0.0005
+  recall: best at sharpness 32, lean 0.3: saves 0.0047 bits a word  (29s)
+  kept recall; blend on the latest tenth: 201.1
+    neurons (bp), time through 1: 273.4 on what it has read; latest tenth 291.1
+    neurons (bp), time through 2: 118.2 on what it has read; latest tenth 261.7
+    neurons (bp), time through 3: 79.5 on what it has read; latest tenth 273.4
+    neurons (bp), time through 4: 61.6 on what it has read; latest tenth 284.3
+    neurons (bp), time through 5: 51.1 on what it has read; latest tenth 299.5
+  neurons: alone 299.5 on the latest tenth; blended in they save 0.1410 bits a word  (147s)
+  kept neurons; blend on the latest tenth: 178.1
+RESULT grow train_clean_10000.txt: 221630 words; ways 6; bits 7.5381 perplexity 185.9; 160s [neurons=5 backprop=1]
+=== some of the kinds it made (full text, 128 kinds; every third of the larger ones)
+   16 words: N one-year cent deloitte dictator abm lifetime retreated jumping weighing
+    9 words: a white jersey generate potentially centennial artistic mansion fromstein
+  380 words: sales chairman part sale loss day director officer number case
+  216 words: million trading way yen bid september wall point policy cut
+   66 words: 's tax early private european best individual sharp whole specific
+  247 words: government people price analysts congress notes employees customers charges inflation
+  100 words: said say reported called know believe saying particularly especially means
+   54 words: on about chief take without nearly increasing develop reflecting roughly
+  171 words: year international insurance service ual weeks air health technology industries
+   99 words: be investors program money contract composite area rights contracts portfolio
+   16 words: that republican clearly fe female kentucky practical first-half finishing gordon
+   22 words: $ oct. nov. sept. # dec. chapter c$ us$ no.
+  211 words: business profit ago high priced record inc force financing account

@@ -41,5 +41,11 @@ Everything was moved here from the Ciall repo (`pra-ji-moh/ciall`, commit
   documents; `run_one.sh` runs every test. Results and limits are at the end
   of `hartley/README.md`. The C files in `hartley/` are the earlier steps,
   kept as they were; porting them to Python is still to do.
+- `hartley/grow.py`: ways of looking and kinds of words nobody writes (the
+  model is handed only pointers and grows the rest); `hartley/local.py`: a
+  layer of neurons that learns with no backprop (broadcast error). Real
+  English only so far: `python3 grow.py DATA_DIR TRAIN_FILE [neurons=5]`.
+  Next: offer one.py's held words, promises and episodes to the grower so
+  one model does every test.
 - `research/ciall/`: design notes from the earlier chats (`ONE_BRAIN.md`,
   `BEING.md`, `ARCHITECTURE.md`).
