@@ -1,0 +1,274 @@
+{
+ "split": "test",
+ "n": 1500,
+ "bigCostPer1000": 2.0708906666666675,
+ "strategies": {
+  "Everything to the big model": {
+   "costPer1000": 2.0708906666666675,
+   "saved": 0,
+   "missedPct": 0,
+   "wastedPct": 1,
+   "accuracy": 0.4
+  },
+  "Everything to the small model": {
+   "costPer1000": 0.05177226666666661,
+   "saved": 0.9750000000000001,
+   "missedPct": 1,
+   "wastedPct": 0,
+   "accuracy": 0.6
+  },
+  "Topic router (science goes big)": {
+   "costPer1000": 0.6079122666666663,
+   "saved": 0.7064488838296954,
+   "missedPct": 0.4533333333333333,
+   "wastedPct": 0.19,
+   "accuracy": 0.7046666666666667
+  },
+  "Order router (ours)": {
+   "costPer1000": 1.053357266666668,
+   "saved": 0.4913506137133905,
+   "missedPct": 0.22333333333333333,
+   "wastedPct": 0.012222222222222223,
+   "accuracy": 0.9033333333333333
+  }
+ },
+ "bySource": {
+  "sciq": {
+   "n": 300,
+   "needsBig": false,
+   "oursBig": 0,
+   "topicBig": 116
+  },
+  "webq": {
+   "n": 300,
+   "needsBig": false,
+   "oursBig": 3,
+   "topicBig": 21
+  },
+  "openqa": {
+   "n": 300,
+   "needsBig": false,
+   "oursBig": 8,
+   "topicBig": 34
+  },
+  "creative": {
+   "n": 300,
+   "needsBig": true,
+   "oursBig": 171,
+   "topicBig": 33
+  },
+  "gsm8k": {
+   "n": 300,
+   "needsBig": true,
+   "oursBig": 295,
+   "topicBig": 295
+  }
+ },
+ "misses": [
+  {
+   "source": "webq",
+   "needs_big": false,
+   "q": "what hotel should i stay in san francisco?"
+  },
+  {
+   "source": "webq",
+   "needs_big": false,
+   "q": "what currency should i take to dubai?"
+  },
+  {
+   "source": "webq",
+   "needs_big": false,
+   "q": "what city in australia should i live in quiz?"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "Why are cats better than dogs?"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "Why is the University of Waterloo the best school for software engineering?"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "What should I do if I consume a household cleaner?"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "How should I clean a stainless steel pan?"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "Why are Dr. Seuss books so good?"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "Polly, a 51-year-old female, visits your fitness facility. Polly has been told she has pre-diabetes. Explain to her what this means. What role can exercise play"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "What planning should you do to visit Walt Disney World?"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "What is it like to have children and how many should I have?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What is the best lure color when fishing for blue Marlin on the Big Island"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Qui était Clovis?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Which is stronger - a lion or a tiger?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "When I ski, at the end of the turn, I'm not able to get good grip at the end of the turn and the tail washout, why does this happen?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "If  you found yourself  washed  up on  a  deserted tropical island with no hope for immediate rescue, what  would  you do?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Conceive a plot for a John Wick movie which includes redemption and closure"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Road Trip to Vegas via Death Valley, example guide"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Who does Machiavelli believe exemplifies the characteristics of a true prince in The Prince, and why does he hold this belief?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Which cities should a perfect trip to Germany include."
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What's a relaxing activity to do when visiting Seoul, South Korea?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "How to be happy?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "First day of baking with sourdough"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "America’s cup comeback"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What is the best city in Ohio?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What's a romatic poem about the universe and time?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What are some tips for traveling with a toddler?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What are some benefits of public transportation?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "How is Tesla organized as a company?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What's the appeal of a vacation rental on the Big Island of Hawaii?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Which national park is hardest to visit?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What are your thoughts of Michael Jackson as a singer and person"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What is bubble tea?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Does money make you happy?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Is social media good for you ?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What's the significance of the lighthouse in Virginia Woolf's \"In The Lighthouse?\""
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "As a 16-year old high school student, write a short summary of your visit to the Vermeer exhibition in the Rijksmuseum."
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "We are getting a new puppy today, I am writing this messages to you our beloved children that we need to keep the Cats away from the new puppy for at least the "
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "which weighs more, a pound of bricks or a ton of feathers?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What is the role of whistleblowers in a democratic market economy?"
+  }
+ ],
+ "anomaly": {
+  "n": 272,
+  "caughtByOurs": 150,
+  "caughtByTopic": 0
+ }
+}

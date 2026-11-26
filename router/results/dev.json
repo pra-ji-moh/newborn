@@ -1,0 +1,274 @@
+{
+ "split": "dev",
+ "n": 1500,
+ "bigCostPer1000": 1.8484400000000005,
+ "strategies": {
+  "Everything to the big model": {
+   "costPer1000": 1.8484400000000005,
+   "saved": 0,
+   "missedPct": 0,
+   "wastedPct": 1,
+   "accuracy": 0.4
+  },
+  "Everything to the small model": {
+   "costPer1000": 0.04621100000000005,
+   "saved": 0.975,
+   "missedPct": 1,
+   "wastedPct": 0,
+   "accuracy": 0.6
+  },
+  "Topic router (science goes big)": {
+   "costPer1000": 0.5998003999999999,
+   "saved": 0.6755099435199413,
+   "missedPct": 0.4666666666666667,
+   "wastedPct": 0.2311111111111111,
+   "accuracy": 0.6746666666666667
+  },
+  "Order router (ours)": {
+   "costPer1000": 0.8852050000000005,
+   "saved": 0.5211069875137953,
+   "missedPct": 0.23166666666666666,
+   "wastedPct": 0.01,
+   "accuracy": 0.9013333333333333
+  }
+ },
+ "bySource": {
+  "sciq": {
+   "n": 300,
+   "needsBig": false,
+   "oursBig": 1,
+   "topicBig": 142
+  },
+  "webq": {
+   "n": 300,
+   "needsBig": false,
+   "oursBig": 1,
+   "topicBig": 26
+  },
+  "openqa": {
+   "n": 300,
+   "needsBig": false,
+   "oursBig": 7,
+   "topicBig": 40
+  },
+  "creative": {
+   "n": 300,
+   "needsBig": true,
+   "oursBig": 171,
+   "topicBig": 26
+  },
+  "gsm8k": {
+   "n": 300,
+   "needsBig": true,
+   "oursBig": 290,
+   "topicBig": 294
+  }
+ },
+ "misses": [
+  {
+   "source": "sciq",
+   "needs_big": false,
+   "q": "The atomic number of tungsten is 74. therefore, in a neutral atom of tungsten, there are 74 electrons. the atomic number of argon is 18. therefore, in a neutral"
+  },
+  {
+   "source": "webq",
+   "needs_big": false,
+   "q": "what currency should i take to mauritius?"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "Give me a list of 10 nematode species"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "What are the pros and cons of charging a Tesla at Public Charging Stations?"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "I am an odd number and if you take away a letter, I become even. What number am I?"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "Why are shiba inus the best dogs?"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "What should I consider when deciding between electric car or gas car?"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "Where should you go on vacation?"
+  },
+  {
+   "source": "openqa",
+   "needs_big": false,
+   "q": "Do you recommend playing Dr. Mercy who is also called Swiss doctor Angela Ziegler to support your Chinese teammates in Overwatch ?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Why Bali is a perfect destination for a family holiday?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "what is the meaning of life?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "How to sell?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What is the Canada's national sport?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What do you say to someone that is suicidal?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "A square has angles of 30 degrees, 90 degrees and 150 degrees. What is the last angle in the square?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What are some of the pros of subleasing?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What Indian sport is like baseball?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Are plastic bags and containers bad for the environment?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "how to survive on Mars"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "How do I make a perfect grilled cheese sandwich?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Does Las Vegas have a professional hockey team?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "How do you cook the perfect pizza?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Can I PLEASE get a dog?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What are some of the sight seeing and outdoor activities to do in Portugal, Spain"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Why is sitting the new smoking?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What is life like living underwater?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "How do you cook a Texas brisket?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What are recommended things to do or have when adopting a puppy?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What is it like living in Salt Lake City?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "road trip to Kerala from Bangalore."
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "What is the most popular sport?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Is Tesla's strategy sustainable in the face of increasing competition from incumbents and entrants in the fully electric vehicle market? How should they respond"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "How to decide what type of dog you want to purchase or adopt?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "How do I decline an invitation to my Aunt's Birthday party?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Tell me some brief highlights as to why adopting a vegan diet is a better choice."
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "what method of commuting works best to get from Marin County to downtown San Francisco?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Would my landlord allow me to have my dog living at the house?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Why does Daenerys Targaryen want to rule Westeros?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "Where do sloths live?"
+  },
+  {
+   "source": "creative",
+   "needs_big": true,
+   "q": "It's your child's birthday, write a message on social media to express your happiness and celebrate their special day"
+  }
+ ],
+ "anomaly": {
+  "n": 280,
+  "caughtByOurs": 164,
+  "caughtByTopic": 0
+ }
+}

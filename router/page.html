@@ -1,0 +1,227 @@
+<title>Order Router</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one column; a live router up top, the measured results under it, limits last. */
+:root {
+  --bg: #f4f5f7; --surface: #ffffff; --ink: #161a22; --soft: #5a6170; --line: #dde0e6;
+  --accent: #2443c4;      /* brand, controls */
+  --abel: #0e7c6b;        /* abelian: existing material, small model */
+  --nonabel: #b4540b;     /* non-abelian: novelty / ordered steps, big model */
+  --abel-tint: #e3f3ef; --nonabel-tint: #fbeadb; --accent-tint: #e6eafa;
+  --display: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --body: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #101318; --surface: #181c23; --ink: #e8eaef; --soft: #9aa1ae; --line: #2a303a;
+  --accent: #8da2ff; --abel: #4fd1b8; --nonabel: #f3a05e;
+  --abel-tint: #12302b; --nonabel-tint: #35230f; --accent-tint: #1c2346; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #101318; --surface: #181c23; --ink: #e8eaef; --soft: #9aa1ae; --line: #2a303a;
+  --accent: #8da2ff; --abel: #4fd1b8; --nonabel: #f3a05e;
+  --abel-tint: #12302b; --nonabel-tint: #35230f; --accent-tint: #1c2346; color-scheme: dark; }
+
+body { background: var(--bg); color: var(--ink); font: 16px/1.55 var(--body); }
+.wrap { max-width: 920px; margin: 0 auto; padding-block: 40px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 48px; }
+h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.08; font-weight: 700; }
+h2 { font-size: 1.45rem; font-weight: 650; }
+p { margin: 0; max-width: 65ch; }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); }
+.lede { font-size: 1.12rem; color: var(--soft); }
+section { display: grid; gap: 16px; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* live router */
+.try { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
+label { font-weight: 600; font-size: 0.95rem; }
+textarea { width: 100%; box-sizing: border-box; min-height: 92px; resize: vertical; font: 16px/1.5 var(--body);
+  color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+textarea:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button { font: 500 13px/1.2 var(--body); color: var(--accent); background: var(--accent-tint); border: 0;
+  border-radius: 999px; padding: 7px 12px; cursor: pointer; text-align: left; }
+.verdict { display: grid; grid-template-columns: auto 1fr; gap: 14px 18px; align-items: start;
+  border-radius: 12px; padding: 16px; background: var(--abel-tint); }
+.verdict.big { background: var(--nonabel-tint); }
+.pill { font: 600 13px/1 var(--mono); padding: 8px 11px; border-radius: 8px; color: var(--surface); background: var(--abel); white-space: nowrap; }
+.verdict.big .pill { background: var(--nonabel); }
+.verdict strong { display: block; font-size: 1.05rem; }
+.verdict ul { margin: 6px 0 0; padding-left: 18px; color: var(--soft); }
+.verdict .cost { grid-column: 1 / -1; font: 13px/1.4 var(--mono); color: var(--soft); }
+
+/* 2x2 */
+.matrix { display: grid; grid-template-columns: 110px 1fr 1fr; gap: 6px; font-size: 0.95rem; }
+.matrix .h { font: 500 12px/1.3 var(--mono); color: var(--soft); padding: 6px 4px; align-self: end; }
+.matrix .r { font: 500 12px/1.3 var(--mono); color: var(--soft); align-self: center; }
+.cell { border-radius: 10px; padding: 14px; min-height: 92px; display: grid; gap: 4px; align-content: start; border: 2px solid transparent; }
+.cell.a { background: var(--abel-tint); } .cell.n { background: var(--nonabel-tint); }
+.cell b { font: 600 1.6rem/1 var(--display); }
+.cell span { color: var(--soft); font-size: 0.88rem; }
+.cell.anom { border-color: var(--nonabel); }
+.cell.lit { outline: 3px solid var(--accent); outline-offset: 1px; }
+
+/* results */
+.tablebox { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+table { border-collapse: collapse; width: 100%; min-width: 600px; font-variant-numeric: tabular-nums; }
+th, td { padding: 12px 14px; text-align: right; border-bottom: 1px solid var(--line); }
+th:first-child, td:first-child { text-align: left; }
+th { font: 500 12px/1.3 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--soft); }
+tr:last-child td { border-bottom: 0; }
+tr.ours td { font-weight: 650; background: var(--accent-tint); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 4px; }
+.stat b { font: 650 2rem/1.05 var(--display); font-variant-numeric: tabular-nums; }
+.stat span { color: var(--soft); font-size: 0.9rem; }
+.note { font-size: 0.92rem; color: var(--soft); }
+ol.limits, ul.plain { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 70ch; }
+code { font: 0.9em var(--mono); }
+a { color: var(--accent); }
+@media (max-width: 560px) {
+  .matrix { grid-template-columns: 64px 1fr 1fr; }
+  .verdict { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: no-preference) { .cell, .verdict { transition: background-color .2s ease, outline-color .2s ease; } }
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:14px">
+    <div class="eyebrow">Prototype · Nov 2026</div>
+    <h1>Pay for the big model only when the work doesn't commute</h1>
+    <p class="lede">Most AI queries fetch existing material: the facts can be gathered in any order and merged, so a small, cheap model is enough. Some need something new, or steps that must happen in order. Only those go to the big model. The router never decides by topic, so it also catches the odd case, like a media question that needs original work.</p>
+  </header>
+
+  <section aria-labelledby="try-h">
+    <h2 id="try-h">Try it</h2>
+    <div class="try">
+      <label for="q">Type any query</label>
+      <textarea id="q">Write a convincing argument about why cats are better than dogs</textarea>
+      <div class="chips" id="chips" aria-label="Example queries"></div>
+      <div class="verdict" id="verdict" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="mx-h">
+    <h2 id="mx-h">Where 1,500 real queries landed</h2>
+    <p class="note">Held-out test half. Columns are the router's decision, rows are only the topic. The outlined cell is the anomaly a topic router misses.</p>
+    <div class="matrix" id="matrix"></div>
+  </section>
+
+  <section aria-labelledby="res-h">
+    <h2 id="res-h">Results on real queries</h2>
+    <div class="stats" id="stats"></div>
+    <div class="tablebox"><table id="table"></table></div>
+    <p class="note"><b>Missed</b>: needed the big model, sent to the small one (quality risk). <b>Wasted</b>: a lookup sent to the big model (money lost). Cost uses list prices for Claude Opus 5.5 ($4 / $20 per million input / output tokens) and Claude Haiku 5.5 ($0.10 / $0.50), with each query's output length taken from its dataset's reference answer.</p>
+  </section>
+
+  <section aria-labelledby="how-h">
+    <h2 id="how-h">How it was tested</h2>
+    <ul class="plain">
+      <li><b>3,000 real queries from five public datasets.</b> Lookups: SciQ (science facts), WebQuestions (people, places, media) and Dolly-15k open questions. Needs the big model: GSM8K maths word problems and Dolly-15k creative writing.</li>
+      <li><b>Nobody labelled anything by hand.</b> Whether a query needs the big model comes from the dataset it is in.</li>
+      <li><b>Tuned on one half, scored on the other.</b> The rules were fixed before the test half was run. Dev and test scores agree: 90.1% and 90.3% routed right.</li>
+      <li><b>The router runs on this page,</b> in your browser, in well under a millisecond. It is the same code that produced the numbers.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="lim-h">
+    <h2 id="lim-h">Not measured yet</h2>
+    <ol class="limits">
+      <li><b>Answer quality.</b> No model was called. The savings assume the small model answers lookups well enough; the next step is to run both models on these queries and grade the answers.</li>
+      <li><b>About one in five "needs big" queries are sent small.</b> Part of that is label noise: Dolly's creative-writing set includes plain fact questions such as "What is the most popular sport?". Part is real misses.</li>
+      <li><b>Public datasets, not a customer's traffic.</b> The mix here is 40% queries that need the big model. A real query log will have its own mix, and the savings move with it.</li>
+      <li><b>No comparison with commercial routers yet.</b> The baseline here is a plain topic router.</li>
+    </ol>
+  </section>
+</div>
+
+<script>/*ROUTER*/</script>
+<script>
+const RESULTS = /*RESULTS*/;
+const $ = (id) => document.getElementById(id);
+const pct = (x, d = 0) => (100 * x).toFixed(d) + "%";
+const usd = (x) => "$" + x.toFixed(2);
+
+const EXAMPLES = [
+  "Write a convincing argument about why cats are better than dogs",
+  "what character did natalie portman play in star wars?",
+  "Janet has 3 boxes of 12 eggs. She uses 8 for a cake and sells the rest at $0.25 each. How much does she make?",
+  "What term in biotechnology means a genetically exact copy of an organism?",
+  "I'm going to Stockholm this weekend and love museums and nature. What should I do?",
+  "Who sings the song Riptide?",
+];
+const chips = $("chips");
+for (const e of EXAMPLES) {
+  const b = document.createElement("button");
+  b.type = "button"; b.textContent = e.length > 58 ? e.slice(0, 56) + "…" : e; b.title = e;
+  b.addEventListener("click", () => { $("q").value = e; show(); });
+  chips.append(b);
+}
+
+function show() {
+  const q = $("q").value.trim();
+  const v = $("verdict");
+  if (!q) { v.className = "verdict"; v.innerHTML = "<div></div><div>Type a query to see where it goes.</div>"; lightCell(null); return; }
+  const r = Router.route(q);
+  const inTok = Math.max(1, Math.round(q.length / 4)), outTok = r.model === "big" ? 400 : 60;
+  const chosen = Router.cost(r.model, inTok, outTok), allBig = Router.cost("big", inTok, outTok);
+  const P = Router.PRICES[r.model];
+  v.className = "verdict" + (r.model === "big" ? " big" : "");
+  v.innerHTML = "";
+  const pill = document.createElement("div"); pill.className = "pill"; pill.textContent = r.model === "big" ? "BIG MODEL" : "SMALL MODEL";
+  const body = document.createElement("div");
+  const s = document.createElement("strong"); s.textContent = `${r.kind}: ${r.need} → ${P.name}`;
+  const ul = document.createElement("ul"); for (const w of r.why) { const li = document.createElement("li"); li.textContent = w; ul.append(li); }
+  body.append(s, ul);
+  const c = document.createElement("div"); c.className = "cost";
+  c.textContent = r.model === "big"
+    ? `Topic: ${r.topic}. Sent to the big model, as the work needs.`
+    : `Topic: ${r.topic}. About ${Math.round(allBig / chosen)}× cheaper than the big model for this query (assuming a ${outTok}-token answer).`;
+  v.append(pill, body, c);
+  lightCell(r.topic + "|" + r.kind);
+}
+$("q").addEventListener("input", show);
+
+// 2x2
+const cells = RESULTS.cells, mx = $("matrix");
+const head = (t) => { const d = document.createElement("div"); d.className = "h"; d.textContent = t; return d; };
+mx.append(head(""), head("ABELIAN · existing material → small"), head("NON-ABELIAN · novelty / order → big"));
+const cellEls = {};
+for (const [topic, label] of [["science", "Science"], ["people & media", "People & media"]]) {
+  const r = document.createElement("div"); r.className = "r"; r.textContent = label; mx.append(r);
+  for (const kind of ["abelian", "non-abelian"]) {
+    const k = topic + "|" + kind, d = document.createElement("div");
+    d.className = "cell " + (kind === "abelian" ? "a" : "n") + (topic !== "science" && kind === "non-abelian" ? " anom" : "");
+    const b = document.createElement("b"); b.className = "num"; b.textContent = (cells[k] || 0).toLocaleString();
+    const sp = document.createElement("span");
+    sp.textContent = { "science|abelian": "science facts, looked up", "science|non-abelian": "maths and multi-step problems",
+      "people & media|abelian": "facts about people, places, media", "people & media|non-abelian": "the anomaly: new writing, plans, arguments" }[k];
+    d.append(b, sp); mx.append(d); cellEls[k] = d;
+  }
+}
+function lightCell(k) { for (const [kk, el] of Object.entries(cellEls)) el.classList.toggle("lit", kk === k); }
+
+// results
+const S = RESULTS.strategies, ours = S["Order router (ours)"], topic = S["Topic router (science goes big)"];
+const stats = [
+  [pct(ours.accuracy, 1), `routed right, against ${pct(topic.accuracy, 1)} for a topic router`],
+  [pct(ours.saved), `cheaper than sending everything to the big model`],
+  [`${RESULTS.anomaly.caughtByOurs} of ${RESULTS.anomaly.n}`, "anomalies caught (need the big model, not about science). A topic router catches 0."],
+  [pct(ours.wastedPct, 1), "of lookups wasted on the big model, against " + pct(topic.wastedPct) + " for a topic router"],
+];
+for (const [b, s] of stats) { const d = document.createElement("div"); d.className = "stat"; d.innerHTML = "<b></b><span></span>"; d.firstChild.textContent = b; d.lastChild.textContent = s; $("stats").append(d); }
+const t = $("table");
+t.innerHTML = "<thead><tr><th>Strategy</th><th>Cost per 1,000</th><th>Saved</th><th>Missed</th><th>Wasted</th><th>Routed right</th></tr></thead><tbody></tbody>";
+for (const [name, v] of Object.entries(S)) {
+  const tr = document.createElement("tr"); if (name.includes("ours")) tr.className = "ours";
+  for (const x of [name, usd(v.costPer1000), pct(v.saved), pct(v.missedPct), pct(v.wastedPct), pct(v.accuracy, 1)]) {
+    const td = document.createElement("td"); td.textContent = x; tr.append(td);
+  }
+  t.tBodies[0].append(tr);
+}
+show();
+</script>
