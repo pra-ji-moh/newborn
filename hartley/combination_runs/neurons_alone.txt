@@ -1,0 +1,6 @@
+    neurons (learn), time through 1: 277.8 on what it has read
+    neurons (learn), time through 2: 187.8 on what it has read
+    neurons (learn), time through 3: 183.8 on what it has read
+    neurons (learn), time through 4: 192.3 on what it has read
+    neurons (learn), time through 5: 205.0 on what it has read
+RESULT neurons alone (learn) train_clean_10000.txt: perplexity 273.0

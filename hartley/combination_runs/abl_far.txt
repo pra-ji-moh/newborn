@@ -1,0 +1,18 @@
+kinds made (3s)
+  kept 1back                                                      saved 1.4395 bits a word; blend on the latest tenth: 253.9  (4s)
+  kept 1back + 2back  <- 1back                                    saved 0.1365 bits a word; blend on the latest tenth: 221.7  (6s)
+  kept 2back                                                      saved 0.0194 bits a word; blend on the latest tenth: 215.4  (7s)
+  kept 1back + 2back + 3back  <- 1back + 2back                    saved 0.0082 bits a word; blend on the latest tenth: 210.0  (9s)
+  kept 1back/kind4                                                saved 0.0070 bits a word; blend on the latest tenth: 205.5  (10s)
+5 ways kept, 60 ruled out, 65 tried
+  recall gains: 8/0.3:-0.0034 8/1:-0.0035 8/3:-0.0040 16/0.3:0.0026 16/1:0.0014 16/3:-0.0008 32/0.3:0.0060 32/1:0.0040 32/3:0.0006
+  recall: best at sharpness 32, lean 0.3: saves 0.0060 bits a word  (26s)
+  kept recall; blend on the latest tenth: 203.0
+    neurons (learn), time through 1: 279.1 on what it has read; latest tenth 314.9
+    neurons (learn), time through 2: 188.1 on what it has read; latest tenth 277.5
+    neurons (learn), time through 3: 184.1 on what it has read; latest tenth 273.7
+    neurons (learn), time through 4: 192.6 on what it has read; latest tenth 274.8
+    neurons (learn), time through 5: 205.3 on what it has read; latest tenth 281.3
+  neurons: alone 281.3 on the latest tenth; blended in they save 0.0974 bits a word  (469s)
+  kept neurons; blend on the latest tenth: 183.2
+RESULT grow train_clean_10000.txt: 221630 words; ways 5; bits 7.5522 perplexity 187.7; 496s [neurons=5 game=2 far=0]
