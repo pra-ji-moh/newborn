@@ -1,0 +1,46 @@
+== base_dfa
+    neurons (dfa), time through 1: 340.2 on what it has read; latest tenth 1134.8
+    neurons (dfa), time through 2: 192.6 on what it has read; latest tenth 411.0
+    neurons (dfa), time through 3: 146.2 on what it has read; latest tenth 362.4
+    neurons (dfa), time through 4: 126.0 on what it has read; latest tenth 356.9
+    neurons (dfa), time through 5: 114.2 on what it has read; latest tenth 354.8
+  neurons: alone 354.8 on the latest tenth; blended in they save 0.0442 bits a word  (1729s)
+  kept neurons; blend on the latest tenth: 191.9
+RESULT grow train_clean_10000.txt: 221630 words; ways 6; bits 7.6375 perplexity 199.1; 1795s [neurons=5]
+== base_bp
+    neurons (bp), time through 1: 273.4 on what it has read; latest tenth 291.1
+    neurons (bp), time through 2: 118.2 on what it has read; latest tenth 261.7
+    neurons (bp), time through 3: 79.5 on what it has read; latest tenth 273.4
+    neurons (bp), time through 4: 61.6 on what it has read; latest tenth 284.3
+    neurons (bp), time through 5: 51.1 on what it has read; latest tenth 299.5
+  neurons: alone 299.5 on the latest tenth; blended in they save 0.1410 bits a word  (1706s)
+  kept neurons; blend on the latest tenth: 178.1
+RESULT grow train_clean_10000.txt: 221630 words; ways 6; bits 7.5381 perplexity 185.9; 1778s [neurons=5 backprop=1]
+== game1
+    neurons (team), time through 1: 3820.9 on what it has read; latest tenth 257231.2
+    neurons (team), time through 2: 641.6 on what it has read; latest tenth 2060.6
+    neurons (team), time through 3: 383.4 on what it has read; latest tenth 768.1
+    neurons (team), time through 4: 304.9 on what it has read; latest tenth 647.9
+    neurons (team), time through 5: 266.3 on what it has read; latest tenth 624.4
+  neurons: alone 624.4 on the latest tenth; blended in they save -0.0003 bits a word  (1874s)
+RESULT grow train_clean_10000.txt: 221630 words; ways 6; bits 7.6951 perplexity 207.2; 1925s [neurons=5 game=1]
+== game2
+    neurons (learn), time through 1: 279.1 on what it has read; latest tenth 314.9
+    neurons (learn), time through 2: 188.1 on what it has read; latest tenth 277.5
+    neurons (learn), time through 3: 184.1 on what it has read; latest tenth 273.7
+    neurons (learn), time through 4: 192.6 on what it has read; latest tenth 274.8
+    neurons (learn), time through 5: 205.3 on what it has read; latest tenth 281.3
+  neurons: alone 281.3 on the latest tenth; blended in they save 0.0990 bits a word  (2154s)
+  kept neurons; blend on the latest tenth: 181.6
+RESULT grow train_clean_10000.txt: 221630 words; ways 6; bits 7.5486 perplexity 187.2; 2196s [neurons=5 game=2]
+== game3
+    neurons (elim, 24 eliminated), time through 1: 319.1 on what it has read; latest tenth 969.3
+    neurons (elim, 56 eliminated), time through 2: 198.5 on what it has read; latest tenth 391.2
+    neurons (elim, 88 eliminated), time through 3: 157.4 on what it has read; latest tenth 358.9
+    neurons (elim, 120 eliminated), time through 4: 135.5 on what it has read; latest tenth 347.7
+    neurons (elim, 120 eliminated), time through 5: 121.9 on what it has read; latest tenth 345.3
+  neurons: alone 345.3 on the latest tenth; blended in they save 0.0479 bits a word  (2221s)
+  kept neurons; blend on the latest tenth: 191.2
+RESULT grow train_clean_10000.txt: 221630 words; ways 6; bits 7.6326 perplexity 198.4; 2237s [neurons=5 game=3]
+
+[exited with code 0]
